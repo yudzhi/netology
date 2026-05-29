@@ -75,6 +75,13 @@ Accept-Ranges: bytes
 
 ## Задача 3
 ### Ответ:
+![Ctrl+C didn't stop the container](https://2.downloader.disk.yandex.ru/disk/c989b6aff9a34b63f8e76c3a2ed43873c004ebd5b132b90f7207c1f0f3033239/6a19a70d/iFwHyHfHYV6LpWmkyGg1uBh9y0YJxvThP9ChkW_cwWDfwvYdhMX1d3AzkFdXOboIgfip9EgN_wpfYtIEy9n0FQ%3D%3D?uid=22194168&filename=Qst3_docker-logs_1.png&disposition=inline&hash=&limit=0&content_type=image%2Fpng&owner_uid=22194168&fsize=581529&hid=fe533f8b5e3c8640426dab70f11996d1&media_type=image&tknv=v3&is_direct_zip_experiment=1&etag=46f65e02aa95805843347f990c958146)
+
+**Объяснение:** Ctrl+C посылает сигнал прерывания процессу в контейнере, завершая главный процесс (Nginx), что приводит к остановке контейнера.
+**Нюанс**
+Ctrl+C завершило подключение к потоку логирования, но не остановило сам контейнер.
+**Версия:**
+Возможно дело в использовании MacBook. Контейнер был остановлен командой docker stop.
 
 <details>
   <summary> Ход выполнения </summary>
@@ -83,4 +90,18 @@ Accept-Ranges: bytes
 $ docker logs -f custom-nginx-t2
 ```
 (Флаг -f — follow, следит за новыми строками)
+
+**Ctrl+C завершило подключение к потоку логирования, но не остановило сам контейнер.**
+
+```ruby
+# docker ps -a
+CONTAINER ID   IMAGE                       COMMAND                  CREATED       STATUS       PORTS                    NAMES
+5e058e2ed4c7   yudzhi/custom-nginx:1.0.0   "/docker-entrypoint.…"   3 hours ago   Up 3 hours   127.0.0.1:8080->80/tcp   custom-nginx-t2
+# docker stop custom-nginx-t2 
+custom-nginx-t2
+# docker ps -a
+CONTAINER ID   IMAGE                       COMMAND                  CREATED       STATUS                     PORTS     NAMES
+5e058e2ed4c7   yudzhi/custom-nginx:1.0.0   "/docker-entrypoint.…"   3 hours ago   Exited (0) 4 seconds ago             custom-nginx-t2
+```
+
 </details>
