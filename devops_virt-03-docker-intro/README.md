@@ -93,6 +93,36 @@ Ctrl+C завершило подключение к потоку логиров�
 
 ![Nano installed and port 80->>81](https://2.downloader.disk.yandex.ru/disk/95a4288b345f3218b6434d1853a230def379b5a1a4d71459b49463067911b2dc/6a1a217d/iFwHyHfHYV6LpWmkyGg1uM-n2cEuCdTVOP2k4476t8CgwW0otSxFFh-DqSWWrgo7dygAd8slhZLyQh1nGzjImw%3D%3D?uid=22194168&filename=Qst3_docker-nano_3.png&disposition=inline&hash=&limit=0&content_type=image%2Fpng&owner_uid=22194168&fsize=442657&hid=deabf7feb52ac0727b480a4ca4f3ddc2&media_type=image&tknv=v3&is_direct_zip_experiment=1&etag=f1c8d52deb0256a67dd247b1343f6708)
 
+#### п.10
+Проброс портов (`-p 127.0.0.1:8080:80`) настраивается при запуске контейнера и не меняется автоматически при изменении конфигурации внутри контейнера. 
+Мы изменили порт внутри контейнера (listen 81), но проброска портов осталась прежней. Хост слушает 80-й порт контейнера, а он теперь выключен. Поэтому curl возвращает ошибку.
+
+**Проверка проброса портов:**
+
+```bash
+# docker port custom-nginx-t2
+80/tcp -> 127.0.0.1:8080
+```
+Docker создаёт правило в брандмауэре хоста: «Все запросы на 127.0.0.1:8080 перенаправлять в контейнер на порт 80».
+Хост получает запрос, видит правило проброса и передаёт его контейнеру на порт 80. Nginx внутри контейнера отвечает, и ответ возвращается клиенту.
+
+```bash
+# ss -tlpn | grep 127.0.0.1:8080
+LISTEN 0      4096       127.0.0.1:8080      0.0.0.0:*    users:(("docker-proxy",pid=46581,fd=8))  
+# curl http://127.0.0.1:8080
+curl: (56) Recv failure: Connection reset by peer
+```
+
+Команда `nginx -s reload` не меняет проброс портов Docker — она только перезагружает конфигурацию Nginx внутри контейнера.
+
+---
+
+![docker_4](https://4.downloader.disk.yandex.ru/disk/d21c8903954e60827fd284af0c8521b6a3bc0c6d6b5b71b374cc89656415060d/6a1a4226/iFwHyHfHYV6LpWmkyGg1uOX2L-ufKHPMNaedLNs60kQknAdoaI26Yb7FRj_sXitgCM1s4mlhR_icp2sTph08Pw%3D%3D?uid=22194168&filename=Qst3_docker_4.png&disposition=inline&hash=&limit=0&content_type=image%2Fpng&owner_uid=22194168&fsize=511278&hid=196c37a72115d67a3e2ea1994e4aa8cf&media_type=image&tknv=v3&is_direct_zip_experiment=1&etag=d357f51736c5c786a02db30bd2c0662a)
+
+![docker_5](https://2.downloader.disk.yandex.ru/disk/f3f0dcb59f976091dc39a255f4961efb14d5b3a272f3a4322a6a451a0bf94bc5/6a1a428b/iFwHyHfHYV6LpWmkyGg1uMkotrUvpSnYSz9jDqaoZD4S8xASfjA7bsCylVEvgD64YJQcguRkCL93B3uXyTkygA%3D%3D?uid=22194168&filename=Qst3_docker_5.png&disposition=inline&hash=&limit=0&content_type=image%2Fpng&owner_uid=22194168&fsize=611688&hid=f4454b87b2106dfcdad4360a07b87e7f&media_type=image&tknv=v3&is_direct_zip_experiment=1&etag=01d69aef9d33cb08b8e6dd57f9c6d6c6)
+
+![docker_6](https://1.downloader.disk.yandex.ru/disk/ff1c96d4c1a872d6687d036108053f7914bdb940abaa5ff9f7eddcb93ccb82e0/6a1a42b8/iFwHyHfHYV6LpWmkyGg1uMkotrUvpSnYSz9jDqaoZD4S8xASfjA7bsCylVEvgD64YJQcguRkCL93B3uXyTkygA%3D%3D?uid=22194168&filename=Qst3_docker_6.png&disposition=inline&hash=&limit=0&content_type=image%2Fpng&owner_uid=22194168&fsize=611688&hid=f4454b87b2106dfcdad4360a07b87e7f&media_type=image&tknv=v3&is_direct_zip_experiment=1&etag=01d69aef9d33cb08b8e6dd57f9c6d6c6)
+
 <details>
   <summary> Ход выполнения </summary>
 
@@ -112,6 +142,63 @@ custom-nginx-t2
 # docker ps -a
 CONTAINER ID   IMAGE                       COMMAND                  CREATED       STATUS                     PORTS     NAMES
 5e058e2ed4c7   yudzhi/custom-nginx:1.0.0   "/docker-entrypoint.…"   3 hours ago   Exited (0) 4 seconds ago             custom-nginx-t2
+```
+
+Перезапуск
+
+```
+# docker start custom-nginx-t2
+custom-nginx-t2
+```
+
+Вход в интерактивный терминал
+
+```bash
+# docker exec -it custom-nginx-t2 bash
+```
+
+Установка редактора и изменение конфига - замена `listen 80` на `listen 81`
+
+```bash
+root@5e058e2ed4c7:/# apt-get update
+root@5e058e2ed4c7:/# apt-get install -y nano
+root@5e058e2ed4c7:/# nano /etc/nginx/conf.d/default.conf
+```
+
+Перезагрузка и проверка, выход
+
+```bash
+# nginx -s reload
+2026/05/29 19:18:46 [notice] 178#178: signal process started
+root@5e058e2ed4c7:/# curl http://127.0.0.1:80
+curl: (7) Failed to connect to 127.0.0.1 port 80 after 0 ms: Couldn't connect to server
+root@5e058e2ed4c7:/# curl http://127.0.0.1:81
+<html>
+<head>
+Hey, Netology
+</head>
+<body>
+<h1>I will be DevOps Engineer!</h1>
+</body>
+</html>
+root@5e058e2ed4c7:/# exit
+exit
+```
+
+Анализ проблемы с внешним портом
+
+```bash
+ss -tlpn | grep 127.0.0.1:8080
+LISTEN 0      4096       127.0.0.1:8080      0.0.0.0:*    users:(("docker-proxy",pid=46581,fd=8))  
+# docker port custom-nginx-t2
+80/tcp -> 127.0.0.1:8080
+# curl http://127.0.0.1:8080
+curl: (56) Recv failure: Connection reset by peer
+```
+
+Удаление контейнера: (Флаг -f принудительно останавливает и удаляет, даже если контейнер запущен).
+```bash
+docker rm -f custom-nginx-t2
 ```
 
 </details>
