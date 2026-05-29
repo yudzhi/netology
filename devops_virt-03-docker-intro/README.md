@@ -72,3 +72,15 @@ ETag: "6a18fcd9-5f"
 Accept-Ranges: bytes
 ```
 </details>
+
+## Задача 3
+### Ответ:
+
+<details>
+  <summary> Ход выполнения </summary>
+
+``` ruby
+$ docker logs -f custom-nginx-t2
+```
+(Флаг -f — follow, следит за новыми строками)
+</details>
