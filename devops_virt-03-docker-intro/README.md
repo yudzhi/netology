@@ -202,3 +202,24 @@ docker rm -f custom-nginx-t2
 ```
 
 </details>
+
+## Задача 4
+
+### Ответ:
+**Запуск контейнера centos с монтированием папки**
+
+```bash
+# docker run -d --name centos-container -v $(pwd):/data centos:latest
+
+Error response from daemon: failed to resolve reference "docker.io/library/centos:latest": docker.io/library/centos:latest: not found
+```
+
+Официальный образ CentOS был удалён из Docker Hub в 2023 году. Компания Red Hat (владелец CentOS) прекратила поддержку дистрибутива и рекомендовала перейти на CentOS Stream или другие дистрибутивы.
+
+Был использован официальный рекомендуемый CentOS Stream, доступный на quay.io. 
+`tail -f /dev/null` — команда, которая выполняется бесконечно, не давая контейнеру завершиться.
+
+```bash
+# docker pull quay.io/centos/centos:stream9
+# docker run -d --name centos-container -v $(pwd):/data quay.io/centos/centos:stream9 tail -f /dev/null
+```
