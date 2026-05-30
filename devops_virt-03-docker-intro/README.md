@@ -339,3 +339,59 @@ exit
 ```
 
 </details>
+
+## Задача 5
+### Ответы:
+**Запуск `docker compose up -d` и анализ результата**
+
+Был запущен только `compose.yaml` (Portainer). 
+    Docker Compose по умолчанию ищет файл с именем `compose.yaml`, но в целях обеспечения совместимости со старыми версиями поддерживает также `docker-compose.yaml` и `docker-compose.yml`.
+    При наличии нескольких файлов приоритет отдаётся `compose.yaml`.
+    Пояснение: Docker Compose ищет файлы в определённом порядке — это помогает избежать путаницы при запуске нескольких проектов.
+
+<details>
+  <summary>Ход выполнения</summary>
+
+```bash
+# mkdir -p /tmp/netology/docker/task5
+root@yudzhi-MacBookPro:~# cd /tmp/netology/docker/task5
+root@yudzhi-MacBookPro:/tmp/netology/docker/task5# nano compose.yaml
+root@yudzhi-MacBookPro:/tmp/netology/docker/task5# nano docker-compose.yaml
+root@yudzhi-MacBookPro:/tmp/netology/docker/task5# docker compose up -d
+WARN[0000] Found multiple config files with supported names: /tmp/netology/docker/task5/compose.yaml, /tmp/netology/docker/task5/docker-compose.yaml 
+WARN[0000] Using /tmp/netology/docker/task5/compose.yaml 
+WARN[0000] /tmp/netology/docker/task5/compose.yaml: the attribute `version` is obsolete, it will be ignored, please remove it to avoid potential confusion 
+[+] up 12/12
+ ✔ Image portainer/portainer-ce:latest Pulled                              13.0s
+ ✔ Container task5-portainer-1         Started
+```
+
+**Редактирование `compose.yaml` для запуска обоих файлов**
+```bash
+nano compose.yaml
+```
+Добавлена секция `include`
+
+```yaml
+include:
+  - docker-compose.yaml
+
+version: "3"
+services:
+  portainer:
+    network_mode: host
+    image: portainer/portainer-ce:latest
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+```
+
+**Перезапуск**
+```bash
+# docker compose down
+# docker compose up -d
+# docker ps
+CONTAINER ID   IMAGE                           COMMAND                  CREATED         STATUS         PORTS                                         NAMES
+202ae1f08804   portainer/portainer-ce:latest   "/portainer"             6 seconds ago   Up 5 seconds                                                 task5-portainer-1
+c62e6243e3f1   registry:2                      "/entrypoint.sh /etc…"   6 seconds ago   Up 5 seconds   0.0.0.0:5000->5000/tcp, [::]:5000->5000/tcp   task5-registry-1
+```
+</details>
