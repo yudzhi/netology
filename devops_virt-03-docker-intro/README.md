@@ -242,7 +242,92 @@ Error response from daemon: failed to resolve reference "docker.io/library/cento
 
 ![CentOS_3](https://3.downloader.disk.yandex.ru/disk/c373bcc084c63628674b39d1d706ae6a94c20099647c0ebb1e09e86349267c02/6a1b1742/iFwHyHfHYV6LpWmkyGg1uAsRozFq_BJldZXPgZDSzQyLEK1HLxYWolPKteOfLDk35rBZrDqGOBo1XkfS0Z3qFw%3D%3D?uid=22194168&filename=Qst4_centos_3.png&disposition=inline&hash=&limit=0&content_type=image%2Fpng&owner_uid=22194168&fsize=507026&hid=0a5f3972945844d6a81067e5db95f985&media_type=image&tknv=v3&is_direct_zip_experiment=1&etag=91be23097efe1d510ba8607e437601ab)
 
+![Data_1](https://1.downloader.disk.yandex.ru/disk/87d0d6bcd17bb481f61b51e2ab9739d83f51d76e1e4002dc473f09be584bc830/6a1b313d/iFwHyHfHYV6LpWmkyGg1uJ2ueSAEcBnHRiIcVEx61d0bLTwF3gvWstxIK4MVUqXhcIy_SHvBkAbN4VA7DtOriA%3D%3D?uid=22194168&filename=Qst4_data_1.png&disposition=inline&hash=&limit=0&content_type=image%2Fpng&owner_uid=22194168&fsize=491867&hid=d5471c8282a6a84238f10bee51c2efd8&media_type=image&tknv=v3&is_direct_zip_experiment=1&etag=5765024b215c59abe3f644a758a49907)
+
+![Data_2](https://3.downloader.disk.yandex.ru/disk/6bd7be85c1970a75f554356c457d0369dd94990481243099a0c651cde4aed697/6a1b317e/iFwHyHfHYV6LpWmkyGg1uMUMtw6eiGXpAwTK0vMyltcHLcApQyUwIgjS2Q952l5nzsumIqkys32h_f7VJwRxPQ%3D%3D?uid=22194168&filename=Qst4_data_2.png&disposition=inline&hash=&limit=0&content_type=image%2Fpng&owner_uid=22194168&fsize=455820&hid=709faa34885e530663865a1fab30814b&media_type=image&tknv=v3&is_direct_zip_experiment=1&etag=c2ebf0f9e796318769946da7b430cdb5)
+
 </details>
 
 ---
 
+<details>
+  <summary>Ход выполнения</summary>
+
+**Запуск контейнера Debian с монтированием той же папки**
+
+```bash
+# docker run -d --name debian-container -v $(pwd):/data debian:latest tail -f /dev/null
+# docker ps
+
+CONTAINER ID   IMAGE                           COMMAND               CREATED             STATUS             PORTS     NAMES
+fae082f0acf3   debian:latest                   "tail -f /dev/null"   About an hour ago   Up About an hour             debian-container
+590fb4dca215   quay.io/centos/centos:stream9   "tail -f /dev/null"   2 hours ago         Up 2 hours                   centos-container
+```
+
+**Создание файла в контейнере Centos Stream**
+
+```bash
+# docker exec -it centos-container bash
+bash-5.1# echo "Это файл, созданный в контейнере CentOS Stream" > /data/file_from_centos.txt
+bash-5.1# ls -la /data/
+total 40
+drwx------ 6 root root 4096 May 30 14:36 .
+drwxr-xr-x 1 root root 4096 May 30 12:41 ..
+-rw------- 1 root root 1747 May 30 09:56 .bash_history
+-rw-r--r-- 1 root root 3106 Oct 15  2021 .bashrc
+drwx------ 3 root root 4096 May 28 19:58 .cache
+drwx------ 3 root root 4096 May 29 02:46 .docker
+drwxr-xr-x 3 root root 4096 May 24 19:49 .local
+-rw-r--r-- 1 root root  161 Jul  9  2019 .profile
+-rw-r--r-- 1 root root   74 May 30 14:36 file_from_centos.txt
+drwx------ 6 root root 4096 May 24 19:00 snap
+bash-5.1# cat /data/file_from_centos.txt
+Это файл, созданный в контейнере CentOS Stream
+bash-5.1# exit
+```
+
+**Добавление файла на хостовой машине**
+
+```bash
+# echo "Этот файл создан на хосте" > $(pwd)/file_from_host.txt
+# ls -la $(pwd)
+total 44
+drwx------  6 root root 4096 мая 30 17:40 .
+drwxr-xr-x 20 root root 4096 мая 24 00:14 ..
+-rw-------  1 root root 1747 мая 30 12:56 .bash_history
+-rw-r--r--  1 root root 3106 окт 15  2021 .bashrc
+drwx------  3 root root 4096 мая 28 22:58 .cache
+drwx------  3 root root 4096 мая 29 05:46 .docker
+-rw-r--r--  1 root root   74 мая 30 17:36 file_from_centos.txt
+-rw-r--r--  1 root root   47 мая 30 17:40 file_from_host.txt
+drwxr-xr-x  3 root root 4096 мая 24 22:49 .local
+-rw-r--r--  1 root root  161 июл  9  2019 .profile
+drwx------  6 root root 4096 мая 24 22:00 snap
+```
+
+**Проверка содержимого в контейнере Debian**
+
+```bash
+# docker exec -it debian-container bash
+root@fae082f0acf3:/# ls -la /data/
+total 44
+drwx------ 6 root root 4096 May 30 14:40 .
+drwxr-xr-x 1 root root 4096 May 30 13:03 ..
+-rw------- 1 root root 1747 May 30 09:56 .bash_history
+-rw-r--r-- 1 root root 3106 Oct 15  2021 .bashrc
+drwx------ 3 root root 4096 May 28 19:58 .cache
+drwx------ 3 root root 4096 May 29 02:46 .docker
+drwxr-xr-x 3 root root 4096 May 24 19:49 .local
+-rw-r--r-- 1 root root  161 Jul  9  2019 .profile
+-rw-r--r-- 1 root root   74 May 30 14:36 file_from_centos.txt
+-rw-r--r-- 1 root root   47 May 30 14:40 file_from_host.txt
+drwx------ 6 root root 4096 May 24 19:00 snap
+root@fae082f0acf3:/# cat /data/file_from_centos.txt
+Это файл, созданный в контейнере CentOS Stream
+root@fae082f0acf3:/# cat /data/file_from_host.txt
+Этот файл создан на хосте
+root@fae082f0acf3:/# exit
+exit
+```
+
+</details>
