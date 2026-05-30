@@ -352,6 +352,8 @@ exit
 <details>
   <summary>Ход выполнения</summary>
 
+  **Создание директории и файлов**
+  
 ```bash
 # mkdir -p /tmp/netology/docker/task5
 root@yudzhi-MacBookPro:~# cd /tmp/netology/docker/task5
@@ -393,5 +395,24 @@ services:
 CONTAINER ID   IMAGE                           COMMAND                  CREATED         STATUS         PORTS                                         NAMES
 202ae1f08804   portainer/portainer-ce:latest   "/portainer"             6 seconds ago   Up 5 seconds                                                 task5-portainer-1
 c62e6243e3f1   registry:2                      "/entrypoint.sh /etc…"   6 seconds ago   Up 5 seconds   0.0.0.0:5000->5000/tcp, [::]:5000->5000/tcp   task5-registry-1
+```
+
+**Загрузка образа в локальный registry**
+```bash
+# docker tag yudzhi/custom-nginx:1.0.0 127.0.0.1:5000/custom-nginx:latest
+# docker push 127.0.0.1:5000/custom-nginx:latest
+The push refers to repository [127.0.0.1:5000/custom-nginx]
+b1badc6e5066: Pushed 
+364db7cc0277: Pushed 
+fea7cebc499c: Pushed 
+856c000ad0ec: Pushed 
+dea1652b095a: Pushed 
+c5ada5e7d698: Pushed 
+e6ef365cd5b9: Pushed 
+9dbfe0b105c9: Pushed 
+85003794a6a5: Pushed 
+latest: digest: sha256:64036ce20b86c93be3e6b97f46ed880e0cd44ca6ec25b5760be8a0cc34afc7b3 size: 856
+# curl http://127.0.0.1:5000/v2/_catalog
+{"repositories":["custom-nginx"]}
 ```
 </details>
