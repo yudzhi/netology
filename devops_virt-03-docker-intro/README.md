@@ -88,10 +88,15 @@ Ctrl+C завершило подключение к потоку логиров�
 
    > «Контейнер был остановлен командой `docker stop`, которая отправила сигнал `SIGTERM` основному процессу (Nginx). Процесс завершил работу, и контейнер перешёл в статус `Exited`».
 
----
+<details>
+  <summary>Скриншоты</summary>
+
 ![Docker stop and bash](https://3.downloader.disk.yandex.ru/disk/2ab5e58541dcb420fc4b4197c27a76a38ba556bff71ef4e271321005145af88e/6a1a20e2/iFwHyHfHYV6LpWmkyGg1uNFFbXlT-byx3fEqY50jQ3zKYJVtAS69XXcArDIUl7Vp6GAQiGxC2yHWjWp5hgFNOA%3D%3D?uid=22194168&filename=Qst3_docker-logs_2.png&disposition=inline&hash=&limit=0&content_type=image%2Fpng&owner_uid=22194168&fsize=511217&hid=b9adea12896f427d90530e6393f8c630&media_type=image&tknv=v3&is_direct_zip_experiment=1&etag=369fdcd41cdef261dd4c8e36a9b92553)
 
 ![Nano installed and port 80->>81](https://2.downloader.disk.yandex.ru/disk/95a4288b345f3218b6434d1853a230def379b5a1a4d71459b49463067911b2dc/6a1a217d/iFwHyHfHYV6LpWmkyGg1uM-n2cEuCdTVOP2k4476t8CgwW0otSxFFh-DqSWWrgo7dygAd8slhZLyQh1nGzjImw%3D%3D?uid=22194168&filename=Qst3_docker-nano_3.png&disposition=inline&hash=&limit=0&content_type=image%2Fpng&owner_uid=22194168&fsize=442657&hid=deabf7feb52ac0727b480a4ca4f3ddc2&media_type=image&tknv=v3&is_direct_zip_experiment=1&etag=f1c8d52deb0256a67dd247b1343f6708)
+</details>
+
+---
 
 #### п.10
 Проброс портов (`-p 127.0.0.1:8080:80`) настраивается при запуске контейнера и не меняется автоматически при изменении конфигурации внутри контейнера. 
@@ -115,13 +120,18 @@ curl: (56) Recv failure: Connection reset by peer
 
 Команда `nginx -s reload` не меняет проброс портов Docker — она только перезагружает конфигурацию Nginx внутри контейнера.
 
----
+<details>
+  <summary>Скриншоты</summary>
 
 ![docker_4](https://4.downloader.disk.yandex.ru/disk/d21c8903954e60827fd284af0c8521b6a3bc0c6d6b5b71b374cc89656415060d/6a1a4226/iFwHyHfHYV6LpWmkyGg1uOX2L-ufKHPMNaedLNs60kQknAdoaI26Yb7FRj_sXitgCM1s4mlhR_icp2sTph08Pw%3D%3D?uid=22194168&filename=Qst3_docker_4.png&disposition=inline&hash=&limit=0&content_type=image%2Fpng&owner_uid=22194168&fsize=511278&hid=196c37a72115d67a3e2ea1994e4aa8cf&media_type=image&tknv=v3&is_direct_zip_experiment=1&etag=d357f51736c5c786a02db30bd2c0662a)
 
 ![docker_5](https://2.downloader.disk.yandex.ru/disk/f3f0dcb59f976091dc39a255f4961efb14d5b3a272f3a4322a6a451a0bf94bc5/6a1a428b/iFwHyHfHYV6LpWmkyGg1uMkotrUvpSnYSz9jDqaoZD4S8xASfjA7bsCylVEvgD64YJQcguRkCL93B3uXyTkygA%3D%3D?uid=22194168&filename=Qst3_docker_5.png&disposition=inline&hash=&limit=0&content_type=image%2Fpng&owner_uid=22194168&fsize=611688&hid=f4454b87b2106dfcdad4360a07b87e7f&media_type=image&tknv=v3&is_direct_zip_experiment=1&etag=01d69aef9d33cb08b8e6dd57f9c6d6c6)
 
 ![docker_6](https://1.downloader.disk.yandex.ru/disk/ff1c96d4c1a872d6687d036108053f7914bdb940abaa5ff9f7eddcb93ccb82e0/6a1a42b8/iFwHyHfHYV6LpWmkyGg1uMkotrUvpSnYSz9jDqaoZD4S8xASfjA7bsCylVEvgD64YJQcguRkCL93B3uXyTkygA%3D%3D?uid=22194168&filename=Qst3_docker_6.png&disposition=inline&hash=&limit=0&content_type=image%2Fpng&owner_uid=22194168&fsize=611688&hid=f4454b87b2106dfcdad4360a07b87e7f&media_type=image&tknv=v3&is_direct_zip_experiment=1&etag=01d69aef9d33cb08b8e6dd57f9c6d6c6)
+
+</details>
+
+---
 
 <details>
   <summary> Ход выполнения </summary>
@@ -223,3 +233,16 @@ Error response from daemon: failed to resolve reference "docker.io/library/cento
 # docker pull quay.io/centos/centos:stream9
 # docker run -d --name centos-container -v $(pwd):/data quay.io/centos/centos:stream9 tail -f /dev/null
 ```
+<details>
+  <summary>Скриншоты</summary>
+
+![CentOS_1](https://2.downloader.disk.yandex.ru/disk/c30a5b607b0ebf5d16d26ef6c23371947840673b23fdb8c80a346e6c7362d6d1/6a1b169c/iFwHyHfHYV6LpWmkyGg1uKKYzHbGsGkQCnyxWTHCjDpZo8eC4U-ryn2tle3vOTcMRj_DgFZLOO_tVobcZ9fETg%3D%3D?uid=22194168&filename=Qst4_centos_1.png&disposition=inline&hash=&limit=0&content_type=image%2Fpng&owner_uid=22194168&fsize=492453&hid=0d44f3bc5f32c841c5df5188baef6652&media_type=image&tknv=v3&is_direct_zip_experiment=1&etag=47098d96a1e0d2a5bc01af25b387d22b)
+
+![CentOS_2](https://3.downloader.disk.yandex.ru/disk/ebef1b753f2a03411380188d1db0daec1d25107ba74e3224b720081e81c8c332/6a1b171c/iFwHyHfHYV6LpWmkyGg1uM9SnYT9xLJ2qTuSE7vCXGvkOQnv-WuRB388hAaL3zJY1CtWxqidLN6jpp2_ZooWIg%3D%3D?uid=22194168&filename=Qst4_centos_2.png&disposition=inline&hash=&limit=0&content_type=image%2Fpng&owner_uid=22194168&fsize=460025&hid=31d48c5e349aaff0f568236fbe2abbd4&media_type=image&tknv=v3&is_direct_zip_experiment=1&etag=25274f93d8772ad994595dfa07881e03)
+
+![CentOS_3](https://3.downloader.disk.yandex.ru/disk/c373bcc084c63628674b39d1d706ae6a94c20099647c0ebb1e09e86349267c02/6a1b1742/iFwHyHfHYV6LpWmkyGg1uAsRozFq_BJldZXPgZDSzQyLEK1HLxYWolPKteOfLDk35rBZrDqGOBo1XkfS0Z3qFw%3D%3D?uid=22194168&filename=Qst4_centos_3.png&disposition=inline&hash=&limit=0&content_type=image%2Fpng&owner_uid=22194168&fsize=507026&hid=0a5f3972945844d6a81067e5db95f985&media_type=image&tknv=v3&is_direct_zip_experiment=1&etag=91be23097efe1d510ba8607e437601ab)
+
+</details>
+
+---
+
