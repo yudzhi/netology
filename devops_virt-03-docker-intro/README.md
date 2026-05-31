@@ -349,6 +349,38 @@ exit
     При наличии нескольких файлов приоритет отдаётся `compose.yaml`.
     Пояснение: Docker Compose ищет файлы в определённом порядке — это помогает избежать путаницы при запуске нескольких проектов.
 
+**Редактирование `compose.yaml` для запуска обоих файлов**
+
+```yaml
+include:
+  - docker-compose.yaml
+
+version: "3"
+services:
+  portainer:
+    network_mode: host
+    image: portainer/portainer-ce:latest
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+```
+**Удаление манифеста и обработка warning**
+<details>
+  <summary>Скриншоты</summary>
+
+![Compose_1](https://4.downloader.disk.yandex.ru/disk/880ffbd3e7c328a41174b20b2554c13ae8ed6f4ecd722dff9e9fcbd07070ed32/6a1cd209/iFwHyHfHYV6LpWmkyGg1uLD4rtMAV9ziEa1E4AxZXQTkYBFix5QONBxLQROsQY2b984qr7S6_I4zqnYua8Kelg%3D%3D?uid=22194168&filename=Qst5_compose_1.png&disposition=inline&hash=&limit=0&content_type=image%2Fpng&owner_uid=22194168&fsize=522498&hid=f793b3406a790ebf2dad541972b70504&media_type=image&tknv=v3&is_direct_zip_experiment=1&etag=2e3a34d1568dce860d18e7f8cfef9b54)
+
+![Compose_2](https://1.downloader.disk.yandex.ru/disk/302fd3af6fd6c99d38d4df0b1e5d03dcb1d1dce6eeac95952e0129314c4b9ebc/6a1cd232/iFwHyHfHYV6LpWmkyGg1uFIMum7QHyqPHKQaNPMAV734CxQLpkrIsvM9qqzw1hCLzvfVIsWn5rmSADfklznDsQ%3D%3D?uid=22194168&filename=Qst5_compose_2.png&disposition=inline&hash=&limit=0&content_type=image%2Fpng&owner_uid=22194168&fsize=467397&hid=8ff7ad347f5cb66de523eee94cb9de18&media_type=image&tknv=v3&is_direct_zip_experiment=1&etag=a97200105ba1b36bc2a09d2bbc6eb16e)
+
+![Compose_3](https://1.downloader.disk.yandex.ru/disk/82deb71cb517328ee8b7e9c66e593a9a75cda2c95487b2c390fb45a349be9aa2/6a1cd256/iFwHyHfHYV6LpWmkyGg1uHRBVlsob7RsBhgzPNG-5maxVNLkRTc98H0lY1alvDlgWX5ERuioyK0UdcY8Cwtu3g%3D%3D?uid=22194168&filename=Qst5_compose_3.png&disposition=inline&hash=&limit=0&content_type=image%2Fpng&owner_uid=22194168&fsize=502947&hid=2336dbfc75a7b0a99aa9af681574a8b3&media_type=image&tknv=v3&is_direct_zip_experiment=1&etag=ee460fc03ca54df397bf40e924df70f9)
+
+![Portainer_nginx_1](https://4.downloader.disk.yandex.ru/disk/0934266ab0463eb28fd712ee41359ce69367fadaca060d8b3958bca098ea89a0/6a1cd293/iFwHyHfHYV6LpWmkyGg1uEIOpIx6QWDX3qkX_lEDZuFa42__xEY8XjNgXcFX9QDTqb_QPajRxmRd3y1YtYKyTA%3D%3D?uid=22194168&filename=Qst5_nginx_1.png&disposition=inline&hash=&limit=0&content_type=image%2Fpng&owner_uid=22194168&fsize=327909&hid=dfc7f31ecc4b5062adaee6dbe1474736&media_type=image&tknv=v3&is_direct_zip_experiment=1&etag=df81cc77f167c8f9a73028531648f67b)
+
+![Portainer_nginx_2](https://4.downloader.disk.yandex.ru/disk/3b152ff52616d0b9955f917432e914cf959398045daa91df3ffda3bbc9b069d4/6a1cd2c0/iFwHyHfHYV6LpWmkyGg1uD8CAKXU-yUN9RLmRurDCVM1qMo0ku87wSjnEeG-QTKrPR7pv4FbGBgFfkdA0yU7zw%3D%3D?uid=22194168&filename=Qst5_nginx_2.png&disposition=inline&hash=&limit=0&content_type=image%2Fpng&owner_uid=22194168&fsize=460030&hid=4d17e131c7596f6588291a4e94fbad26&media_type=image&tknv=v3&is_direct_zip_experiment=1&etag=7227e2bebaf82f26e704c5a61bd333b4)
+
+![Portainer_nginx_3](https://2.downloader.disk.yandex.ru/disk/664324a4a7f7b8a2b5adbee4fe5e708bf1501d7e487ecee7afd19c2486457207/6a1cd2e5/iFwHyHfHYV6LpWmkyGg1uMxTOIbem9Oh8SIuZAH5Tx160H81MPnLHjYZcvvPXsVArECEuz861syzorRhljHJTA%3D%3D?uid=22194168&filename=Qst5_portainer_1.png&disposition=inline&hash=&limit=0&content_type=image%2Fpng&owner_uid=22194168&fsize=408801&hid=9bf340bce07f187fe71122828807162b&media_type=image&tknv=v3&is_direct_zip_experiment=1&etag=dd4e31d9c41221e3a84076f9b6173c6e)
+
+</details>
+
 <details>
   <summary>Ход выполнения</summary>
 
@@ -415,4 +447,18 @@ latest: digest: sha256:64036ce20b86c93be3e6b97f46ed880e0cd44ca6ec25b5760be8a0cc3
 # curl http://127.0.0.1:5000/v2/_catalog
 {"repositories":["custom-nginx"]}
 ```
+
+**Удаление манифеста и обработка warning**
+
+```bash
+# rm compose.yaml
+# docker compose up -d
+WARN[0000] /tmp/netology/docker/task5/docker-compose.yaml: the attribute `version` is obsolete, it will be ignored, please remove it to avoid potential confusion 
+WARN[0000] Found orphan containers ([task5-portainer-1]) for this project. If you removed or renamed this service in your compose file, you can run this command with the --remove-orphans flag to clean it up. 
+[+] up 1/1
+ ✔ Container task5-registry-1 Running                                                                            0.0s
+# docker compose up -d --remove-orphans
+
+```
+
 </details>
