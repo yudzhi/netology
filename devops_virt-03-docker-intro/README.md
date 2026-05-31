@@ -364,6 +364,42 @@ services:
       - /var/run/docker.sock:/var/run/docker.sock
 ```
 **Удаление манифеста и обработка warning**
+
+**1. Первое предупреждение:**
+```
+WARN[0000] /tmp/netology/docker/task5/docker-compose.yaml: the attribute `version` is obsolete, it will be ignored, please remove it to avoid potential confusion
+```
+
+* В современных версиях Docker Compose (начиная с v2) версия схемы определяется автоматически — явное указание `version` больше не требуется.
+* Атрибут обеспечивает совместимость со старыми версиями, но игнорируется при обработке.
+
+**2. Второе предупреждение:**
+```
+WARN[0000] Found orphan containers ([task5-portainer-1]) for this project. If you removed or renamed this service in your compose file, you can run this command with the --remove-orphans flag to clean it up.
+```
+
+Обнаружены «осиротевшие» (orphan) контейнеры — контейнеры, которые были созданы для этого проекта ранее, но сейчас не описаны в Compose‑файле.
+
+* Изначально был файл `compose.yaml` с сервисом `portainer`.
+* После удаления `compose.yaml` остался только `docker-compose.yaml` с сервисом `registry`.
+* Docker Compose обнаружил несоответствие между существующими контейнерами проекта и текущей конфигурацией - «помнит», что контейнер `task5-portainer-1` относился к проекту в этой директории.
+* Поскольку в текущем Compose‑файле сервиса `portainer` нет, контейнер считается «осиротевшим».
+
+**Решение**
+
+```bash
+# docker compose up -d --remove-orphans
+
+WARN[0000] /tmp/netology/docker/task5/docker-compose.yaml: the attribute `version` is obsolete, it will be ignored, please remove it to avoid potential confusion 
+[+] up 2/2
+ ✔ Container task5-portainer-1 Removed                                                                           0.2s
+ ✔ Container task5-registry-1  Running
+     
+```
+
+Docker Compose запустит сервисы из актуального Compose‑файла (`registry`) и автоматически остановит и удалит контейнер `task5-portainer-1`, так как он больше не описан в конфигурации.
+
+`docker compose down` гасит compose-проект
 <details>
   <summary>Скриншоты</summary>
 
@@ -457,8 +493,18 @@ WARN[0000] /tmp/netology/docker/task5/docker-compose.yaml: the attribute `versio
 WARN[0000] Found orphan containers ([task5-portainer-1]) for this project. If you removed or renamed this service in your compose file, you can run this command with the --remove-orphans flag to clean it up. 
 [+] up 1/1
  ✔ Container task5-registry-1 Running                                                                            0.0s
-# docker compose up -d --remove-orphans
 
+# docker compose up -d --remove-orphans
+WARN[0000] /tmp/netology/docker/task5/docker-compose.yaml: the attribute `version` is obsolete, it will be ignored, please remove it to avoid potential confusion 
+[+] up 2/2
+ ✔ Container task5-portainer-1 Removed                                                                           0.2s
+ ✔ Container task5-registry-1  Running
+        
+# docker compose down
+WARN[0000] /tmp/netology/docker/task5/docker-compose.yaml: the attribute `version` is obsolete, it will be ignored, please remove it to avoid potential confusion 
+[+] down 2/2
+ ✔ Container task5-registry-1 Removed                                                                            0.3s
+ ✔ Network task5_default      Removed      
 ```
 
 </details>
