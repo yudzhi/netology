@@ -2,7 +2,7 @@
 ## DevOps-инженер: курс для действующих IT-специалистов
 ### Модуль "Виртуализация и контейнеризация"
 1. ["Введение в виртуализацию. Типы и функции гипервизоров. Обзор рынка вендоров и областей применения"](https://github.com/yudzhi/netology/blob/main/devops_virtd-01-basics/README.md)
-2. "Оркестрация группой Docker контейнеров на примере Docker Compose."
+[2. "Оркестрация группой Docker контейнеров на примере Docker Compose."](https://github.com/yudzhi/netology/blob/main/devops_virt-03-docker-intro/README.md)
 3. ["Практическое применение Docker"](https://github.com/yudzhi/netology/blob/main/devops_virt-04-docker-in-practice/README.md)
    
 
