@@ -58,6 +58,8 @@ docker run -d \
 
 ![venv and requirements](https://4.downloader.disk.yandex.ru/disk/79961d68375216a22317e61d13fed5efe14e5087fc149a6c984155d81a380f74/6a2df404/iFwHyHfHYV6LpWmkyGg1uCBIWiLbUpImSbh552Tj2sTfzL5Hn1mgdawrlyPAEs0bwPv0hi55G4bmQuova1wmUQ%3D%3D?uid=22194168&filename=04-docker_1-3_2.png&disposition=inline&hash=&limit=0&content_type=image%2Fpng&owner_uid=22194168&fsize=243268&hid=f3b1e55f67b5c0d021ccf7875512e3cd&media_type=image&tknv=v3&is_direct_zip_experiment=1&etag=498d625137f170250f408391585aaebd)
 
+![App startup](https://1.downloader.disk.yandex.ru/disk/fc4abba676bdbaff6aabde11c1bdf5b10c3c38e623c707caa9eec9d71196f348/6a2e0944/iFwHyHfHYV6LpWmkyGg1uCUOE6QfDhwnVlpOWKH8tiGIF6FHNw7yVaA_fSh8fovWTaJMhzFT2fcYMRRECW41cg%3D%3D?uid=22194168&filename=04-docker_1-3_3.png&disposition=inline&hash=&limit=0&content_type=image%2Fpng&owner_uid=22194168&fsize=66212&hid=0a36dabbe643b2c70b869a387df9476b&media_type=image&tknv=v3&is_direct_zip_experiment=1&etag=056a7635b49578c5acbd0306de3cc138)
+
 </details>
 <details>
   <summary>Ход выполнения</summary>
