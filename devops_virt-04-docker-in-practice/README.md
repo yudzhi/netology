@@ -172,5 +172,13 @@ pip install --upgrade pip
 # Установить зависимости из requirements.txt
 pip install -r requirements.txt
 ```
+Содержимое файла 'requirements.txt':
+```python
+ fastapi==0.104.1
+uvicorn[standard]==0.24.0
+mysql-connector-python==8.2.0
+```
+
+---
 
 </details>
