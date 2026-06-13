@@ -60,6 +60,8 @@ docker run -d \
 
 ![App startup](https://1.downloader.disk.yandex.ru/disk/fc4abba676bdbaff6aabde11c1bdf5b10c3c38e623c707caa9eec9d71196f348/6a2e0944/iFwHyHfHYV6LpWmkyGg1uCUOE6QfDhwnVlpOWKH8tiGIF6FHNw7yVaA_fSh8fovWTaJMhzFT2fcYMRRECW41cg%3D%3D?uid=22194168&filename=04-docker_1-3_3.png&disposition=inline&hash=&limit=0&content_type=image%2Fpng&owner_uid=22194168&fsize=66212&hid=0a36dabbe643b2c70b869a387df9476b&media_type=image&tknv=v3&is_direct_zip_experiment=1&etag=056a7635b49578c5acbd0306de3cc138)
 
+![Second Terminal](https://3.downloader.disk.yandex.ru/disk/3e6708afdc051c437724fc560593fdc3572efd963829ffa153fa930542d9c82f/6a2e09db/iFwHyHfHYV6LpWmkyGg1uA8RiyQnsNbcAeI3g-dClgci-reJskhLZP32_dj4iDn8Q-Rq__Yol4O6uJm8axOwHg%3D%3D?uid=22194168&filename=04-docker_1-3_4.png&disposition=inline&hash=&limit=0&content_type=image%2Fpng&owner_uid=22194168&fsize=48625&hid=164cf9c4deb1a70ea4eb228e36185b7e&media_type=image&tknv=v3&is_direct_zip_experiment=1&etag=f996ec511a807862a6b9e5bcbdec77ba)
+
 </details>
 <details>
   <summary>Ход выполнения</summary>
