@@ -29,7 +29,15 @@ Docker Compose version v5.1.4
 
 ---
 
-## Задача 1.3
+## Задача 1
+
+### 1.1
+[Fork репозитория](https://github.com/yudzhi/shvirtd-example-python)
+
+### 1.2
+[Dockerfile.python](https://github.com/yudzhi/shvirtd-example-python/blob/main/Dockerfile.python)
+
+### 1.3 Запуск приложения без Docker с помощью venv
 
 **1. Запуск MySQL в Docker-контейнере**
 ```bash
@@ -43,8 +51,18 @@ docker run -d \
   -e MYSQL_PASSWORD=very_strong \
   mysql:8.0
 ```
+<details>
+  <summary>Скриншоты</summary>
 
-### Источник параметров: файл  `main.py`
+![Запуск и проверка MySQL](https://3.downloader.disk.yandex.ru/disk/848fd76a41bb46527ad3121b3c3a22136c283e87e77ac02f24b43a357ddc2bcd/6a2df0f2/iFwHyHfHYV6LpWmkyGg1uAKWEW1fIgkyI0Czcl-K-st8XaACJoFaGG9-ewbYZ8DwyEqc_mDxx9kFzk0KAjUbYw%3D%3D?uid=22194168&filename=04-docker_1-3_1.png&disposition=inline&hash=&limit=0&content_type=image%2Fpng&owner_uid=22194168&fsize=252597&hid=1139de45f76da415ee38620786db13e2&media_type=image&tknv=v3&is_direct_zip_experiment=1&etag=dc813393e4595f7e036200c7efd39c19)
+
+![venv and requirements](https://4.downloader.disk.yandex.ru/disk/79961d68375216a22317e61d13fed5efe14e5087fc149a6c984155d81a380f74/6a2df404/iFwHyHfHYV6LpWmkyGg1uCBIWiLbUpImSbh552Tj2sTfzL5Hn1mgdawrlyPAEs0bwPv0hi55G4bmQuova1wmUQ%3D%3D?uid=22194168&filename=04-docker_1-3_2.png&disposition=inline&hash=&limit=0&content_type=image%2Fpng&owner_uid=22194168&fsize=243268&hid=f3b1e55f67b5c0d021ccf7875512e3cd&media_type=image&tknv=v3&is_direct_zip_experiment=1&etag=498d625137f170250f408391585aaebd)
+
+</details>
+<details>
+  <summary>Ход выполнения</summary>
+
+**1. Запуск MySQL. Источник параметров: файл  `main.py`**
 
 | Параметр Docker run | Значение | Откуда взято |
 |---------------------|----------|--------------|
@@ -111,19 +129,48 @@ MYSQL_PASSWORD="QwErTy1234"
 2. Приложение само подключится с дефолтными значениями
 3. Простота тестирования
 
-<details>
-  <summary>Ход выполнения</summary>
+---
 
-**Запуск MySQL в Docker-контейнере**
+**2. Проверка работы MySQL**
+- Проверить, что контейнер запустился
 ```bash
-# Запустить MySQL контейнер с параметрами для приложения
-docker run -d \
-  --name mysql-local \
-  -p 3306:3306 \
-  -e MYSQL_ROOT_PASSWORD=rootpass \
-  -e MYSQL_DATABASE=example \
-  -e MYSQL_USER=app \
-  -e MYSQL_PASSWORD=very_strong \
-  mysql:8.0
+docker ps
 ```
+- Проверить логи (убедиться, что БД инициализировалась)
+```bash
+docker logs mysql-local
+```
+- Подключиться к MySQL и проверить базу данных
+```bash
+docker exec -it mysql-local mysql -uroot -prootpass -e "SHOW DATABASES;"
+```
+
+---
+
+**3. Создание виртуального окружения**
+```bash
+# Перейти в папку проекта
+cd ~/projects/shvirtd-example-python
+
+# Создать виртуальное окружение
+python3 -m venv venv
+
+# Активировать виртуальное окружение
+source venv/bin/activate
+
+# Убедиться, что активировалось (должна появиться приставка (venv))
+which python
+```
+
+---
+
+**4. Установка зависимостей**
+```bash
+# Убедиться, что pip обновлён
+pip install --upgrade pip
+
+# Установить зависимости из requirements.txt
+pip install -r requirements.txt
+```
+
 </details>
