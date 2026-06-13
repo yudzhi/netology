@@ -31,9 +31,20 @@ Docker Compose version v5.1.4
 
 ## Задача 1.3
 
-** 1. Запуск MySQL в Docker-контейнере**
+**1. Запуск MySQL в Docker-контейнере**
+```bash
+# Запустить MySQL контейнер с параметрами для приложения
+docker run -d \
+  --name mysql-local \
+  -p 3306:3306 \
+  -e MYSQL_ROOT_PASSWORD=rootpass \
+  -e MYSQL_DATABASE=example \
+  -e MYSQL_USER=app \
+  -e MYSQL_PASSWORD=very_strong \
+  mysql:8.0
+```
 
-### Источник параметров: файл `.env` и `main.py`
+### Источник параметров: файл  `main.py`
 
 | Параметр Docker run | Значение | Откуда взято |
 |---------------------|----------|--------------|
@@ -42,112 +53,50 @@ Docker Compose version v5.1.4
 | `MYSQL_USER=app` | `app` | Из `main.py` (значение по умолчанию) |
 | `MYSQL_PASSWORD=very_strong` | `very_strong` | Из `main.py` (значение по умолчанию) |
 
----
-
-## Подробное объяснение каждого параметра
-
-### 1. `-d` (detach)
-```bash
--d
-```
-**Откуда:** Стандартный параметр Docker  
-**Что делает:** Запускает контейнер в фоновом режиме
-
----
-
-### 2. `--name mysql-local`
 ```bash
 --name mysql-local
 ```
-**Откуда:** Придумано для локального запуска  
-**Что делает:** Даёт контейнеру понятное имя, чтобы потом можно было обращаться: `docker stop mysql-local`
+Придумано для локального запуска  
+Даёт контейнеру понятное имя, чтобы потом можно было обращаться: `docker stop mysql-local`
 
----
-
-### 3. `-p 3306:3306` (port mapping)
 ```bash
 -p 3306:3306
 ```
-**Откуда:** Стандартный порт MySQL  
-**Что делает:** Пробрасывает порт 3306 из контейнера на хост (чтобы приложение на хосте могло подключиться к `localhost:3306`)
+Port mapping. Стандартный порт MySQL  
+Пробрасывает порт 3306 из контейнера на хост (чтобы приложение на хосте могло подключиться к `localhost:3306`)
 
----
-
-### 4. `MYSQL_ROOT_PASSWORD=rootpass`
 ```bash
 -e MYSQL_ROOT_PASSWORD=rootpass
 ```
-**Откуда:** **Придумано для локального запуска** (простой пароль для тестирования)  
+**Придумано для локального запуска** (простой пароль для тестирования)  
 **Почему не из `.env`:** В `.env` указан `MYSQL_ROOT_PASSWORD="YtReWq4321"`, но:
 - Для локального тестирования не нужен сложный пароль
 - `main.py` НЕ использует root-пользователя, он использует пользователя `app`
 
----
-
-### 5. `MYSQL_DATABASE=example`
 ```bash
 -e MYSQL_DATABASE=example
 ```
 **Откуда:** Из `main.py` (значение по умолчанию)
-
-Посмотрим в `main.py`:
-```python
-db_name = os.environ.get('DB_NAME', 'example')  # ← 'example' по умолчанию
-```
-
 **Почему `example`, а не `virtd` (из .env)?**
 - В Docker-сборке мы использовали `.env` с `virtd`, потому что меняли переменные в `compose.yaml`
 - Для локального запуска мы НЕ меняем переменные, приложение берёт `example` по умолчанию
 - Так проще тестировать - не нужно экспортировать `DB_NAME=virtd`
 
----
 
-### 6. `MYSQL_USER=app`
-```bash
--e MYSQL_USER=app
-```
-**Откуда:** Из `main.py` (значение по умолчанию)
-
-Посмотрим в `main.py`:
 ```python
-db_user = os.environ.get('DB_USER', 'app')  # ← 'app' по умолчанию
+# --- 1. Конфигурация ---
+# Считываем конфигурацию БД из переменных окружения
+db_host = os.environ.get('DB_HOST', '127.0.0.1')
+db_user = os.environ.get('DB_USER', 'app')
+db_password = os.environ.get('DB_PASSWORD', 'very_strong')
+db_name = os.environ.get('DB_NAME', 'example')
 ```
 
----
-
-### 7. `MYSQL_PASSWORD=very_strong`
-```bash
--e MYSQL_PASSWORD=very_strong
-```
-**Откуда:** Из `main.py` (значение по умолчанию)
-
-Посмотрим в `main.py`:
-```python
-db_password = os.environ.get('DB_PASSWORD', 'very_strong')  # ← 'very_strong' по умолчанию
-```
-
----
-
-### 8. `mysql:8.0`
 ```bash
 mysql:8.0
 ```
 **Откуда:** Официальный образ MySQL версии 8.0 (используется и в Docker-сборке)
 
----
-
-## Сводная таблица: откуда что взялось
-
-| Параметр | Значение | Источник |
-|----------|----------|----------|
-| `MYSQL_ROOT_PASSWORD` | `rootpass` | Локальное тестирование (простой пароль) |
-| `MYSQL_DATABASE` | `example` | `main.py` - значение по умолчанию |
-| `MYSQL_USER` | `app` | `main.py` - значение по умолчанию |
-| `MYSQL_PASSWORD` | `very_strong` | `main.py` - значение по умолчанию |
-
----
-
-## Почему не взять параметры из `.env`?
 
 Файл `.env` в проекте содержит:
 ```bash
@@ -157,83 +106,10 @@ MYSQL_USER="app"
 MYSQL_PASSWORD="QwErTy1234"
 ```
 
-**Но для локального запуска мы хотим использовать значения по умолчанию из `main.py`**, потому что:
+**Но для локального запуска использую значения по умолчанию из `main.py`**, потому что:
 1. Не нужно экспортировать дополнительные переменные
 2. Приложение само подключится с дефолтными значениями
 3. Простота тестирования
-
-Если бы мы хотели использовать `.env`, команда была бы:
-```bash
-# Загрузить переменные из .env
-export $(cat .env | xargs)
-
-docker run -d \
-  --name mysql-local \
-  -p 3306:3306 \
-  -e MYSQL_ROOT_PASSWORD="$MYSQL_ROOT_PASSWORD" \
-  -e MYSQL_DATABASE="$MYSQL_DATABASE" \
-  -e MYSQL_USER="$MYSQL_USER" \
-  -e MYSQL_PASSWORD="$MYSQL_PASSWORD" \
-  mysql:8.0
-```
-
-Но тогда пришлось бы экспортировать переменные при запуске приложения:
-```bash
-export DB_HOST='127.0.0.1'
-export DB_USER='app'
-export DB_PASSWORD='QwErTy1234'  # ← из .env
-export DB_NAME='virtd'           # ← из .env
-```
-
----
-
-## Проверка соответствия
-
-Когда вы запускаете приложение в venv, переменные не экспортированы, поэтому используются значения по умолчанию:
-
-```python
-# main.py читает переменные окружения
-db_host = os.environ.get('DB_HOST', '127.0.0.1')      # → '127.0.0.1'
-db_user = os.environ.get('DB_USER', 'app')            # → 'app'
-db_password = os.environ.get('DB_PASSWORD', 'very_strong')  # → 'very_strong'
-db_name = os.environ.get('DB_NAME', 'example')        # → 'example'
-```
-
-MySQL контейнер создан с:
-- БД: `example` ✅
-- Пользователь: `app` ✅
-- Пароль: `very_strong` ✅
-
-**Всё совпадает!**
-
----
-
-## Альтернативный вариант (с использованием .env)
-
-Если хотите использовать параметры из `.env`:
-
-```bash
-# 1. Запустить MySQL с параметрами из .env
-docker run -d \
-  --name mysql-local \
-  -p 3306:3306 \
-  -e MYSQL_ROOT_PASSWORD="YtReWq4321" \
-  -e MYSQL_DATABASE="virtd" \
-  -e MYSQL_USER="app" \
-  -e MYSQL_PASSWORD="QwErTy1234" \
-  mysql:8.0
-
-# 2. Экспортировать переменные для приложения
-export DB_HOST='127.0.0.1'
-export DB_USER='app'
-export DB_PASSWORD='QwErTy1234'
-export DB_NAME='virtd'
-
-# 3. Запустить приложение
-uvicorn main:app --host 0.0.0.0 --port 5000 --reload
-```
-
-Оба варианта рабочие. В инструкции использован первый (с дефолтными значениями), потому что он проще и не требует экспорта переменных.
 
 <details>
   <summary>Ход выполнения</summary>
