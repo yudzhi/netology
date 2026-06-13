@@ -181,4 +181,16 @@ mysql-connector-python==8.2.0
 
 ---
 
+**5. Настройка переменных окружения для приложения**
+- Экспорт переменные для подключения к БД
+```bash
+export DB_HOST='127.0.0.1'
+export DB_USER='app'
+export DB_PASSWORD='very_strong'
+export DB_NAME='example'
+```
+- Проверка установленных переменных
+```bash
+env | grep DB_
+```
 </details>
