@@ -186,7 +186,16 @@ mysql-connector-python==8.2.0
 ---
 
 **5. Настройка переменных окружения для приложения и запуск**
-- Экспорт переменных для подключения к БД
+- Что считывает 'main.py':
+```python
+# --- 1. Конфигурация ---
+# Считываем конфигурацию БД из переменных окружения
+db_host = os.environ.get('DB_HOST', '127.0.0.1')
+db_user = os.environ.get('DB_USER', 'app')
+db_password = os.environ.get('DB_PASSWORD', 'very_strong')
+db_name = os.environ.get('DB_NAME', 'example')
+```
+- Экспорт
 ```bash
 export DB_HOST='127.0.0.1'
 export DB_USER='app'
@@ -228,3 +237,40 @@ docker stop mysql-local
 docker rm mysql-local
 ```
 </details>
+
+### 1.4 Добавление управления названием таблицы через ENV переменную
+
+**1. Изучение 'main.py':
+```python
+def ensure_table_exists():
+    """Создает таблицу requests если она не существует"""
+    try:
+        with get_db_connection() as db:
+            cursor = db.cursor()
+            create_table_query = f"""
+            CREATE TABLE IF NOT EXISTS {db_name}.requests (
+                id INT AUTO_INCREMENT PRIMARY KEY,
+                request_date DATETIME,
+                request_ip VARCHAR(255)
+            )
+            """
+            cursor.execute(create_table_query)
+            db.commit()
+            cursor.close()
+            return True
+    except mysql.connector.Error as err:
+        print(f"Ошибка при создании таблицы: {err}")
+        return False
+```
+В коде 'main.py' название таблицы 'requests' сейчас жёстко зашито. Нужно добавить переменную, чтобы можно было менять название таблицы.
+Зададим переменную окружения 'TABLE_NAME'.
+
+<details>
+  <summary>Скриншоты</summary>
+</details>
+
+<details>
+  <summary>Ход выполнения</summary>
+</details>
+
+---
