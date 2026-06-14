@@ -389,6 +389,18 @@ UPD:
 yudzhi@DESKTOP-5VK4TT0:~/projects/shvirtd-example-python$ curl http://localhost:5000/requests
 {"total_records":2,"records":[{"id":2,"request_date":"2026-06-14 14:42:35","request_ip":null},{"id":1,"request_date":"2026-06-14 14:35:31","request_ip":null}]}
 ```
+
+- Очистка
+```bash
+# Остановить uvicorn (Ctrl+C)
+
+# Деактивировать venv
+deactivate
+
+# Остановить и удалить MySQL
+docker stop mysql-local
+docker rm mysql-local
+```
 </details>
 
 ---
