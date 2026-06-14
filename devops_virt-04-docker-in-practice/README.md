@@ -267,17 +267,21 @@ def ensure_table_exists():
 
 <details>
   <summary>Скриншоты</summary>
+
+![Terminal 1](https://2.downloader.disk.yandex.ru/disk/8e2f86285e65faf4c72a001848041758b7d8cbb06a5477cdd54a20f3b06ae096/6a2ecccc/iFwHyHfHYV6LpWmkyGg1uAJnXot7OUaTTFFqvxG3LUU2yEaPDu36ioMfVNYtoaAu-H9TGi64Dj9XPQBpXvVkMw%3D%3D?uid=22194168&filename=04-docker_1-4_1.png&disposition=inline&hash=&limit=0&content_type=image%2Fpng&owner_uid=22194168&fsize=147235&hid=144e3fb8493a9728dc47b983c1d82a91&media_type=image&tknv=v3&is_direct_zip_experiment=1&etag=6a3983ce027bff2133adc04a1bf29f93)
+
+![Terminal 2](https://3.downloader.disk.yandex.ru/disk/18c35a43ad319a01fb23e42c72e95ca774b3e263f1abbb3172d003b23d72fa72/6a2ecd24/iFwHyHfHYV6LpWmkyGg1uLYxpE_p0Mu1df-rErJpBb1Sbna7iYpJn2L8e88J4dXe3aCsSns_FfVS-9fpGgir-g%3D%3D?uid=22194168&filename=04-docker_1-4_2.png&disposition=inline&hash=&limit=0&content_type=image%2Fpng&owner_uid=22194168&fsize=104378&hid=94a2a5b34533d3280fee671a0b999f5c&media_type=image&tknv=v3&is_direct_zip_experiment=1&etag=c7b9e4f3370490fd29e5e934cdf15d36)
 </details>
 
 <details>
   <summary>Ход выполнения</summary>
 
-2. Добавление переменной окружения 'TABLE_NAME' в блок с конфигурацией 'main.py':
+**2. Добавление переменной окружения 'TABLE_NAME' в блок с конфигурацией 'main.py':**
 ```python
 table_name = os.environ.get('TABLE_NAME', 'requests')
 ```
 
-3. Изменение функции ensure_table_exists()
+**3. Изменение функции ensure_table_exists()**
 ```python
 create_table_query = f"""
 CREATE TABLE IF NOT EXISTS {db_name}.{table_name} (
@@ -286,6 +290,95 @@ CREATE TABLE IF NOT EXISTS {db_name}.{table_name} (
     request_ip VARCHAR(255)
 )
 """
+```
+
+**4. Изменение функции index()**
+```python
+query = "INSERT INTO {table_name} (request_date, request_ip) VALUES (%s, %s)"
+```
+
+**5. Изменение функции get_requests()**
+```python
+query = f"SELECT id, request_date, request_ip FROM {table_name} ORDER BY id DESC LIMIT 50"
+```
+
+**6. Тестирование**
+- Проверка, что переменная table_name определена
+```bash
+grep "table_name =" main.py                                                                                                                                                                          # table_name = os.environ.get('TABLE_NAME', 'requests')  # <-- НОВАЯ СТРОКА
+```
+
+- Запуск MySQL
+```bash
+docker run -d \
+  --name mysql-local \
+  -p 3306:3306 \
+  -e MYSQL_ROOT_PASSWORD=rootpass \
+  -e MYSQL_DATABASE=example \
+  -e MYSQL_USER=app \
+  -e MYSQL_PASSWORD=very_strong \
+  mysql:8.0
+```
+
+- Активация виртуального окружения
+```bash
+cd ~/projects/shvirtd-example-python
+source venv/bin/activate
+```
+
+- Новые переменные окружения:
+```bash
+export DB_HOST='127.0.0.1'
+export DB_USER='app'
+export DB_PASSWORD='very_strong'
+export DB_NAME='example'
+export TABLE_NAME='my_logs'   # <-- НОВАЯ ПЕРЕМЕННАЯ, таблица будет называться my_logs
+```
+**ИЛИ Файл .env для локального запуска:**
+```bash
+cat > .env.local << 'EOF'
+DB_HOST=127.0.0.1
+DB_USER=app
+DB_PASSWORD=very_strong
+DB_NAME=example
+EOF
+```
+
+- Запуск:
+```bash
+export $(cat .env.local | xargs)
+uvicorn main:app --host 0.0.0.0 --port 5000 --reload
+```
+
+- Второй терминал:
+```bash
+# Отправить запрос - создаст таблицу my_logs
+curl http://localhost:5000
+
+# Проверить, что таблица создалась с новым именем
+docker exec mysql-local mysql -uroot -prootpass -e "USE example; SHOW TABLES;"
+
+#Tables_in_example
+#my_logs 
+```
+
+- Проверка со значением по умолчанию:
+```bash
+# Терминал 1:
+# Перезапустить uvicorn (Ctrl+C и снова uvicorn main:app...)
+# Отключить TABLE_NAME - должна использоваться таблица 'requests'
+unset TABLE_NAME
+
+# Терминал 2:
+# Отправить запрос
+curl http://localhost:5000
+
+# Проверить таблицы
+docker exec mysql-local mysql -uroot -prootpass -e "USE example; SHOW TABLES;"
+
+# Tables_in_example
+# my_logs
+# requests 
 ```
 </details>
 
