@@ -460,6 +460,7 @@ echo $REGISTRY_ID
   <summary>Ход выполнения</summary>
 
 **- Настройка Docker Credential Helper**
+
 Настраивает Docker для автоматической аутентификации в Yandex Container Registry
 ```bash
 yc container registry configure-docker
