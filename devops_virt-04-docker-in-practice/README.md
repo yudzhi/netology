@@ -271,6 +271,22 @@ def ensure_table_exists():
 
 <details>
   <summary>Ход выполнения</summary>
+
+2. Добавление переменной окружения 'TABLE_NAME' в блок с конфигурацией 'main.py':
+```python
+table_name = os.environ.get('TABLE_NAME', 'requests')
+```
+
+3. Изменение функции ensure_table_exists()
+```python
+create_table_query = f"""
+CREATE TABLE IF NOT EXISTS {db_name}.{table_name} (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    request_date DATETIME,
+    request_ip VARCHAR(255)
+)
+"""
+```
 </details>
 
 ---
