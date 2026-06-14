@@ -404,3 +404,104 @@ docker rm mysql-local
 </details>
 
 ---
+
+## Задача 2. Работа с Yandex Cloud Container Registry
+
+### 2.1 Создать реестр (registry) с именем "test" в Yandex Cloud Container Registry
+
+<details>
+  <summary>Ход выполнения</summary>
+
+**- Установка Yandex Cloud yc**
+```bash
+curl https://storage.yandexcloud.net/yandexcloud-yc/install.sh | bash
+
+# Yandex Cloud CLI 1.13.0 linux/amd64
+# Скрипт установит CLI и добавит путь до исполняемого файла в переменную окружения PATH.
+# yc PATH has been added to your '/home/yudzhi/.bashrc' profile                                                                                                                                                                                
+# Перезапустить терминал
+source ~/.bashrc
+
+yc version
+# Yandex Cloud CLI 1.13.0 linux/amd64
+```
+
+**- Аутентификация в Yandex Cloud**
+```bash
+yc init --username=ruthhieris@yandex.ru
+
+# Проверка настройки профиля CLI:
+yc config list
+```
+
+**- Docker version 29.5.3, build d1c06ef**
+**- Создание реестра в Yandex Container Registry с именем 'test'**
+```bash
+yc container registry create --name test
+
+done
+id: crp***********
+folder_id: b1g*******
+name: test
+status: ACTIVE
+created_at: "2026-06-14T19:52:44.360Z"                                                                                                                                                     
+```
+
+**- Сохранение ID реестра**
+```bash
+# Получить ID реестра по имени
+REGISTRY_ID=$(yc container registry get --name test --format json | grep -o '"id": "[^"]*"' | head -1 | cut -d'"' -f4)
+echo $REGISTRY_ID
+```
+</details>
+
+### 2.2 Настроить аутентификацию локального Docker в этом реестре
+<details>
+  <summary>Ход выполнения</summary>
+
+**- Настройка Docker Credential Helper**
+Настраивает Docker для автоматической аутентификации в Yandex Container Registry
+```bash
+yc container registry configure-docker
+
+docker configured to use yc --profile "default" for authenticating "cr.yandex" container registries
+Credential helper is configured in '/home/yudzhi/.docker/config.json'  
+```
+
+**- Проверка**
+```bash
+cat ~/.docker/config.json
+
+{
+"credHelpers": {
+"container-registry.cloud.yandex.net": "yc",
+"cr.cloud.yandex.net": "yc",
+"cr.yandex": "yc"
+},
+"credsStore": "desktop.exe" 
+
+yc container registry list 
+```
+</details>
+
+### 2.3 Собрать и загрузить образ с Python-приложением из предыдущего задания
+<details>
+  <summary>Ход выполнения</summary>
+</details>
+
+### 2.4 Просканировать образ на уязвимости
+<details>
+  <summary>Ход выполнения</summary>
+</details>
+
+### 2.5 Предоставить отчёт сканирования
+<details>
+  <summary>Ход выполнения</summary>
+</details>
+
+<details>
+  <summary>Скриншоты</summary>
+</details>
+
+
+---
