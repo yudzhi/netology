@@ -271,6 +271,8 @@ def ensure_table_exists():
 ![Terminal 1](https://2.downloader.disk.yandex.ru/disk/8e2f86285e65faf4c72a001848041758b7d8cbb06a5477cdd54a20f3b06ae096/6a2ecccc/iFwHyHfHYV6LpWmkyGg1uAJnXot7OUaTTFFqvxG3LUU2yEaPDu36ioMfVNYtoaAu-H9TGi64Dj9XPQBpXvVkMw%3D%3D?uid=22194168&filename=04-docker_1-4_1.png&disposition=inline&hash=&limit=0&content_type=image%2Fpng&owner_uid=22194168&fsize=147235&hid=144e3fb8493a9728dc47b983c1d82a91&media_type=image&tknv=v3&is_direct_zip_experiment=1&etag=6a3983ce027bff2133adc04a1bf29f93)
 
 ![Terminal 2](https://3.downloader.disk.yandex.ru/disk/18c35a43ad319a01fb23e42c72e95ca774b3e263f1abbb3172d003b23d72fa72/6a2ecd24/iFwHyHfHYV6LpWmkyGg1uLYxpE_p0Mu1df-rErJpBb1Sbna7iYpJn2L8e88J4dXe3aCsSns_FfVS-9fpGgir-g%3D%3D?uid=22194168&filename=04-docker_1-4_2.png&disposition=inline&hash=&limit=0&content_type=image%2Fpng&owner_uid=22194168&fsize=104378&hid=94a2a5b34533d3280fee671a0b999f5c&media_type=image&tknv=v3&is_direct_zip_experiment=1&etag=c7b9e4f3370490fd29e5e934cdf15d36)
+
+![Terminal 2 \requests](https://3.downloader.disk.yandex.ru/disk/efcd268533de4fb3e746abebb3881277a2e80b79a5126b8bd4970c50d6e70147/6a2ecf55/iFwHyHfHYV6LpWmkyGg1uFJDaP7Y-2sdNhG9C5-sb9b8o2HunHvOe8-GIU-6evw9KbpoRbjA5oFowCatt1KNUw%3D%3D?uid=22194168&filename=04-docker_1-4_3.png&disposition=inline&hash=&limit=0&content_type=image%2Fpng&owner_uid=22194168&fsize=12081&hid=38b776a097e0dcf479ab01cadb21a562&media_type=image&tknv=v3&is_direct_zip_experiment=1&etag=09c955a11d13d5215a70fc6e59f55c44)
 </details>
 
 <details>
@@ -379,6 +381,13 @@ docker exec mysql-local mysql -uroot -prootpass -e "USE example; SHOW TABLES;"
 # Tables_in_example
 # my_logs
 # requests 
+```
+
+UPD:
+Исправлено main.py get_requests(), теперь правильный ответ:
+```bash
+yudzhi@DESKTOP-5VK4TT0:~/projects/shvirtd-example-python$ curl http://localhost:5000/requests
+{"total_records":2,"records":[{"id":2,"request_date":"2026-06-14 14:42:35","request_ip":null},{"id":1,"request_date":"2026-06-14 14:35:31","request_ip":null}]}
 ```
 </details>
 
