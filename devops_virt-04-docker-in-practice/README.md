@@ -488,6 +488,11 @@ yc container registry list
 ### 2.3 Собрать и загрузить образ с Python-приложением из предыдущего задания
 <details>
   <summary>Ход выполнения</summary>
+
+```bash
+cd ~/projects/shvirtd-example-python
+```
+
 </details>
 
 ### 2.4 Просканировать образ на уязвимости
