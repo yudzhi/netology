@@ -486,6 +486,21 @@ yc container registry list
 </details>
 
 ### 2.3 Собрать и загрузить образ с Python-приложением из предыдущего задания
+
+*!!! Пришлось перейти с Linux-машины на wsl*
+
+| Где проблема? | В чём проблема?  |
+|---------------------------------|-------------------------------|
+| WSL/Docker Desktop	| По умолчанию создаёт мультиплатформенные образы для совместимости с разными архитектурами |
+| BuildKit | Иногда создаёт мультиплатформенные образы по умолчанию |
+| Yandex Cloud	| Поддерживает сканирование только образов с одним типом архитектуры |
+| Решение	| Явно указать --platform linux/amd64 при сборке + отключить BuildKit |
+
+```bash
+# Собрать с отключённым BuildKit
+DOCKER_BUILDKIT=0 docker build --platform linux/amd64 --no-cache -f Dockerfile.python -t cr.yandex/$REGISTRY_ID/python-app:latest .
+```
+
 <details>
   <summary>Ход выполнения</summary>
 
@@ -510,6 +525,66 @@ docker push cr.yandex/$REGISTRY_ID/python-app:latest
 ```bash
 yc container image list --registry-name test
 ```
+
+**- Диагностика**
+```bash
+# ============================================
+# 1. Удалить образы из Yandex Cloud Registry
+# ============================================
+
+# Удалить все образы в реестре через YC CLI
+for id in $(yc container image list --registry-name test --format json | grep -o '"id": "[^"]*"' | cut -d'"' -f4); do
+    echo "Deleting image from registry: $id"
+    yc container image delete $id
+done
+
+# ============================================
+# 2. Очистить локальные образы Docker
+# ============================================
+
+# Безопасное удаление (только образы cr.yandex)
+docker images --format "{{.Repository}}:{{.Tag}}" | grep cr.yandex | xargs -r docker rmi -f
+# Флаг -r означает "не выполнять, если нет аргументов"
+
+# Или через ID
+docker images --filter "reference=cr.yandex/*" -q | xargs -r docker rmi -f
+
+# ============================================
+# 3. Очистить кэш
+# ============================================
+
+docker builder prune -af
+docker system prune -af
+
+# ============================================
+# 4. Пересобрать образ
+# ============================================
+
+REGISTRY_ID=$(yc container registry get --name test --format json | grep -o '"id": "[^"]*"' | head -1 | cut -d'"' -f4)
+
+# Собрать с отключённым BuildKit
+DOCKER_BUILDKIT=0 docker build --platform linux/amd64 --no-cache -f Dockerfile.python -t cr.yandex/$REGISTRY_ID/python-app:latest .
+
+# ============================================
+# 5. Проверить, что образ собран для правильной платформы
+# ============================================
+
+docker inspect cr.yandex/$REGISTRY_ID/python-app:latest | grep -i architecture
+# Должно быть: "Architecture": "amd64"
+
+# ============================================
+# 6. Загрузить образ
+# ============================================
+
+docker push cr.yandex/$REGISTRY_ID/python-app:latest
+
+# ============================================
+# 7. Сканировать
+# ============================================
+
+IMAGE_ID=$(yc container image list --registry-name test --format json | grep -o '"id": "[^"]*"' | head -1 | cut -d'"' -f4)
+yc container image scan $IMAGE_ID
+```
 </details>
 
 ### 2.4 Просканировать образ на уязвимости
@@ -525,22 +600,67 @@ echo "Image ID: $IMAGE_ID"
 **- Запуск сканирования**
 ```bash
 yc container image scan $IMAGE_ID
+
+# Проверить статус сканирования
+yc container image list-scan-results --image-id $IMAGE_ID
 ```
+
+**- ID результата сканирования**
+```bash
+SCAN_ID=$(yc container image list-scan-results --image-id $IMAGE_ID --format json | grep -o '"id": "[^"]*"' | head -1 | cut -d'"' -f4)
+echo "Scan ID: $SCAN_ID"
+```
+
 </details>
 
 ### 2.5 Предоставить отчёт сканирования
+[Файл отчёта сканирования](https://github.com/yudzhi/shvirtd-example-python/blob/main/vulnerability-report.json)
+
 <details>
   <summary>Ход выполнения</summary>
+
+**- Детальный отчёт об уязвимостях**
+```bash
+yc container image list-vulnerabilities --scan-result-id $SCAN_ID
+```
+
+**- Сохранение отчёта в файл**
+```bash
+yc container image list-vulnerabilities --scan-result-id $SCAN_ID --format json > vulnerability-report.json
+```
+
+**- Просмотр в удобном формате**
+```bash
+# Показать уязвимости по уровням серьезности
+echo "=== CRITICAL ==="
+cat vulnerability-report.json | grep -A5 '"severity": "CRITICAL"'
+
+echo "=== HIGH ==="
+cat vulnerability-report.json | grep -A5 '"severity": "HIGH"'
+
+echo "=== MEDIUM ==="
+cat vulnerability-report.json | grep -A5 '"severity": "MEDIUM"'
+
+cat vulnerability-report.json
+```
 
 **- Очистка**
 ```bash
 # Список всех образов
 yc container image list --registry-name test
 
+yc container image delete $IMAGE_ID
+
 # Удалить все образы (если нужно)
 for id in $(yc container image list --registry-name test --format json | grep -o '"id": "[^"]*"' | cut -d'"' -f4); do
     yc container image delete $id
 done
+
+# Удалить реестр
+yc container registry delete --name test
+
+# Удалить Docker-образ локально
+docker rmi cr.yandex/$REGISTRY_ID/python-app:latest
 ```
 </details>
 
