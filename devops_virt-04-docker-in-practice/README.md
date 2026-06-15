@@ -36,6 +36,7 @@ Docker Compose version v5.1.4
 
 ### 1.2
 [Dockerfile.python](https://github.com/yudzhi/shvirtd-example-python/blob/main/Dockerfile.python)
+[.dockerignore](https://github.com/yudzhi/shvirtd-example-python/blob/main/.dockerignore)
 
 ### 1.3 Запуск приложения без Docker с помощью venv
 
@@ -663,6 +664,32 @@ yc container registry delete --name test
 docker rmi cr.yandex/$REGISTRY_ID/python-app:latest
 ```
 </details>
+
+---
+
+## Задача 3. Запуск проекта с помощью Docker Compose
+
+### 3.1 Исходные данные
+
+**Proxy.yaml**
+
+| Сервис	| Назначение	| Порт	| Особенности |
+|--------|-------------|---------|-------------|
+|reverse-proxy |	HAProxy	 | 8080	| Прокси между Nginx и web |
+|ingress-proxy	| Nginx |	8090	| Внешний вход, режим network_mode: host |
+|backend	 | Сеть	| 172.20.0.0/24	| Bridge-сеть с фиксированной подсетью |
+
+Для простоты тестирования:
+- Используется сборка из Dockerfile.python
+
+### 3.2 [compose.yaml](https://github.com/yudzhi/shvirtd-example-python/blob/main/compose.yaml)
+
+<details>
+  <summary>Ход выполнения</summary>
+
+
+</details>
+
 
 <details>
   <summary>Скриншоты</summary>
