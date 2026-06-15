@@ -491,18 +491,57 @@ yc container registry list
 
 ```bash
 cd ~/projects/shvirtd-example-python
+
+# Собрать образ
+docker build -f Dockerfile.python -t cr.yandex/$REGISTRY_ID/python-app:latest .
 ```
 
+**- Проверка, что образ создался**
+```bash
+docker images | grep cr.yandex
+```
+
+**- Загрузка образа в Yandex Container Registry**
+```bash
+docker push cr.yandex/$REGISTRY_ID/python-app:latest
+```
+
+**- Проверка, что образ появился в реестре**
+```bash
+yc container image list --registry-name test
+```
 </details>
 
 ### 2.4 Просканировать образ на уязвимости
 <details>
   <summary>Ход выполнения</summary>
+
+**- Получить ID образа**
+```bash
+IMAGE_ID=$(yc container image list --registry-name test --format json | grep -o '"id": "[^"]*"' | head -1 | cut -d'"' -f4)
+echo "Image ID: $IMAGE_ID"
+```
+
+**- Запуск сканирования**
+```bash
+yc container image scan $IMAGE_ID
+```
 </details>
 
 ### 2.5 Предоставить отчёт сканирования
 <details>
   <summary>Ход выполнения</summary>
+
+**- Очистка**
+```bash
+# Список всех образов
+yc container image list --registry-name test
+
+# Удалить все образы (если нужно)
+for id in $(yc container image list --registry-name test --format json | grep -o '"id": "[^"]*"' | cut -d'"' -f4); do
+    yc container image delete $id
+done
+```
 </details>
 
 <details>
