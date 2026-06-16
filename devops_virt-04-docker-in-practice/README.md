@@ -689,7 +689,98 @@ docker rmi cr.yandex/$REGISTRY_ID/python-app:latest
 <details>
   <summary>Ход выполнения</summary>
 
+#### 3.2.1 Описание сервиса `web`
 
+- *Образ приложения должен собираться при запуске compose из файла Dockerfile.python. Контейнер должен работать в bridge-сети с названием backend и иметь фиксированный ipv4-адрес 172.20.0.5.*  
+
+- *Сервис должен всегда перезапускаться в случае ошибок.*
+|Значение	| Что делает |
+|-------------|--------------|
+|restart: unless-stopped	| Перезапускается при ошибках/падении, НО не перезапускается, если вы вручную остановили (docker stop) |
+|restart: always	| Перезапускается всегда: при падении, при перезагрузке Docker, даже если остановлен вручную |
+
+В задании сказано "всегда перезапускаться" — следовало бы использовать restart: always, но unless-stopped — это лучшая практика для разработки (удобнее).
+
+- *Передайте необходимые ENV-переменные для подключения к Mysql базе данных по сетевому имени сервиса web*
+
+| Переменная	| Значение	| Откуда |
+|-----------|------------|-----------|
+| DB_HOST |	"db"	| Сетевое имя сервиса (не IP-адрес!) |
+| DB_USER	| `${MYSQL_USER}` |	Из файла .env (app) |
+| DB_PASSWORD |	`${MYSQL_PASSWORD}` |	Из файла .env (QwErTy1234) |
+| DB_NAME	| `${MYSQL_DATABASE}` |	Из файла .env (virtd) |
+
+```yaml
+include:
+  - proxy.yaml
+
+services:
+  # ============================================
+  # MySQL база данных
+  # ============================================
+  db:
+    image: mysql:8.0
+    container_name: mysql_db
+    restart: unless-stopped
+    env_file:
+      - .env
+    environment:
+      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD}
+      MYSQL_DATABASE: ${MYSQL_DATABASE}
+      MYSQL_USER: ${MYSQL_USER}
+      MYSQL_PASSWORD: ${MYSQL_PASSWORD}
+    networks:
+      backend:
+        ipv4_address: 172.20.0.10
+    ports:
+      - "3306:3306"
+    volumes:
+      - mysql_data:/var/lib/mysql
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-u", "root", "-p${MYSQL_ROOT_PASSWORD}"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 30s
+
+  # ============================================
+  # Python FastAPI приложение
+  # ============================================
+  web:
+    build:
+      context: .
+      dockerfile: Dockerfile.python
+    container_name: python_app
+    restart: unless-stopped
+    depends_on:
+      db:
+        condition: service_healthy
+    environment:
+      DB_HOST: "db"
+      DB_USER: ${MYSQL_USER}
+      DB_PASSWORD: ${MYSQL_PASSWORD}
+      DB_NAME: ${MYSQL_DATABASE}
+    networks:
+      backend:
+        ipv4_address: 172.20.0.5
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:5000"]
+      interval: 30s
+      timeout: 5s
+      retries: 3
+      start_period: 20s
+
+volumes:
+  mysql_data:
+```
+
+#### 3.2.2 Описание сервиса `deb`
+
+- *image=mysql:8.*
+- *Контейнер должен работать в bridge-сети с названием backend и иметь фиксированный ipv4-адрес 172.20.0.10.*
+- *Явно перезапуск сервиса в случае ошибок.*
+- *Передайте необходимые ENV-переменные для создания: пароля root пользователя, создания базы данных, пользователя и пароля для web-приложения.Обязательно используйте уже существующий .env file для назначения секретных ENV-переменных!*
+- 
 </details>
 
 
