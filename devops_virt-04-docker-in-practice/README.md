@@ -700,7 +700,7 @@ docker rmi cr.yandex/$REGISTRY_ID/python-app:latest
 |restart: unless-stopped	| Перезапускается при ошибках/падении, НО не перезапускается, если вы вручную остановили (docker stop) |
 |restart: always	| Перезапускается всегда: при падении, при перезагрузке Docker, даже если остановлен вручную |
 
-В задании сказано "всегда перезапускаться" — следовало бы использовать restart: always, но unless-stopped — это лучшая практика для разработки (удобнее).
+В задании сказано "всегда перезапускаться" — логичнее restart: always, но удобнее unless-stopped.
 
 - *Передайте необходимые ENV-переменные для подключения к Mysql базе данных по сетевому имени сервиса web*
 
@@ -782,6 +782,7 @@ volumes:
   mysql_data:
 ```
 #### 3.2.4 Проверка синтаксиса `compose.yaml`
+
 ```bash
 # Проверить, что файл корректен
 docker compose config
@@ -790,24 +791,18 @@ docker compose config
 
 ### 3.3 Локальный запуск проекта с помощью Docker Compose
 
-**Проблема: Nginx не слушает порт 8090, не опубликовал порт 8090 на хост.**
+*Временный переход на wsl/docker выявил проблему. Устранена возвращением на Linux-машину --> исходные условия задачи соблюдены. Под катом альтернативные способы решения*
 
-Из вывода видно:
+| Проблема	| Причина |	Решение |
+|------|-----------|-------|
+| Порт 8090 не работает в WSL	network_mode: host | не поддерживается в WSL2 |	Убрать network_mode: host, использовать явный проброс порта |
+| На Linux работает, на WSL нет |	Разная сетевая архитектура |	Использовать стандартную bridge-сеть |
 
-- Все контейнеры запущены и healthy
-- ❌ curl не может подключиться к порту 8090
-- В логах MySQL видно, что БД virtd создана успешно
-
-Причина: 
-В `proxy.yaml` (который подключается через `include`) у Nginx указан `network_mode: host`:
-
-- `network_mode: host` — контейнер использует сеть хоста напрямую
-- В этом режиме секция `ports` игнорируется
-- Нужно либо убрать `network_mode: host`, либо добавить `ports`
-
+Вывод: использовать ports + networks вместо network_mode: host для кроссплатформенной совместимости.
 
 <details>
   <summary>Ход выполнения</summary>
+
 
 ```bash
 # Запустить все сервисы
@@ -823,8 +818,191 @@ shvirtd-example-python-reverse-proxy-1   haproxy:2.4                  "docker-en
 shvirtd-example-python-web               shvirtd-example-python-web   "uvicorn main:app --…"   web             17 seconds ago   Up 10 seconds (healthy)
 ```
 
+---
+#### Диагностика
+
+```bash
+# Логи web-приложения
+docker compose logs web
+
+# Логи MySQL
+docker compose logs db
+
+# Логи HAProxy
+docker compose logs reverse-proxy
+
+# Логи Nginx
+docker compose logs ingress-proxy
+
+# Проверка всех контейнеров
+docker ps -a
+
+# Проверить, что все контейнеры в сети backend
+docker network inspect shvirtd-example-python_backend
+```
+
+---
+
+#### 3.3.1 Почему на Linux работает, а на WSL — нет
+
+1. `network_mode: host` в WSL работает иначе
+
+| Окружение | `network_mode: host` | Результат |
+|-----------|---------------------|-----------|
+| **Нативный Linux** | Контейнер использует сеть хоста напрямую | ✅ Работает как ожидается |
+| **WSL (Windows)** | Контейнер использует сеть WSL-виртуализации | ⚠️ Ограниченная поддержка, порты не всегда доступны с хоста |
+
+**Причина:** WSL2 работает в виртуальной машине Hyper-V со своей сетевой изоляцией. `network_mode: host` не даёт полного доступа к сетевому стеку Windows.
+
+2. Проброс портов в WSL
+
+В WSL2 порты автоматически пробрасываются на Windows:
+- Контейнер на порту 80 → доступен на `localhost:80` в Windows
+- Контейнер на порту 5000 → доступен на `localhost:5000`
+- **Но:** с `network_mode: host` эта логика нарушается
+
+3. Docker Desktop на Windows
+
+Docker Desktop использует виртуальную машину с отдельным IP-адресом, а не хост напрямую.
+
+#### 3.3.2 Почему на WSL не работал порт 8090
+
+1. Nginx в `network_mode: host` пытался слушать на `127.0.0.1:8090`
+2. В WSL2 это не пробросилось на Windows
+3. `curl` не мог подключиться
+
+#### 3.3.3 Решение для WSL: Использовать network_mode: bridge
+
+##### Решение 1: Вместо `network_mode: host` использовать стандартную bridge-сеть с пробросом портов:
+
+```yaml
+ingress-proxy:
+  image: nginx:latest
+  restart: unless-stopped
+  # network_mode: host    # ← УДАЛИТЬ!
+  ports:
+    - "8090:8090"
+  networks:
+    backend:              # ← ДОБАВИТЬ
+      ipv4_address: 172.20.0.20
+  volumes:
+    - ./nginx/ingress/default.conf:/etc/nginx/conf.d/default.conf:ro
+    - ./nginx/ingress/nginx.conf:/etc/nginx/nginx.conf:ro
+```
+**Проверка в WSL**
+
+```bash
+# 1. Перезапустить проект
+docker compose down
+docker compose up -d
+
+# 2. Проверить статус (должны быть порты)
+docker compose ps
+
+# 3. Проверить через curl
+curl -v http://127.0.0.1:8090
+
+# 4. Проверить через IP WSL
+curl -v http://$(ip addr show eth0 | grep inet | awk '{print $2}' | cut -d/ -f1):8090
+```
+
+##### Решение 2: Использовать IP WSL-машины вместо localhost
+
+В WSL2 у виртуальной машины есть свой IP:
+
+```bash
+# Найти IP WSL
+ip addr show eth0 | grep inet | awk '{print $2}' | cut -d/ -f1
+```
+
+Обычно это `172.27.0.1` или подобный.
+
+```bash
+# Проверить через этот IP
+curl http://172.27.0.1:8090
+```
+
+##### Решение 3: Пробросить порт через Docker Desktop
+
+1. Открыть Docker Desktop
+2. Settings → Resources → Network
+3. Добавить проброс порта вручную
+
 </details>
 
+### 3.4 Подключение к MySQL и выполнение SQL-запросов
+
+<details>
+  <summary>Ход выполнения</summary>
+
+#### 3.4.1 Узнать имя контейнера MySQL
+```bash
+docker ps | grep mysql
+```
+
+#### 3.4.2 Подключение к MySQL
+```bash
+# Пароль root из файла .env (YtReWq4321)
+docker exec -ti mysql_db mysql -uroot -pYtReWq4321
+```
+
+### 3.4.3 SQL запросы
+```sql
+-- Показать все базы данных
+show databases;
+
+-- Переключиться на базу данных virtd
+use virtd;
+
+-- Показать все таблицы
+show tables;
+
+-- Посмотреть записи (после первого запроса к приложению)
+SELECT * FROM requests LIMIT 10;
+
+exit;
+```
+
+### 3.4.4 Остановка 
+```bash
+# Остановить все сервисы
+docker compose down
+
+# Полная очистка (удалить тома с данными)
+docker compose down -v
+```
+
+### Диагностика
+```bash
+#!/bin/bash
+
+echo "=== 1. Проверка синтаксиса ==="
+docker compose config > /dev/null && echo "✅ Синтаксис корректен"
+
+echo "=== 2. Запуск сервисов ==="
+docker compose up -d
+
+echo "=== 3. Ожидание готовности (30 сек) ==="
+sleep 30
+
+echo "=== 4. Статус контейнеров ==="
+docker compose ps
+
+echo "=== 5. Проверка через curl ==="
+RESPONSE=$(curl -s -L http://127.0.0.1:8090)
+echo "Ответ: $RESPONSE"
+
+if echo "$RESPONSE" | grep -q "TIME:"; then
+    echo "✅ Приложение работает корректно"
+else
+    echo "❌ Ошибка: проверьте логи"
+    docker compose logs --tail=20 web
+fi
+
+echo "=== 6. Подключение к MySQL (выполните вручную) ==="
+echo "Команда: docker exec -ti mysql_db mysql -uroot -pYtReWq4321"
+```
+</details>
 
 <details>
   <summary>Скриншоты</summary>
