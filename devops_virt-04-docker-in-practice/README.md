@@ -1012,5 +1012,50 @@ echo "Команда: docker exec -ti mysql_db mysql -uroot -pYtReWq4321"
 ![sql](https://3.downloader.disk.yandex.ru/disk/cd38cdef4a52ea462081563bb3dd9d84c03c4291c5596cfb698028b413f2ca03/6a325aa1/iFwHyHfHYV6LpWmkyGg1uMNTOtgzOpKFF4dClzj1ZJWyYxJhn8plhWq_GpYp8tnWVxe0P-hb5KH92tdjVpki1Q%3D%3D?uid=22194168&filename=04-docker_3-2.png&disposition=inline&hash=&limit=0&content_type=image%2Fpng&owner_uid=22194168&fsize=225978&hid=b236ab08a39ff67112ea25e701b5beed&media_type=image&tknv=v3&is_direct_zip_experiment=1&etag=16f527d80eb19beef62992f83732f03a)
 </details>
 
-
 ---
+
+## Задача 4.Развёртывание проекта на Yandex Cloud ВМ
+
+### 4.1 Создать ВМ в Yandex Cloud (2 ГБ RAM)
+
+<details>
+  <summary>Ход выполнения</summary>
+
+- **Получить ID папки**
+```bash
+yc config list
+
+token: y0__wg**************
+cloud-id: b1gve0m7402c1phkc44c
+folder-id: b1gd35ulrq15fj4fftut
+compute-default-zone: ru-central1-a
+
+# OR
+yc resource-manager folder list
+```
+- **Создание ВМ**
+```bash
+yc compute instance create \
+  --name my-app-vm \
+  --zone ru-central1-a \
+  --platform standard-v3 \
+  --memory 2 \
+  --cores 2 \
+  --core-fraction 100 \
+  --public-ip \
+  --create-boot-disk size=20,image-folder-id=standard-images,image-id=fd8t6b0s1q6k9d8e7g5l \
+  --ssh-key ~/.ssh/id_rsa.pub
+```
+
+</details>
+### 4.2 Подключиться по SSH и установить Docker
+
+### 4.3 Написать bash-скрипт для скачивания fork-репозитория и запуска проекта
+
+### 4.4 Проверить доступность сервиса через check-host.net
+
+### 4.5 (Опционально) Настроить remote SSH context
+
+### 4.6 Выполнить SQL-запрос на сервере
+
+
