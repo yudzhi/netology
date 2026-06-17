@@ -694,6 +694,7 @@ docker rmi cr.yandex/$REGISTRY_ID/python-app:latest
 - *Образ приложения должен собираться при запуске compose из файла Dockerfile.python. Контейнер должен работать в bridge-сети с названием backend и иметь фиксированный ipv4-адрес 172.20.0.5.*  
 
 - *Сервис должен всегда перезапускаться в случае ошибок.*
+
 |Значение	| Что делает |
 |-------------|--------------|
 |restart: unless-stopped	| Перезапускается при ошибках/падении, НО не перезапускается, если вы вручную остановили (docker stop) |
@@ -709,6 +710,13 @@ docker rmi cr.yandex/$REGISTRY_ID/python-app:latest
 | DB_USER	| `${MYSQL_USER}` |	Из файла .env (app) |
 | DB_PASSWORD |	`${MYSQL_PASSWORD}` |	Из файла .env (QwErTy1234) |
 | DB_NAME	| `${MYSQL_DATABASE}` |	Из файла .env (virtd) |
+
+#### 3.2.2 Описание сервиса `deb`
+
+- *image=mysql:8.*
+- *Контейнер должен работать в bridge-сети с названием backend и иметь фиксированный ipv4-адрес 172.20.0.10.*
+- *Явно перезапуск сервиса в случае ошибок.*
+- *Передайте необходимые ENV-переменные для создания: пароля root пользователя, создания базы данных, пользователя и пароля для web-приложения.Обязательно используйте уже существующий .env file для назначения секретных ENV-переменных!*
 
 ```yaml
 include:
@@ -773,14 +781,48 @@ services:
 volumes:
   mysql_data:
 ```
+#### 3.2.4 Проверка синтаксиса `compose.yaml`
+```bash
+# Проверить, что файл корректен
+docker compose config
+```
+</details>
 
-#### 3.2.2 Описание сервиса `deb`
+### 3.3 Локальный запуск проекта с помощью Docker Compose
 
-- *image=mysql:8.*
-- *Контейнер должен работать в bridge-сети с названием backend и иметь фиксированный ipv4-адрес 172.20.0.10.*
-- *Явно перезапуск сервиса в случае ошибок.*
-- *Передайте необходимые ENV-переменные для создания: пароля root пользователя, создания базы данных, пользователя и пароля для web-приложения.Обязательно используйте уже существующий .env file для назначения секретных ENV-переменных!*
-- 
+**Проблема: Nginx не слушает порт 8090, не опубликовал порт 8090 на хост.**
+
+Из вывода видно:
+
+- Все контейнеры запущены и healthy
+- ❌ curl не может подключиться к порту 8090
+- В логах MySQL видно, что БД virtd создана успешно
+
+Причина: 
+В `proxy.yaml` (который подключается через `include`) у Nginx указан `network_mode: host`:
+
+- `network_mode: host` — контейнер использует сеть хоста напрямую
+- В этом режиме секция `ports` игнорируется
+- Нужно либо убрать `network_mode: host`, либо добавить `ports`
+
+
+<details>
+  <summary>Ход выполнения</summary>
+
+```bash
+# Запустить все сервисы
+docker compose up -d
+
+# Проверить статус контейнеров
+docker compose ps
+ 
+NAME                   IMAGE                        COMMAND                  SERVICE         CREATED          STATUS                    PORTS
+mysql_db                                 mysql:8.0                    "docker-entrypoint.s…"   db              17 seconds ago   Up 16 seconds (healthy)   0.0.0.0:3306->3306/tcp, [::]:3306->3306/tcp
+shvirtd-example-python-ingress-proxy-1   nginx:latest                 "/docker-entrypoint.…"   ingress-proxy   17 seconds ago   Up 16 seconds
+shvirtd-example-python-reverse-proxy-1   haproxy:2.4                  "docker-entrypoint.s…"   reverse-proxy   17 seconds ago   Up 16 seconds             127.0.0.1:8080->8080/tcp
+shvirtd-example-python-web               shvirtd-example-python-web   "uvicorn main:app --…"   web             17 seconds ago   Up 10 seconds (healthy)
+```
+
 </details>
 
 
