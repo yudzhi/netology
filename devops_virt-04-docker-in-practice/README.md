@@ -1006,6 +1006,10 @@ echo "Команда: docker exec -ti mysql_db mysql -uroot -pYtReWq4321"
 
 <details>
   <summary>Скриншоты</summary>
+
+![curl8090](https://1.downloader.disk.yandex.ru/disk/6a90dfc1281ac5a6429c4eb16ad5cb32503079d3eb80ef6c17adac3225208e94/6a325a23/iFwHyHfHYV6LpWmkyGg1uEIhZzmNq-Zv01T0tE88EfirODCVJ_eQ9-eXDoxg9Mh0FZpsS2Flv7QnNwYzXPmwUA%3D%3D?uid=22194168&filename=04-docker_3-1.png&disposition=inline&hash=&limit=0&content_type=image%2Fpng&owner_uid=22194168&fsize=512663&hid=37d3c22b16eca839e34ed60c3ae3b1cf&media_type=image&tknv=v3&is_direct_zip_experiment=1&etag=7cb59d6df0be06c6b6df7dbd531bcde5)
+
+![sql](https://3.downloader.disk.yandex.ru/disk/cd38cdef4a52ea462081563bb3dd9d84c03c4291c5596cfb698028b413f2ca03/6a325aa1/iFwHyHfHYV6LpWmkyGg1uMNTOtgzOpKFF4dClzj1ZJWyYxJhn8plhWq_GpYp8tnWVxe0P-hb5KH92tdjVpki1Q%3D%3D?uid=22194168&filename=04-docker_3-2.png&disposition=inline&hash=&limit=0&content_type=image%2Fpng&owner_uid=22194168&fsize=225978&hid=b236ab08a39ff67112ea25e701b5beed&media_type=image&tknv=v3&is_direct_zip_experiment=1&etag=16f527d80eb19beef62992f83732f03a)
 </details>
 
 
