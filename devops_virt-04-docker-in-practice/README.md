@@ -1035,7 +1035,7 @@ yc resource-manager folder list
 ```
 
 - **Создание ВМ**
-- 
+
 Проще через браузер, но можно и в терминале задать параметры, но надо разбираться в настройках, чтобы обеспечить оптимальную экономию ресурсов. Скрипт для примера на будущее.
 ! Зону в уже созданной ВМ сменить нельзя.
 
@@ -1066,10 +1066,52 @@ yc compute instance list
 </details>
 
 ### 4.2 Подключиться по SSH и установить Docker
+Docker version 29.5.3, build d1c06ef
+Docker Compose version v5.1.4
 
+<details>
+  <summary>Ход выполнения</summary>
+
+- **Подключение**
 ```bash
 ssh -i ~/.ssh/id_rsa yudzhi@89.169.153.170
+
+Welcome to Ubuntu 24.04.4 LTS (GNU/Linux 6.8.0-124-generic x86_64)
 ```
+
+- **Установка Docker**
+```bash
+# Обновить пакеты
+sudo apt update
+
+# Установить зависимости
+sudo apt install -y \
+    ca-certificates \
+    curl \
+    gnupg \
+    lsb-release
+
+# Добавить официальный GPG-ключ Docker
+sudo mkdir -p /etc/apt/keyrings
+curl -fsSL https://download.docker.com/linux/ubuntu/gpg | sudo gpg --dearmor -o /etc/apt/keyrings/docker.gpg
+
+# Добавить репозиторий Docker
+echo \
+  "deb [arch=$(dpkg --print-architecture) signed-by=/etc/apt/keyrings/docker.gpg] https://download.docker.com/linux/ubuntu \
+  $(lsb_release -cs) stable" | sudo tee /etc/apt/sources.list.d/docker.list > /dev/null
+
+# Установить Docker
+sudo apt update
+sudo apt install -y docker-ce docker-ce-cli containerd.io docker-buildx-plugin docker-compose-plugin
+
+# Добавить пользователя в группу docker
+sudo usermod -aG docker $USER
+
+# Перезагрузить сессию (или выйти и зайти заново)
+exit
+ssh -l yudzhi 89.169.153.170
+```
+</details>
 
 ### 4.3 Написать bash-скрипт для скачивания fork-репозитория и запуска проекта
 
