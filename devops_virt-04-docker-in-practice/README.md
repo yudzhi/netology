@@ -1133,7 +1133,7 @@ set -e
 # ============================================
 # Настройки
 # ============================================
-REPO_URL="https://github.com/ВАШЕ_ИМЯ_ПОЛЬЗОВАТЕЛЯ/shvirtd-example-python.git"
+REPO_URL="https://github.com/yudzhi/shvirtd-example-python.git"
 PROJECT_DIR="/opt/shvirtd-example-python"
 
 # Цвета для вывода
@@ -1167,36 +1167,36 @@ cd "$PROJECT_DIR"
 print_yellow "Шаг 3: Проверка файлов..."
 ls -la
 
-# Шаг 4: Убедиться, что .env существует
-if [ ! -f ".env" ]; then
-    print_red "Файл .env не найден! Создаём..."
-    cat > .env << 'EOF'
-MYSQL_ROOT_PASSWORD="YtReWq4321"
-MYSQL_DATABASE="virtd"
-MYSQL_USER="app"
-MYSQL_PASSWORD="QwErTy1234"
-EOF
-fi
+## Шаг 3.1: Убедиться, что .env существует
+#if [ ! -f ".env" ]; then
+#    print_red "Файл .env не найден! Создаём..."
+#    cat > .env << 'EOF'
+#MYSQL_ROOT_PASSWORD="YtReWq4321"
+#MYSQL_DATABASE="virtd"
+#MYSQL_USER="app"
+#MYSQL_PASSWORD="QwErTy1234"
+#EOF
+#fi
 
-# Шаг 5: Остановка старых контейнеров
-print_yellow "Шаг 5: Остановка старых контейнеров..."
+# Шаг 4: Остановка старых контейнеров
+print_yellow "Шаг 4: Остановка старых контейнеров..."
 docker compose down -v 2>/dev/null || true
 
-# Шаг 6: Сборка и запуск
-print_yellow "Шаг 6: Сборка и запуск проекта..."
+# Шаг 5: Сборка и запуск
+print_yellow "Шаг 5: Сборка и запуск проекта..."
 docker compose build --no-cache
 docker compose up -d
 
-# Шаг 7: Ожидание готовности
-print_yellow "Шаг 7: Ожидание готовности сервисов (30 секунд)..."
+# Шаг 6: Ожидание готовности
+print_yellow "Шаг 6: Ожидание готовности сервисов (30 секунд)..."
 sleep 30
 
-# Шаг 8: Проверка статуса
-print_yellow "Шаг 8: Статус контейнеров..."
+# Шаг 7: Проверка статуса
+print_yellow "Шаг 7: Статус контейнеров..."
 docker compose ps
 
-# Шаг 9: Проверка работы
-print_yellow "Шаг 9: Проверка работы приложения..."
+# Шаг 8: Проверка работы
+print_yellow "Шаг 8: Проверка работы приложения..."
 RESPONSE=$(curl -s -o /dev/null -w "%{http_code}" http://localhost:8090)
 
 if [ "$RESPONSE" == "200" ]; then
@@ -1212,9 +1212,10 @@ else
     exit 1
 fi
 
-# Шаг 10: Показать логи
-print_yellow "Шаг 10: Последние логи..."
+# Шаг 9: Показать логи
+print_yellow "Шаг 9: Последние логи..."
 docker compose logs --tail=10
+
 ```
 </details>
 
