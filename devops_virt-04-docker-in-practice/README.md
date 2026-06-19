@@ -1485,3 +1485,60 @@ docker rmi hashicorp/terraform:latest
 
 ![terraform save](https://4.downloader.disk.yandex.ru/disk/0f5f700fa7c3d8853da8ccca0ab08b6be3407bc78bb188430fa898a7747af8d6/6a35d64d/iFwHyHfHYV6LpWmkyGg1uGRQrdgeiUjg_jRZyK_x9RG_2OJ6vnNVsg5wQZM1R0qkJz4BV5QupCPtH4_CJjtrtw%3D%3D?uid=22194168&filename=04-docker_6-4.png&disposition=inline&hash=&limit=0&content_type=image%2Fpng&owner_uid=22194168&fsize=399798&hid=d3c410603d49645a3d3d8c6727d4f3c2&media_type=image&tknv=v3&is_direct_zip_experiment=1&etag=3e4648e49bfadcaffb08e9fa8f528d1f)
 </details>
+
+## Задача 6.1
+Зачем?
+
+|Аспект	|Задача 6 (через dive + save) |Задача 6.1 (через docker cp)|
+|------------|----------------------|-----------------------|
+|Инструменты	|dive, docker save, tar	|docker cp (встроенный)|
+|Сложность	|Высокая (много шагов)	|Низкая (2-3 команды)|
+|Время	|~5-10 минут	|~1 минута|
+|Результат	|Тот же файл /bin/terraform	|Тот же файл /bin/terraform|
+|Скриншоты	|Много (dive, tar, распаковка)	|Мало (docker cp + проверка)|
+
+<details>
+  <summary>Ход выполнения</summary>
+
+```bash
+#!/bin/bash
+
+set -e
+
+IMAGE="hashicorp/terraform:latest"
+PROJECT_DIR="$HOME/DevOps/Projects/terraform"
+
+echo "=== Создание папки проекта ==="
+mkdir -p "$PROJECT_DIR"
+cd "$PROJECT_DIR"
+
+echo "=== 1. Скачивание образа ==="
+docker pull $IMAGE
+
+echo "=== 2. Создание контейнера ==="
+docker create --name temp-terraform $IMAGE
+
+echo "=== 3. Копирование файла ==="
+docker cp temp-terraform:/bin/terraform ./terraform
+
+echo "=== 4. Проверка ==="
+ls -la terraform
+file terraform
+./terraform --version
+
+echo "=== 5. Очистка ==="
+docker rm temp-terraform
+
+echo "=== 6. Размер файла ==="
+du -sh terraform
+
+echo "✅ Готово! Файл сохранён в $PROJECT_DIR/terraform"
+echo "Проверка: ./terraform --version"
+```
+</details>
+
+<details>
+  <summary>Скриншоты</summary>
+
+![docker cp](https://4.downloader.disk.yandex.ru/disk/428f4ce8e463481ff9e24631dc4127fde1156cd71dd748005369f7d398b92ead/6a35d998/iFwHyHfHYV6LpWmkyGg1uIgwwxsKaXpoLcsjaRvUSvvSY2FjPS-5A4Tioo2vrvbPnKotDplvaETcKlTLqCoqOg%3D%3D?uid=22194168&filename=04-docker_6-5.png&disposition=inline&hash=&limit=0&content_type=image%2Fpng&owner_uid=22194168&fsize=403848&hid=8f5c9eb80cb7a3dac8c62b489d793c29&media_type=image&tknv=v3&is_direct_zip_experiment=1&etag=7391948fed9a8c435303f1a13eedb618)
+</details>
