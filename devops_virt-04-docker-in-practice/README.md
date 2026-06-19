@@ -1275,6 +1275,8 @@ docker ps -a
 
 # Вернуться к локальному контексту
 docker context use default
+```
+
 </details>
 
 <details>
