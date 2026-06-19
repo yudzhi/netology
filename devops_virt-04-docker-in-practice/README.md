@@ -1233,11 +1233,13 @@ sudo /opt/deploy.sh
   <summary>Ход выполнения</summary>
 
 - **Внешний IP ВМ**
+
 ```bash
 curl -s ifconfig.me
 ```
 
 - **https://check-host.net/check-http**
+
 http://89.169.153.170:8090
 
 </details>
@@ -1250,13 +1252,36 @@ http://89.169.153.170:8090
 </details>
 
 ### 4.5 (Опционально) Настроить remote SSH context
+remote context — это для подключения с локальной машины к ВМ.
 
 <details>
   <summary>Ход выполнения</summary>
+
+```bash
+# Выйти с ВМ
+exit
+
+# Создать контекст
+docker context create remote-vm --docker "host=ssh://yudzhi@89.169.153.170"
+
+# Показать все контексты
+docker context ls
+
+# Переключиться на удалённый контекст
+docker context use remote-vm
+
+# Выполнить удалённую команду
+docker ps -a
+
+# Вернуться к локальному контексту
+docker context use default
 </details>
 
 <details>
   <summary>Скриншоты</summary>
+
+![remote-context](https://3.downloader.disk.yandex.ru/disk/491dc5f1f39b1eea7d13b02da6fd7ddf5309e843329817f776b01d88bf024b30/6a34e80d/iFwHyHfHYV6LpWmkyGg1uHlX2KftX66OWjJDJPwHXxp4WjnopjBYUnrKu-2ERaSg17ZdGq-QkDQaRuZMPF3LuA%3D%3D?uid=22194168&filename=04-docker_4-2.png&disposition=inline&hash=&limit=0&content_type=image%2Fpng&owner_uid=22194168&fsize=266580&hid=1f10ee2d11d032935b347c46a926b137&media_type=image&tknv=v3&is_direct_zip_experiment=1&etag=0552bdea15af4dc57c83d34a51760d47)
+
 </details>
 
 ### 4.6 Выполнить SQL-запрос на сервере
