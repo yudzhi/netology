@@ -1288,4 +1288,20 @@ docker context use default
 
 ### 4.6 Выполнить SQL-запрос на сервере
 
+<details>
+  <summary>Ход выполнения</summary>
+
+```bash
+ssh yudzhi@89.169.153.170
+
+docker exec mysql_db mysql -uroot -pYtReWq4321 -e "USE virtd; SELECT * FROM requests LIMIT 10;"
+```
+</details>
+
+<details>
+  <summary>Скриншоты</summary>
+
+![SQL-remote](https://1.downloader.disk.yandex.ru/disk/f301f58b6c535e673edd8353b74e4d1d13fc00873b4fd72598972781cab1b1b5/6a34e9ae/iFwHyHfHYV6LpWmkyGg1uAnWS7Mp9WbhsXiRKuFYjOD2Sdi_Sau-zAfeHlYv2Tu5VL2lvYGxv1NH3Kgvd_dXPw%3D%3D?uid=22194168&filename=04-docker_4-3.png&disposition=inline&hash=&limit=0&content_type=image%2Fpng&owner_uid=22194168&fsize=281802&hid=2277d650df4e1e75acc0a95e02fcb419&media_type=image&tknv=v3&is_direct_zip_experiment=1&etag=d0445b3f6845baa62b33d2232c775a8b)
+</details>
+
 
