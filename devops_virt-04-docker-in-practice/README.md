@@ -1114,6 +1114,7 @@ ssh -l yudzhi 89.169.153.170
 </details>
 
 ### 4.3 Написать bash-скрипт для скачивания fork-репозитория и запуска проекта
+[deploy.sh](https://github.com/yudzhi/shvirtd-example-python/blob/main/deploy.sh)
 
 <details>
   <summary>Ход выполнения</summary>
@@ -1217,11 +1218,46 @@ print_yellow "Шаг 9: Последние логи..."
 docker compose logs --tail=10
 
 ```
+
+- **Сделать исполняемым и запустить**
+
+```bash
+sudo chmod +x /opt/deploy.sh
+sudo /opt/deploy.sh
+```
+
 </details>
 
 ### 4.4 Проверить доступность сервиса через check-host.net
+<details>
+  <summary>Ход выполнения</summary>
+
+- **Внешний IP ВМ**
+```bash
+curl -s ifconfig.me
+```
+
+- **https://check-host.net/check-http**
+http://89.169.153.170:8090
+
+</details>
+
+<details>
+  <summary>Скриншоты</summary>
+
+![Check-host_http-200](https://2.downloader.disk.yandex.ru/disk/8db11d92af6294814430d78c98396925b9401a7a572d1c2a9deb311d8ebb9998/6a34e41e/iFwHyHfHYV6LpWmkyGg1uCF9vAUdw1mnGb2aIxNGfrKZg-cB6_GtGKoztsPSqmHN74Fc4hNOjkz64ja2_5hu5Q%3D%3D?uid=22194168&filename=04-docker_4-1.png&disposition=inline&hash=&limit=0&content_type=image%2Fpng&owner_uid=22194168&fsize=526425&hid=a56961884fd2a9a1166ea07b75c06fac&media_type=image&tknv=v3&is_direct_zip_experiment=1&etag=3e46513b8e9c93758a6bca2423c158f6)
+
+</details>
 
 ### 4.5 (Опционально) Настроить remote SSH context
+
+<details>
+  <summary>Ход выполнения</summary>
+</details>
+
+<details>
+  <summary>Скриншоты</summary>
+</details>
 
 ### 4.6 Выполнить SQL-запрос на сервере
 
