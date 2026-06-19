@@ -1345,7 +1345,7 @@ http://89.169.153.170:8090
 
 </details>
 
-### 4.5 (Опционально) Настроить remote SSH context
+### 4.5 Настроить remote SSH context
 remote context — это для подключения с локальной машины к ВМ.
 
 <details>
@@ -1398,4 +1398,90 @@ docker exec mysql_db mysql -uroot -pYtReWq4321 -e "USE virtd; SELECT * FROM requ
 ![SQL-remote](https://1.downloader.disk.yandex.ru/disk/f301f58b6c535e673edd8353b74e4d1d13fc00873b4fd72598972781cab1b1b5/6a34e9ae/iFwHyHfHYV6LpWmkyGg1uAnWS7Mp9WbhsXiRKuFYjOD2Sdi_Sau-zAfeHlYv2Tu5VL2lvYGxv1NH3Kgvd_dXPw%3D%3D?uid=22194168&filename=04-docker_4-3.png&disposition=inline&hash=&limit=0&content_type=image%2Fpng&owner_uid=22194168&fsize=281802&hid=2277d650df4e1e75acc0a95e02fcb419&media_type=image&tknv=v3&is_direct_zip_experiment=1&etag=d0445b3f6845baa62b33d2232c775a8b)
 </details>
 
+---
 
+## Задача 6.
+
+<details>
+  <summary>Ход выполнения</summary>
+
+- **Установка dive**
+
+```bash
+# Скачать dive для Ubuntu 22.04
+wget https://github.com/wagoodman/dive/releases/download/v0.12.0/dive_0.12.0_linux_amd64.deb
+
+# Установить
+sudo dpkg -i dive_0.12.0_linux_amd64.deb
+
+# Проверить
+dive --version
+```
+- **Создать папку проекта**
+
+```bash
+mkdir -p ~/DevOps/Projects/terraform
+cd ~/DevOps/Projects/terraform
+```
+- **Скачать образ**
+
+```bash
+docker pull hashicorp/terraform:latest
+```
+
+- **Анализ образа через dive**
+```bash
+dive hashicorp/terraform:latest
+```
+
+- **Сохранить образ в tar-файл**
+
+```bash
+docker save hashicorp/terraform:latest -o terraform-image.tar
+```
+
+- **Извлечь бинарный файл**
+
+```bash
+# Способ 1: Через docker cp (самый простой)
+docker create --name temp-terraform hashicorp/terraform:latest
+docker cp temp-terraform:/bin/terraform ./terraform
+docker rm temp-terraform
+```
+
+- **Проверка**
+
+```bash
+ls -la terraform
+-rwxr-xr-x 1 yudzhi yudzhi 117104824 июн 10 13:16 terraform
+
+./terraform --version
+Terraform v1.15.6
+on linux_amd64
+
+file terraform
+terraform: ELF 64-bit LSB executable, x86-64, version 1 (SYSV), statically linked, BuildID[sha1]=e3b7a7a445fb7a2dea4dc6791acb423a7afc448b, stripped
+```
+
+- **Очистка**
+
+```bash
+# Удалить tar-архив
+rm -f terraform-image.tar
+
+# Удалить образ
+docker rmi hashicorp/terraform:latest
+```
+</details>
+
+<details>
+  <summary>Скриншоты</summary>
+
+![dive](https://2.downloader.disk.yandex.ru/disk/3f03a76996153bae66d8ebb9be60ae0fd7b0d29d4f0076121a4cbb917b8c108b/6a35d5b0/iFwHyHfHYV6LpWmkyGg1uJ4r6xLPEf7i9pS7qMl4mo_Nt8nBNeaguTWtqQICP9RTyruhs1uoXE1U64i1_SuZ9g%3D%3D?uid=22194168&filename=04-docker_6-1.png&disposition=inline&hash=&limit=0&content_type=image%2Fpng&owner_uid=22194168&fsize=479775&hid=652125d54d8b281bdd88b959b8bb09cc&media_type=image&tknv=v3&is_direct_zip_experiment=1&etag=16969fc53b8bfdc9f7529eeca919cb7a)
+
+![dive with bin/terraform](https://1.downloader.disk.yandex.ru/disk/0506fd86b1539da614bda73079a392dfe76ab93edeaf2629643b6d2663293071/6a35d603/iFwHyHfHYV6LpWmkyGg1uM3U2hSIGEdlQc712A3yqkOUsCA59WLLUvuOp3_mxvatcTjgYVvrqTCZQWNI_BXBRw%3D%3D?uid=22194168&filename=04-docker_6-2.png&disposition=inline&hash=&limit=0&content_type=image%2Fpng&owner_uid=22194168&fsize=470107&hid=e420375d0dfcf44f06124fad05b1370d&media_type=image&tknv=v3&is_direct_zip_experiment=1&etag=faf96555686c32561c2019eaec8736c4)
+
+![dive install](https://1.downloader.disk.yandex.ru/disk/455c3fe7d4342c09f43be83b2543eeac886b2a9d257b9543938a9ddd4a48d29d/6a35d629/iFwHyHfHYV6LpWmkyGg1uISgZPazj6BNIe0iKe00o95OVor2zx2TadAo_CFjY7PBqnOh1XlsXE9cI-XtuKNZkQ%3D%3D?uid=22194168&filename=04-docker_6-3.png&disposition=inline&hash=&limit=0&content_type=image%2Fpng&owner_uid=22194168&fsize=529163&hid=fee9fd584bad77613e247c0350b57457&media_type=image&tknv=v3&is_direct_zip_experiment=1&etag=cf873254e114911797952df23a2374cd)
+
+![terraform save](https://4.downloader.disk.yandex.ru/disk/0f5f700fa7c3d8853da8ccca0ab08b6be3407bc78bb188430fa898a7747af8d6/6a35d64d/iFwHyHfHYV6LpWmkyGg1uGRQrdgeiUjg_jRZyK_x9RG_2OJ6vnNVsg5wQZM1R0qkJz4BV5QupCPtH4_CJjtrtw%3D%3D?uid=22194168&filename=04-docker_6-4.png&disposition=inline&hash=&limit=0&content_type=image%2Fpng&owner_uid=22194168&fsize=399798&hid=d3c410603d49645a3d3d8c6727d4f3c2&media_type=image&tknv=v3&is_direct_zip_experiment=1&etag=3e4648e49bfadcaffb08e9fa8f528d1f)
+</details>
