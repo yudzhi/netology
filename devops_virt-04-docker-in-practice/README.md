@@ -1117,6 +1117,7 @@ ssh -l yudzhi 89.169.153.170
 
 ### 4.3 Написать bash-скрипт для скачивания fork-репозитория и запуска проекта
 [deploy.sh](https://github.com/yudzhi/shvirtd-example-python/blob/main/deploy.sh)
+
 [Автоматический скрипт для локального запуска](https://github.com/yudzhi/shvirtd-example-python/blob/main/deploy-remote.sh)
 
 
