@@ -1729,12 +1729,6 @@ tail -f /var/log/mysql-backup.log
 
 ### 5.4 Скрыть логин/пароль в скрипте (не хранить в Git!)
 
-</details>
-
-<details>
-  <summary>Скриншоты</summary>
-</details>
-
 ---
 
 ### Понимание задачи
@@ -1857,4 +1851,11 @@ OLD_COUNT=$(find "$BACKUP_DIR" -name "*.sql" -mtime +7 | wc -l)
 find "$BACKUP_DIR" -name "*.sql" -mtime +7 -delete
 echo "$(date) 🧹 Удалено старых бэкапов: $OLD_COUNT" >> "$LOG_FILE"
 ```
+</details>
+
+<details>
+  <summary>Скриншоты</summary>
+</details>
+
+
   
