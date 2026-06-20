@@ -1695,10 +1695,6 @@ sudo systemctl start cron
 crontab -e
 ```
 
-Если спросит редактор — выберите `nano`.
-
-**Добавьте строку:**
-
 ```
 * * * * * /opt/scripts/mysql-backup.sh >> /var/log/mysql-backup.log 2>&1
 ```
@@ -1723,9 +1719,6 @@ crontab -l
 ```bash
 tail -f /var/log/mysql-backup.log
 ```
-
-**Через минуту должны появиться записи о создании бэкапов.**
-
 
 ### 5.4 Скрыть логин/пароль в скрипте (не хранить в Git!)
 
