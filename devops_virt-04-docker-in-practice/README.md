@@ -1746,8 +1746,6 @@ tail -f /var/log/mysql-backup.log
 | Меньше гибкости | Можно легко отключить/изменить |
 
 
-
-```
 </details>
 
 <details>
