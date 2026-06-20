@@ -1542,3 +1542,319 @@ echo "Проверка: ./terraform --version"
 
 ![docker cp](https://4.downloader.disk.yandex.ru/disk/428f4ce8e463481ff9e24631dc4127fde1156cd71dd748005369f7d398b92ead/6a35d998/iFwHyHfHYV6LpWmkyGg1uIgwwxsKaXpoLcsjaRvUSvvSY2FjPS-5A4Tioo2vrvbPnKotDplvaETcKlTLqCoqOg%3D%3D?uid=22194168&filename=04-docker_6-5.png&disposition=inline&hash=&limit=0&content_type=image%2Fpng&owner_uid=22194168&fsize=403848&hid=8f5c9eb80cb7a3dac8c62b489d793c29&media_type=image&tknv=v3&is_direct_zip_experiment=1&etag=7391948fed9a8c435303f1a13eedb618)
 </details>
+
+## Задача 5. Настройка резервного копирования MySQL на ВМ
+
+<details>
+  <summary>Ход выполнения</summary>
+
+### 5.1 Написать bash-скрипт для резервного копирования БД с помощью образа schnitzler/mysqldump
+- **Создать директорию для скриптов и бэкапов**
+
+```bash
+# На ВМ
+sudo mkdir -p /opt/backup
+sudo mkdir -p /opt/scripts
+sudo chown yudzhi:yudzhi /opt/backup /opt/scripts
+```
+
+- **Создать скрипт бэкапа**
+
+```bash
+nano /opt/scripts/mysql-backup.sh
+```
+
+- **mysql-backup.sh**
+
+```bash
+#!/bin/bash
+
+# ============================================
+# Скрипт резервного копирования MySQL
+# ============================================
+
+set -e  # Остановка при ошибке
+
+# Настройки
+BACKUP_DIR="/opt/backup"
+CONTAINER_NAME="mysql_db"
+NETWORK_NAME="shvirtd-example-python_backend"
+DB_NAME="virtd"
+DB_USER="app"
+
+# Загрузка пароля из .env
+ENV_FILE="/opt/shvirtd-example-python/.env"
+if [ -f "$ENV_FILE" ]; then
+    source "$ENV_FILE"
+else
+    echo "❌ Файл .env не найден: $ENV_FILE"
+    exit 1
+fi
+
+# Проверка, что пароль задан
+if [ -z "$MYSQL_PASSWORD" ]; then
+    echo "❌ MYSQL_PASSWORD не задан в .env"
+    exit 1
+fi
+
+# Формирование имени файла: дата_время.sql
+TIMESTAMP=$(date +"%Y%m%d_%H%M%S")
+BACKUP_FILE="$BACKUP_DIR/${DB_NAME}_${TIMESTAMP}.sql"
+
+echo "=== Создание бэкапа $DB_NAME ==="
+
+# Запуск mysqldump через Docker
+docker run --rm \
+    --network "$NETWORK_NAME" \
+    -e MYSQL_HOST="$CONTAINER_NAME" \
+    -e MYSQL_USER="$DB_USER" \
+    -e MYSQL_PASSWORD="$MYSQL_PASSWORD" \
+    -e MYSQL_DATABASE="$DB_NAME" \
+    -v "$BACKUP_DIR:/backup" \
+    schnitzler/mysqldump \
+    sh -c "/usr/bin/mysqldump --opt -h \$MYSQL_HOST -u \$MYSQL_USER -p\$MYSQL_PASSWORD \$MYSQL_DATABASE > /backup/$(basename "$BACKUP_FILE")"
+
+# Проверка результата
+if [ -f "$BACKUP_FILE" ] && [ -s "$BACKUP_FILE" ]; then
+    echo "✅ Бэкап создан: $BACKUP_FILE"
+    echo "Размер: $(du -h "$BACKUP_FILE" | cut -f1)"
+else
+    echo "❌ Ошибка: бэкап не создан или пустой"
+    exit 1
+fi
+
+# Удаление старых бэкапов (старше 7 дней)
+find "$BACKUP_DIR" -name "*.sql" -mtime +7 -delete
+echo "🧹 Старые бэкапы (старше 7 дней) удалены"
+```
+
+**Важно:** Пароль загружается из `.env`, а не хранится в скрипте. Это безопаснее и позволяет коммитить скрипт в Git.
+
+- **Сделать скрипт исполняемым**
+
+```bash
+chmod +x /opt/scripts/mysql-backup.sh
+```
+
+### 5.2 Разместить скрипт на ВМ и протестировать ручной запуск
+
+- **Запустить скрипт вручную**
+
+```bash
+/opt/scripts/mysql-backup.sh
+```
+
+**Ожидаемый вывод:**
+```
+=== Создание бэкапа virtd ===
+Unable to find image 'schnitzler/mysqldump:latest' locally
+latest: Pulling from schnitzler/mysqldump
+...
+✅ Бэкап создан: /opt/backup/virtd_20240619_120000.sql
+Размер: 1.2M
+🧹 Старые бэкапы (старше 7 дней) удалены
+```
+
+- **Проверить, что бэкап создался**
+
+```bash
+ls -la /opt/backup/
+```
+
+**Ожидаемый вывод:**
+```
+-rw-r--r-- 1 root root 1234567 Jun 19 12:00 virtd_20240619_120000.sql
+```
+
+- **Проверить содержимое бэкапа**
+
+```bash
+head -20 /opt/backup/*.sql
+```
+
+Должны быть видны SQL-команды CREATE TABLE, INSERT и т.д.
+
+### 5.3 Настроить выполнение скрипта раз в минуту через cron
+
+Проверить, что cron установлен
+
+```bash
+systemctl status cron
+```
+
+Если не установлен:
+```bash
+sudo apt install cron -y
+sudo systemctl enable cron
+sudo systemctl start cron
+```
+
+### 3.2 Добавить задание в crontab (выполнение раз в минуту)
+
+```bash
+crontab -e
+```
+
+Если спросит редактор — выберите `nano`.
+
+**Добавьте строку:**
+
+```
+* * * * * /opt/scripts/mysql-backup.sh >> /var/log/mysql-backup.log 2>&1
+```
+
+**Что значит:**
+| Часть | Значение |
+|-------|----------|
+| `* * * * *` | Каждую минуту  |
+| `/opt/scripts/mysql-backup.sh` | Путь к скрипту |
+| `>> /var/log/mysql-backup.log 2>&1` | Логировать вывод (и ошибки) в файл |
+
+Сохраните (`Ctrl+O`, Enter) и выйдите (`Ctrl+X`).
+
+### 3.3 Проверить, что cron добавлен
+
+```bash
+crontab -l
+```
+
+### 3.4 Дождаться выполнения (1-2 минуты) и проверить логи
+
+```bash
+tail -f /var/log/mysql-backup.log
+```
+
+**Через минуту должны появиться записи о создании бэкапов.**
+
+
+### 5.4 Скрыть логин/пароль в скрипте (не хранить в Git!)
+
+</details>
+
+<details>
+  <summary>Скриншоты</summary>
+</details>
+
+---
+
+### Понимание задачи
+
+- **Что такое schnitzler/mysqldump**
+
+Это небольшой Docker-образ на основе Alpine Linux, который содержит `mysqldump` и может использоваться двумя способами:
+
+| Способ | Описание |
+|--------|----------|
+| **Однократный запуск** | Запускается `docker run` для создания одного дампа |
+| **Периодический запуск** | Внутри контейнера работает cron, который выполняет дампы по расписанию |
+
+**В задаче однократный запуск** через `docker run`, а периодичность настраивается через системный cron на ВМ.
+
+| Встроенный cron в контейнере | Системный cron на ВМ |
+|------------------------------|----------------------|
+| Сложнее настраивать | Проще контролировать |
+| Нужно монтировать файлы с правами | Стандартный crontab |
+| Меньше гибкости | Можно легко отключить/изменить |
+
+
+---
+
+## Шаг 4. Проверка накопления бэкапов
+
+### 4.1 Подождать несколько минут и проверить
+
+```bash
+ls -la /opt/backup/
+```
+
+Должно быть несколько файлов с разными временами:
+```
+-rw-r--r-- 1 root root 1.2M Jun 19 12:01 virtd_20240619_120100.sql
+-rw-r--r-- 1 root root 1.2M Jun 19 12:02 virtd_20240619_120200.sql
+-rw-r--r-- 1 root root 1.2M Jun 19 12:03 virtd_20240619_120300.sql
+```
+
+### 4.2 Проверить содержимое одного бэкапа
+
+```bash
+head -20 /opt/backup/virtd_*.sql
+```
+
+---
+
+## Шаг 5. Остановка cron (для теста)
+
+Если нужно временно отключить бэкапы:
+
+```bash
+# Закомментировать строку в crontab
+crontab -e
+# Добавить # в начало строки:
+# * * * * * /opt/scripts/mysql-backup.sh >> /var/log/mysql-backup.log 2>&1
+```
+
+---
+
+## Полный рабочий скрипт с проверками
+
+```bash
+#!/bin/bash
+
+set -e
+
+BACKUP_DIR="/opt/backup"
+LOG_FILE="/var/log/mysql-backup.log"
+CONTAINER_NAME="mysql_db"
+NETWORK_NAME="shvirtd-example-python_backend"
+DB_NAME="virtd"
+DB_USER="app"
+ENV_FILE="/opt/shvirtd-example-python/.env"
+
+# Проверка наличия .env
+if [ ! -f "$ENV_FILE" ]; then
+    echo "$(date) ❌ .env не найден" >> "$LOG_FILE"
+    exit 1
+fi
+
+source "$ENV_FILE"
+
+if [ -z "$MYSQL_PASSWORD" ]; then
+    echo "$(date) ❌ MYSQL_PASSWORD не задан" >> "$LOG_FILE"
+    exit 1
+fi
+
+# Проверка, что MySQL контейнер запущен
+if ! docker ps | grep -q "$CONTAINER_NAME"; then
+    echo "$(date) ❌ Контейнер $CONTAINER_NAME не запущен" >> "$LOG_FILE"
+    exit 1
+fi
+
+# Создание бэкапа
+TIMESTAMP=$(date +"%Y%m%d_%H%M%S")
+BACKUP_FILE="$BACKUP_DIR/${DB_NAME}_${TIMESTAMP}.sql"
+
+docker run --rm \
+    --network "$NETWORK_NAME" \
+    -e MYSQL_HOST="$CONTAINER_NAME" \
+    -e MYSQL_USER="$DB_USER" \
+    -e MYSQL_PASSWORD="$MYSQL_PASSWORD" \
+    -e MYSQL_DATABASE="$DB_NAME" \
+    -v "$BACKUP_DIR:/backup" \
+    schnitzler/mysqldump \
+    sh -c "/usr/bin/mysqldump --opt -h \$MYSQL_HOST -u \$MYSQL_USER -p\$MYSQL_PASSWORD \$MYSQL_DATABASE > /backup/$(basename "$BACKUP_FILE")" \
+    >> "$LOG_FILE" 2>&1
+
+if [ -f "$BACKUP_FILE" ] && [ -s "$BACKUP_FILE" ]; then
+    SIZE=$(du -h "$BACKUP_FILE" | cut -f1)
+    echo "$(date) ✅ Бэкап создан: $(basename "$BACKUP_FILE") ($SIZE)" >> "$LOG_FILE"
+else
+    echo "$(date) ❌ Ошибка создания бэкапа" >> "$LOG_FILE"
+    exit 1
+fi
+
+# Очистка старых
+OLD_COUNT=$(find "$BACKUP_DIR" -name "*.sql" -mtime +7 | wc -l)
+find "$BACKUP_DIR" -name "*.sql" -mtime +7 -delete
+echo "$(date) 🧹 Удалено старых бэкапов: $OLD_COUNT" >> "$LOG_FILE"
+```
+  
