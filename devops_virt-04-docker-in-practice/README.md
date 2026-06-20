@@ -1548,6 +1548,8 @@ echo "Проверка: ./terraform --version"
 <details>
   <summary>Ход выполнения</summary>
 
+*`docker run` не выполняется и пока выявить проблему не удалось*
+
 ### 5.1 Написать bash-скрипт для резервного копирования БД с помощью образа schnitzler/mysqldump
 - **Создать директорию для скриптов и бэкапов**
 
@@ -1744,105 +1746,7 @@ tail -f /var/log/mysql-backup.log
 | Меньше гибкости | Можно легко отключить/изменить |
 
 
----
 
-## Шаг 4. Проверка накопления бэкапов
-
-### 4.1 Подождать несколько минут и проверить
-
-```bash
-ls -la /opt/backup/
-```
-
-Должно быть несколько файлов с разными временами:
-```
--rw-r--r-- 1 root root 1.2M Jun 19 12:01 virtd_20240619_120100.sql
--rw-r--r-- 1 root root 1.2M Jun 19 12:02 virtd_20240619_120200.sql
--rw-r--r-- 1 root root 1.2M Jun 19 12:03 virtd_20240619_120300.sql
-```
-
-### 4.2 Проверить содержимое одного бэкапа
-
-```bash
-head -20 /opt/backup/virtd_*.sql
-```
-
----
-
-## Шаг 5. Остановка cron (для теста)
-
-Если нужно временно отключить бэкапы:
-
-```bash
-# Закомментировать строку в crontab
-crontab -e
-# Добавить # в начало строки:
-# * * * * * /opt/scripts/mysql-backup.sh >> /var/log/mysql-backup.log 2>&1
-```
-
----
-
-## Полный рабочий скрипт с проверками
-
-```bash
-#!/bin/bash
-
-set -e
-
-BACKUP_DIR="/opt/backup"
-LOG_FILE="/var/log/mysql-backup.log"
-CONTAINER_NAME="mysql_db"
-NETWORK_NAME="shvirtd-example-python_backend"
-DB_NAME="virtd"
-DB_USER="app"
-ENV_FILE="/opt/shvirtd-example-python/.env"
-
-# Проверка наличия .env
-if [ ! -f "$ENV_FILE" ]; then
-    echo "$(date) ❌ .env не найден" >> "$LOG_FILE"
-    exit 1
-fi
-
-source "$ENV_FILE"
-
-if [ -z "$MYSQL_PASSWORD" ]; then
-    echo "$(date) ❌ MYSQL_PASSWORD не задан" >> "$LOG_FILE"
-    exit 1
-fi
-
-# Проверка, что MySQL контейнер запущен
-if ! docker ps | grep -q "$CONTAINER_NAME"; then
-    echo "$(date) ❌ Контейнер $CONTAINER_NAME не запущен" >> "$LOG_FILE"
-    exit 1
-fi
-
-# Создание бэкапа
-TIMESTAMP=$(date +"%Y%m%d_%H%M%S")
-BACKUP_FILE="$BACKUP_DIR/${DB_NAME}_${TIMESTAMP}.sql"
-
-docker run --rm \
-    --network "$NETWORK_NAME" \
-    -e MYSQL_HOST="$CONTAINER_NAME" \
-    -e MYSQL_USER="$DB_USER" \
-    -e MYSQL_PASSWORD="$MYSQL_PASSWORD" \
-    -e MYSQL_DATABASE="$DB_NAME" \
-    -v "$BACKUP_DIR:/backup" \
-    schnitzler/mysqldump \
-    sh -c "/usr/bin/mysqldump --opt -h \$MYSQL_HOST -u \$MYSQL_USER -p\$MYSQL_PASSWORD \$MYSQL_DATABASE > /backup/$(basename "$BACKUP_FILE")" \
-    >> "$LOG_FILE" 2>&1
-
-if [ -f "$BACKUP_FILE" ] && [ -s "$BACKUP_FILE" ]; then
-    SIZE=$(du -h "$BACKUP_FILE" | cut -f1)
-    echo "$(date) ✅ Бэкап создан: $(basename "$BACKUP_FILE") ($SIZE)" >> "$LOG_FILE"
-else
-    echo "$(date) ❌ Ошибка создания бэкапа" >> "$LOG_FILE"
-    exit 1
-fi
-
-# Очистка старых
-OLD_COUNT=$(find "$BACKUP_DIR" -name "*.sql" -mtime +7 | wc -l)
-find "$BACKUP_DIR" -name "*.sql" -mtime +7 -delete
-echo "$(date) 🧹 Удалено старых бэкапов: $OLD_COUNT" >> "$LOG_FILE"
 ```
 </details>
 
