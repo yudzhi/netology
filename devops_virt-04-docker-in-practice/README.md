@@ -56,13 +56,13 @@ docker run -d \
 <details>
   <summary>Скриншоты</summary>
 
-![Запуск и проверка MySQL](https://getfile.dokpub.com/yandex/get/https://3.downloader.disk.yandex.ru/disk/848fd76a41bb46527ad3121b3c3a22136c283e87e77ac02f24b43a357ddc2bcd/6a2df0f2/iFwHyHfHYV6LpWmkyGg1uAKWEW1fIgkyI0Czcl-K-st8XaACJoFaGG9-ewbYZ8DwyEqc_mDxx9kFzk0KAjUbYw%3D%3D?uid=22194168&filename=04-docker_1-3_1.png&disposition=inline&hash=&limit=0&content_type=image%2Fpng&owner_uid=22194168&fsize=252597&hid=1139de45f76da415ee38620786db13e2&media_type=image&tknv=v3&is_direct_zip_experiment=1&etag=dc813393e4595f7e036200c7efd39c19)
+![Запуск и проверка MySQL](https://getfile.dokpub.com/yandex/get/https://disk.yandex.ru/i/7OuT6pAWZv-zhA)
 
-![venv and requirements](https://4.downloader.disk.yandex.ru/disk/79961d68375216a22317e61d13fed5efe14e5087fc149a6c984155d81a380f74/6a2df404/iFwHyHfHYV6LpWmkyGg1uCBIWiLbUpImSbh552Tj2sTfzL5Hn1mgdawrlyPAEs0bwPv0hi55G4bmQuova1wmUQ%3D%3D?uid=22194168&filename=04-docker_1-3_2.png&disposition=inline&hash=&limit=0&content_type=image%2Fpng&owner_uid=22194168&fsize=243268&hid=f3b1e55f67b5c0d021ccf7875512e3cd&media_type=image&tknv=v3&is_direct_zip_experiment=1&etag=498d625137f170250f408391585aaebd)
+![venv and requirements](https://getfile.dokpub.com/yandex/get/https://disk.yandex.ru/i/uoaX2y38Yk8gKA)
 
-![App startup](https://1.downloader.disk.yandex.ru/disk/fc4abba676bdbaff6aabde11c1bdf5b10c3c38e623c707caa9eec9d71196f348/6a2e0944/iFwHyHfHYV6LpWmkyGg1uCUOE6QfDhwnVlpOWKH8tiGIF6FHNw7yVaA_fSh8fovWTaJMhzFT2fcYMRRECW41cg%3D%3D?uid=22194168&filename=04-docker_1-3_3.png&disposition=inline&hash=&limit=0&content_type=image%2Fpng&owner_uid=22194168&fsize=66212&hid=0a36dabbe643b2c70b869a387df9476b&media_type=image&tknv=v3&is_direct_zip_experiment=1&etag=056a7635b49578c5acbd0306de3cc138)
+![App startup](https://getfile.dokpub.com/yandex/get/https://disk.yandex.ru/i/7Xzysu78LWb57g)
 
-![Second Terminal](https://3.downloader.disk.yandex.ru/disk/3e6708afdc051c437724fc560593fdc3572efd963829ffa153fa930542d9c82f/6a2e09db/iFwHyHfHYV6LpWmkyGg1uA8RiyQnsNbcAeI3g-dClgci-reJskhLZP32_dj4iDn8Q-Rq__Yol4O6uJm8axOwHg%3D%3D?uid=22194168&filename=04-docker_1-3_4.png&disposition=inline&hash=&limit=0&content_type=image%2Fpng&owner_uid=22194168&fsize=48625&hid=164cf9c4deb1a70ea4eb228e36185b7e&media_type=image&tknv=v3&is_direct_zip_experiment=1&etag=f996ec511a807862a6b9e5bcbdec77ba)
+![Second Terminal](https://getfile.dokpub.com/yandex/get/https://disk.yandex.ru/i/xxqF8YuI74kUuQ)
 
 </details>
 <details>
@@ -270,11 +270,11 @@ def ensure_table_exists():
 <details>
   <summary>Скриншоты</summary>
 
-![Terminal 1](https://2.downloader.disk.yandex.ru/disk/8e2f86285e65faf4c72a001848041758b7d8cbb06a5477cdd54a20f3b06ae096/6a2ecccc/iFwHyHfHYV6LpWmkyGg1uAJnXot7OUaTTFFqvxG3LUU2yEaPDu36ioMfVNYtoaAu-H9TGi64Dj9XPQBpXvVkMw%3D%3D?uid=22194168&filename=04-docker_1-4_1.png&disposition=inline&hash=&limit=0&content_type=image%2Fpng&owner_uid=22194168&fsize=147235&hid=144e3fb8493a9728dc47b983c1d82a91&media_type=image&tknv=v3&is_direct_zip_experiment=1&etag=6a3983ce027bff2133adc04a1bf29f93)
+![Terminal 1](https://getfile.dokpub.com/yandex/get/https://disk.yandex.ru/i/Is7BOV8VT28k2w)
 
-![Terminal 2](https://3.downloader.disk.yandex.ru/disk/18c35a43ad319a01fb23e42c72e95ca774b3e263f1abbb3172d003b23d72fa72/6a2ecd24/iFwHyHfHYV6LpWmkyGg1uLYxpE_p0Mu1df-rErJpBb1Sbna7iYpJn2L8e88J4dXe3aCsSns_FfVS-9fpGgir-g%3D%3D?uid=22194168&filename=04-docker_1-4_2.png&disposition=inline&hash=&limit=0&content_type=image%2Fpng&owner_uid=22194168&fsize=104378&hid=94a2a5b34533d3280fee671a0b999f5c&media_type=image&tknv=v3&is_direct_zip_experiment=1&etag=c7b9e4f3370490fd29e5e934cdf15d36)
+![Terminal 2](https://getfile.dokpub.com/yandex/get/https://disk.yandex.ru/i/6Ci3McYY2-342g)
 
-![Terminal 2 \requests](https://3.downloader.disk.yandex.ru/disk/efcd268533de4fb3e746abebb3881277a2e80b79a5126b8bd4970c50d6e70147/6a2ecf55/iFwHyHfHYV6LpWmkyGg1uFJDaP7Y-2sdNhG9C5-sb9b8o2HunHvOe8-GIU-6evw9KbpoRbjA5oFowCatt1KNUw%3D%3D?uid=22194168&filename=04-docker_1-4_3.png&disposition=inline&hash=&limit=0&content_type=image%2Fpng&owner_uid=22194168&fsize=12081&hid=38b776a097e0dcf479ab01cadb21a562&media_type=image&tknv=v3&is_direct_zip_experiment=1&etag=09c955a11d13d5215a70fc6e59f55c44)
+![Terminal 2 \requests](https://getfile.dokpub.com/yandex/get/https://disk.yandex.ru/i/sCdtALRZ32M0gA)
 </details>
 
 <details>
@@ -1007,9 +1007,9 @@ echo "Команда: docker exec -ti mysql_db mysql -uroot -pYtReWq4321"
 <details>
   <summary>Скриншоты</summary>
 
-![curl8090](https://1.downloader.disk.yandex.ru/disk/6a90dfc1281ac5a6429c4eb16ad5cb32503079d3eb80ef6c17adac3225208e94/6a325a23/iFwHyHfHYV6LpWmkyGg1uEIhZzmNq-Zv01T0tE88EfirODCVJ_eQ9-eXDoxg9Mh0FZpsS2Flv7QnNwYzXPmwUA%3D%3D?uid=22194168&filename=04-docker_3-1.png&disposition=inline&hash=&limit=0&content_type=image%2Fpng&owner_uid=22194168&fsize=512663&hid=37d3c22b16eca839e34ed60c3ae3b1cf&media_type=image&tknv=v3&is_direct_zip_experiment=1&etag=7cb59d6df0be06c6b6df7dbd531bcde5)
+![curl8090](https://getfile.dokpub.com/yandex/get/https://disk.yandex.ru/i/xlvW2866j64Jjg)
 
-![sql](https://3.downloader.disk.yandex.ru/disk/cd38cdef4a52ea462081563bb3dd9d84c03c4291c5596cfb698028b413f2ca03/6a325aa1/iFwHyHfHYV6LpWmkyGg1uMNTOtgzOpKFF4dClzj1ZJWyYxJhn8plhWq_GpYp8tnWVxe0P-hb5KH92tdjVpki1Q%3D%3D?uid=22194168&filename=04-docker_3-2.png&disposition=inline&hash=&limit=0&content_type=image%2Fpng&owner_uid=22194168&fsize=225978&hid=b236ab08a39ff67112ea25e701b5beed&media_type=image&tknv=v3&is_direct_zip_experiment=1&etag=16f527d80eb19beef62992f83732f03a)
+![sql](https://getfile.dokpub.com/yandex/get/https://disk.yandex.ru/i/asoA7tGfkoDVwQ)
 </details>
 
 ---
@@ -1341,7 +1341,7 @@ http://89.169.153.170:8090
 <details>
   <summary>Скриншоты</summary>
 
-![Check-host_http-200](https://2.downloader.disk.yandex.ru/disk/8db11d92af6294814430d78c98396925b9401a7a572d1c2a9deb311d8ebb9998/6a34e41e/iFwHyHfHYV6LpWmkyGg1uCF9vAUdw1mnGb2aIxNGfrKZg-cB6_GtGKoztsPSqmHN74Fc4hNOjkz64ja2_5hu5Q%3D%3D?uid=22194168&filename=04-docker_4-1.png&disposition=inline&hash=&limit=0&content_type=image%2Fpng&owner_uid=22194168&fsize=526425&hid=a56961884fd2a9a1166ea07b75c06fac&media_type=image&tknv=v3&is_direct_zip_experiment=1&etag=3e46513b8e9c93758a6bca2423c158f6)
+![Check-host_http-200](https://getfile.dokpub.com/yandex/get/https://disk.yandex.ru/i/y91MRsGhukqXjA)
 
 </details>
 
@@ -1376,7 +1376,7 @@ docker context use default
 <details>
   <summary>Скриншоты</summary>
 
-![remote-context](https://3.downloader.disk.yandex.ru/disk/491dc5f1f39b1eea7d13b02da6fd7ddf5309e843329817f776b01d88bf024b30/6a34e80d/iFwHyHfHYV6LpWmkyGg1uHlX2KftX66OWjJDJPwHXxp4WjnopjBYUnrKu-2ERaSg17ZdGq-QkDQaRuZMPF3LuA%3D%3D?uid=22194168&filename=04-docker_4-2.png&disposition=inline&hash=&limit=0&content_type=image%2Fpng&owner_uid=22194168&fsize=266580&hid=1f10ee2d11d032935b347c46a926b137&media_type=image&tknv=v3&is_direct_zip_experiment=1&etag=0552bdea15af4dc57c83d34a51760d47)
+![remote-context](https://getfile.dokpub.com/yandex/get/https://disk.yandex.ru/i/TCpcS7qv2Y3sTw)
 
 </details>
 
@@ -1395,7 +1395,7 @@ docker exec mysql_db mysql -uroot -pYtReWq4321 -e "USE virtd; SELECT * FROM requ
 <details>
   <summary>Скриншоты</summary>
 
-![SQL-remote](https://1.downloader.disk.yandex.ru/disk/f301f58b6c535e673edd8353b74e4d1d13fc00873b4fd72598972781cab1b1b5/6a34e9ae/iFwHyHfHYV6LpWmkyGg1uAnWS7Mp9WbhsXiRKuFYjOD2Sdi_Sau-zAfeHlYv2Tu5VL2lvYGxv1NH3Kgvd_dXPw%3D%3D?uid=22194168&filename=04-docker_4-3.png&disposition=inline&hash=&limit=0&content_type=image%2Fpng&owner_uid=22194168&fsize=281802&hid=2277d650df4e1e75acc0a95e02fcb419&media_type=image&tknv=v3&is_direct_zip_experiment=1&etag=d0445b3f6845baa62b33d2232c775a8b)
+![SQL-remote](https://getfile.dokpub.com/yandex/get/https://disk.yandex.ru/i/3jc6Asp4OUgegA)
 </details>
 
 ---
@@ -1477,13 +1477,13 @@ docker rmi hashicorp/terraform:latest
 <details>
   <summary>Скриншоты</summary>
 
-![dive](https://2.downloader.disk.yandex.ru/disk/3f03a76996153bae66d8ebb9be60ae0fd7b0d29d4f0076121a4cbb917b8c108b/6a35d5b0/iFwHyHfHYV6LpWmkyGg1uJ4r6xLPEf7i9pS7qMl4mo_Nt8nBNeaguTWtqQICP9RTyruhs1uoXE1U64i1_SuZ9g%3D%3D?uid=22194168&filename=04-docker_6-1.png&disposition=inline&hash=&limit=0&content_type=image%2Fpng&owner_uid=22194168&fsize=479775&hid=652125d54d8b281bdd88b959b8bb09cc&media_type=image&tknv=v3&is_direct_zip_experiment=1&etag=16969fc53b8bfdc9f7529eeca919cb7a)
+![dive](https://getfile.dokpub.com/yandex/get/https://disk.yandex.ru/i/p1SInBHchsPcFA)
 
-![dive with bin/terraform](https://1.downloader.disk.yandex.ru/disk/0506fd86b1539da614bda73079a392dfe76ab93edeaf2629643b6d2663293071/6a35d603/iFwHyHfHYV6LpWmkyGg1uM3U2hSIGEdlQc712A3yqkOUsCA59WLLUvuOp3_mxvatcTjgYVvrqTCZQWNI_BXBRw%3D%3D?uid=22194168&filename=04-docker_6-2.png&disposition=inline&hash=&limit=0&content_type=image%2Fpng&owner_uid=22194168&fsize=470107&hid=e420375d0dfcf44f06124fad05b1370d&media_type=image&tknv=v3&is_direct_zip_experiment=1&etag=faf96555686c32561c2019eaec8736c4)
+![dive with bin/terraform](https://getfile.dokpub.com/yandex/get/https://disk.yandex.ru/i/Ib58Mwcm10RpaA)
 
-![dive install](https://1.downloader.disk.yandex.ru/disk/455c3fe7d4342c09f43be83b2543eeac886b2a9d257b9543938a9ddd4a48d29d/6a35d629/iFwHyHfHYV6LpWmkyGg1uISgZPazj6BNIe0iKe00o95OVor2zx2TadAo_CFjY7PBqnOh1XlsXE9cI-XtuKNZkQ%3D%3D?uid=22194168&filename=04-docker_6-3.png&disposition=inline&hash=&limit=0&content_type=image%2Fpng&owner_uid=22194168&fsize=529163&hid=fee9fd584bad77613e247c0350b57457&media_type=image&tknv=v3&is_direct_zip_experiment=1&etag=cf873254e114911797952df23a2374cd)
+![dive install](https://getfile.dokpub.com/yandex/get/https://disk.yandex.ru/i/NEPxGobfsNtJVA)
 
-![terraform save](https://4.downloader.disk.yandex.ru/disk/0f5f700fa7c3d8853da8ccca0ab08b6be3407bc78bb188430fa898a7747af8d6/6a35d64d/iFwHyHfHYV6LpWmkyGg1uGRQrdgeiUjg_jRZyK_x9RG_2OJ6vnNVsg5wQZM1R0qkJz4BV5QupCPtH4_CJjtrtw%3D%3D?uid=22194168&filename=04-docker_6-4.png&disposition=inline&hash=&limit=0&content_type=image%2Fpng&owner_uid=22194168&fsize=399798&hid=d3c410603d49645a3d3d8c6727d4f3c2&media_type=image&tknv=v3&is_direct_zip_experiment=1&etag=3e4648e49bfadcaffb08e9fa8f528d1f)
+![terraform save](https://getfile.dokpub.com/yandex/get/https://disk.yandex.ru/i/5CtdbAzOWJ6Ppw)
 </details>
 
 ## Задача 6.1
@@ -1540,7 +1540,7 @@ echo "Проверка: ./terraform --version"
 <details>
   <summary>Скриншоты</summary>
 
-![docker cp](https://4.downloader.disk.yandex.ru/disk/428f4ce8e463481ff9e24631dc4127fde1156cd71dd748005369f7d398b92ead/6a35d998/iFwHyHfHYV6LpWmkyGg1uIgwwxsKaXpoLcsjaRvUSvvSY2FjPS-5A4Tioo2vrvbPnKotDplvaETcKlTLqCoqOg%3D%3D?uid=22194168&filename=04-docker_6-5.png&disposition=inline&hash=&limit=0&content_type=image%2Fpng&owner_uid=22194168&fsize=403848&hid=8f5c9eb80cb7a3dac8c62b489d793c29&media_type=image&tknv=v3&is_direct_zip_experiment=1&etag=7391948fed9a8c435303f1a13eedb618)
+![docker cp](https://getfile.dokpub.com/yandex/get/https://disk.yandex.ru/i/CeoYylYQKzV_Pw)
 </details>
 
 ## Задача 5. Настройка резервного копирования MySQL на ВМ
