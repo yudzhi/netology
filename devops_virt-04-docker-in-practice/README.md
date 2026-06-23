@@ -5,7 +5,7 @@ Docker Compose version v5.1.4
 <details>
   <summary>Скриншоты</summary>
   
-![Проверка версии Docker Compose](https://disk.yandex.ru/i/3CHa5benzPtcbw)
+![Проверка версии Docker Compose](https://getfile.dokpub.com/yandex/get/https://disk.yandex.ru/i/3CHa5benzPtcbw)
 </details>
 
 <details>
