@@ -56,7 +56,7 @@ docker run -d \
 <details>
   <summary>Скриншоты</summary>
 
-![Запуск и проверка MySQL](https://3.downloader.disk.yandex.ru/disk/848fd76a41bb46527ad3121b3c3a22136c283e87e77ac02f24b43a357ddc2bcd/6a2df0f2/iFwHyHfHYV6LpWmkyGg1uAKWEW1fIgkyI0Czcl-K-st8XaACJoFaGG9-ewbYZ8DwyEqc_mDxx9kFzk0KAjUbYw%3D%3D?uid=22194168&filename=04-docker_1-3_1.png&disposition=inline&hash=&limit=0&content_type=image%2Fpng&owner_uid=22194168&fsize=252597&hid=1139de45f76da415ee38620786db13e2&media_type=image&tknv=v3&is_direct_zip_experiment=1&etag=dc813393e4595f7e036200c7efd39c19)
+![Запуск и проверка MySQL](https://getfile.dokpub.com/yandex/get/https://3.downloader.disk.yandex.ru/disk/848fd76a41bb46527ad3121b3c3a22136c283e87e77ac02f24b43a357ddc2bcd/6a2df0f2/iFwHyHfHYV6LpWmkyGg1uAKWEW1fIgkyI0Czcl-K-st8XaACJoFaGG9-ewbYZ8DwyEqc_mDxx9kFzk0KAjUbYw%3D%3D?uid=22194168&filename=04-docker_1-3_1.png&disposition=inline&hash=&limit=0&content_type=image%2Fpng&owner_uid=22194168&fsize=252597&hid=1139de45f76da415ee38620786db13e2&media_type=image&tknv=v3&is_direct_zip_experiment=1&etag=dc813393e4595f7e036200c7efd39c19)
 
 ![venv and requirements](https://4.downloader.disk.yandex.ru/disk/79961d68375216a22317e61d13fed5efe14e5087fc149a6c984155d81a380f74/6a2df404/iFwHyHfHYV6LpWmkyGg1uCBIWiLbUpImSbh552Tj2sTfzL5Hn1mgdawrlyPAEs0bwPv0hi55G4bmQuova1wmUQ%3D%3D?uid=22194168&filename=04-docker_1-3_2.png&disposition=inline&hash=&limit=0&content_type=image%2Fpng&owner_uid=22194168&fsize=243268&hid=f3b1e55f67b5c0d021ccf7875512e3cd&media_type=image&tknv=v3&is_direct_zip_experiment=1&etag=498d625137f170250f408391585aaebd)
 
