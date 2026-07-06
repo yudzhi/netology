@@ -118,7 +118,7 @@ provider_installation {
 
 **Файл конфигурации**
 
-Создана директория `cloud-terraform`. В ней будут храниться конфигурационные файлы и сохраненные состояния Terraform и инфраструктуры и `key.json`.
+Создана директория `cloud-terraform`. В ней будут храниться конфигурационные файлы и сохраненные состояния Terraform и инфраструктуры и `key.json` (**TODO включить `key.json` в `.gitignore**).
 
 Конфигурационный файл `main.tf`
 
@@ -243,7 +243,57 @@ output "workers_ips" {
 ```bash
 yc compute image list --folder-id standard-images
 ```
-  
+
+**Создание ресурсов**
+
+Выполните команду в папке с конфигурационным файлом .tf. Эта команда инициализирует провайдеров, указанных в конфигурационных файлах, и позволяет работать с ресурсами и источниками данных провайдера. 
+
+```bash
+terraform init
+
+Initializing provider plugins found in the configuration...
+- Finding latest version of yandex-cloud/yandex...
+- Installing yandex-cloud/yandex v0.213.0...
+- Installed yandex-cloud/yandex v0.213.0 (unauthenticated)
+Terraform has been successfully initialized!
+```
+
+Проверка конфигурации:
+
+```bash
+terraform validate
+
+Success! The configuration is valid.
+```
+
+Форматирование файлов конфигураций в текущем каталоге и подкаталогах (**TODO Осознать, что происходит**:
+
+```bash
+terraform fmt
+```
+
+После проверки конфигурации:
+
+```bash
+terraform plan
+```
+В терминале будет выведен список ресурсов с параметрами. Это проверочный этап: ресурсы не будут созданы. Если в конфигурации есть ошибки, Terraform на них укажет.
+
+Создание ресурсов:
+
+```bash
+terraform apply
+
+Apply complete! Resources: 3 added, 0 changed, 0 destroyed.
+
+Outputs:
+
+manager_ip = "62.84.127.52"
+workers_ips = [
+  "62.84.124.140",
+  "111.88.251.252",
+]
+```
 </details>
 
 ### 1.2 Установка docker на каждую ВМ.
