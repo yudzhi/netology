@@ -12,7 +12,17 @@ on linux_amd64
 <details>
   <summary>Ход выполнения</summary>
 
-Файл `main.tf'
+**Установка Terraform**
+```bash
+unzip terraform_1.15.7_linux_amd64.zip
+sudo mv terraform /usr/local/bin/
+```
+**Настройка Terraform**
+
+[Начало работы - справка Yandex Cloud](https://yandex.cloud/ru/docs/tutorials/infrastructure-management/terraform-quickstart)
+
+
+Файл `main.tf`
 
 ```hcl
 terraform {
