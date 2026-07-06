@@ -298,6 +298,30 @@ workers_ips = [
 
 ### 1.2 Установка docker на каждую ВМ.
 
+<details>
+  <summary>Ход выполнения</summary>
+
+```bash
+# Обновление списка пакетов
+sudo apt update
+
+# Установка вспомогательных пакетов
+sudo apt install -y apt-transport-https ca-certificates curl software-properties-common
+
+# Добавление официального ключа и репозитория Docker
+curl -fsSL https://download.docker.com/linux/ubuntu/gpg | sudo gpg --dearmor -o /usr/share/keyrings/docker-archive-keyring.gpg
+echo "deb [arch=amd64 signed-by=/usr/share/keyrings/docker-archive-keyring.gpg] https://download.docker.com/linux/ubuntu $(lsb_release -cs) stable" | sudo tee /etc/apt/sources.list.d/docker.list > /dev/null
+
+# Установка Docker Engine
+sudo apt update
+sudo apt install -y docker-ce docker-ce-cli containerd.io
+
+# Добавление пользователя в группу docker (чтобы не использовать sudo)
+sudo usermod -aG docker $USER
+```
+
+</details>
+
 ### 1.3 Создание swarm-кластера из 1 мастера и 2-х рабочих нод.
 
 ### 1.4 Проверка списка нод командой:
