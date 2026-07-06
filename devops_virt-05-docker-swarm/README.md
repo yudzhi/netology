@@ -21,6 +21,79 @@ sudo mv terraform /usr/local/bin/
 
 [Начало работы - справка Yandex Cloud](https://yandex.cloud/ru/docs/tutorials/infrastructure-management/terraform-quickstart)
 
+Для Terraform в Yandex Cloud используется переменная YC_SERVICE_ACCOUNT_KEY_FILE. Она может содержать либо путь к JSON-файлу с ключом сервисного аккаунта, либо содержимое этого файла.
+
+Использование сервисного аккаунта с помощью имперсонации является рекомендованным и наиболее безопасным способом аутентификации.
+
+При создании IAM-токена используйте имперсонацию для созданного сервисного аккаунта, указав его идентификатор в параметре --impersonate-service-account-id. В результате Terraform будет от имени сервисного аккаунта управлять ресурсами в каталоге и использовать IAM-токен сервисного аккаунта.
+
+У вас уже есть статический ключ доступа (access_key и secret_key) от сервисного аккаунта, который вы создали ранее. Теперь нужно создать файл с авторизованным ключом.
+
+```bash
+yc iam key create \
+  --service-account-name terraform-sa \
+  --output key.json
+
+id: ajekk84kglhjf5jaet2o
+service_account_id: ajebpt9aaf41hlevnr3g
+created_at: "2026-07-04T19:53:24.452674526Z"
+key_algorithm: RSA_2048
+```
+Или можно создать самостоятельно `key.json` со статическим ключом:
+
+```bash
+{
+  "id": "идентификатор_ключа",
+  "service_account_id": "идентификатор_сервисного_аккаунта",
+  "created_at": "2024-01-01T00:00:00Z",
+  "key_algorithm": "RSA_2048",
+  "public_key": "публичный_ключ",
+  "private_key": "секретный_ключ_в_формате_PEM"
+}
+```
+
+Теперь нужно указать Terraform, где находится этот файл. 
+Переменные, созданные через export, действуют только в текущей сессии терминала. Чтобы они сохранялись, добавьте их в файл `~/.bashrc`:
+
+```bash
+nano ~/.bashrc
+```
+Добавьте в конец файла строки:
+```bash
+export YC_SERVICE_ACCOUNT_KEY_FILE="~/key.json"
+export YC_CLOUD_ID="ваш_cloud_id"
+export YC_FOLDER_ID="ваш_folder_id"
+```
+
+Сохраните файл и выполните:
+
+```bash
+source ~/.bashrc
+```
+
+**Провайдер**
+
+Откройте файл конфигурации Terraform CLI:
+
+```bash
+nano ~/.terraformrc
+```
+
+Файл `.terraformrc` должен располагаться в корне домашней папки пользователя, например, `/home/user/`.
+
+Добавьте в него следующий блок:
+
+```bash
+provider_installation {
+  network_mirror {
+    url = "https://terraform-mirror.yandexcloud.net/"
+    include = ["registry.terraform.io/*/*"]
+  }
+  direct {
+    exclude = ["registry.terraform.io/*/*"]
+  }
+}
+```
 
 Файл `main.tf`
 
