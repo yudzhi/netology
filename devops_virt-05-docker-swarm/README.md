@@ -14,7 +14,7 @@ on linux_amd64
 
 Файл `main.tf'
 
-```bash
+```hcl
 terraform {
   required_providers {
     yandex = {
