@@ -12,20 +12,21 @@ on linux_amd64
 <details>
   <summary>Ход выполнения</summary>
 
-**Установка Terraform**
+
+#### Установка Terraform
 ```bash
 unzip terraform_1.15.7_linux_amd64.zip
 sudo mv terraform /usr/local/bin/
 ```
-**Настройка Terraform**
+#### Настройка Terraform
 
 [Начало работы - справка Yandex Cloud](https://yandex.cloud/ru/docs/tutorials/infrastructure-management/terraform-quickstart)
 
-**Аутентификация в YC**
+#### Аутентификация в YC
 
 Для Terraform в Yandex Cloud используется переменная YC_SERVICE_ACCOUNT_KEY_FILE. Она может содержать либо путь к JSON-файлу с ключом сервисного аккаунта, либо содержимое этого файла.
 
-**Создать сервисный аккаунт**
+#### Создать сервисный аккаунт
 
 Использование сервисного аккаунта с помощью имперсонации является рекомендованным и наиболее безопасным способом аутентификации.
 
@@ -63,7 +64,7 @@ key_algorithm: RSA_2048
 }
 ```
 
-**Настройка переменных окружения**
+#### Настройка переменных окружения
 
 Рекомендации YC - Запишите аутентификационные данные в переменные окружения, используя имперсонацию:
 
@@ -92,7 +93,7 @@ export YC_FOLDER_ID="b1gd35ulrq15fj4fftut"
 source ~/.bashrc
 ```
 
-**Настройка провайдера**
+#### Настройка провайдера
 
 Файл конфигурации Terraform CLI - нужно указать источник, из которого будет устанавливаться провайдер:
 
@@ -115,8 +116,65 @@ provider_installation {
   }
 }
 ```
+#### Файл объявления переменных `variables.tf`
 
-**Файл конфигурации**
+В корневой папке Terraform-проекта.
+
+```bash
+# variables.tf
+# Объявление всех переменных, используемых в конфигурации
+
+variable "ssh_public_key" {
+  description = "Публичный SSH-ключ пользователя для доступа к ВМ"
+  type        = string
+}
+
+variable "cloud_id" {
+  description = "Идентификатор облака в Yandex Cloud"
+  type        = string
+}
+
+variable "folder_id" {
+  description = "Идентификатор каталога в Yandex Cloud"
+  type        = string
+}
+
+variable "zone" {
+  description = "Зона доступности для размещения ресурсов"
+  type        = string
+  default     = "ru-central1-a"
+}
+
+variable "image_id" {
+  description = "ID образа операционной системы для ВМ"
+  type        = string
+}
+
+variable "vpc_network_id" {
+  description = "ID существующей сети VPC"
+  type        = string
+}
+
+variable "subnet_cidr" {
+  description = "CIDR-блок для подсети"
+  type        = string
+  default     = "10.20.0.0/24"
+}
+
+variable "vm_name_prefix" {
+  description = "Префикс для имен виртуальных машин"
+  type        = string
+  default     = "swarm"
+}
+
+variable "worker_count" {
+  description = "Количество рабочих нод"
+  type        = number
+  default     = 2
+}
+```
+
+#### Файл конфигурации `main.tf`
 
 Создана директория `cloud-terraform`. В ней будут храниться конфигурационные файлы и сохраненные состояния Terraform и инфраструктуры и `key.json` (**TODO включить `key.json` в `.gitignore**).
 
@@ -236,15 +294,57 @@ output "workers_ips" {
 }
 ```
 
-**Инфраструктурный план**
+#### Инфраструктурный план, или на что обратить внимание!
 
+- Актуальность ID образа
 Список доступных публичных образов:
 
 ```bash
 yc compute image list --folder-id standard-images
 ```
 
-**Создание ресурсов**
+- Выбор сети - YC разрешает созданее не более двух:
+Список сетей:
+
+```bash
+yc vpc network list
++----------------------+---------+
+|          ID          |  NAME   |
++----------------------+---------+
+| enpk17sut5bjiq73p826 | default |
+| enprb83klnpar77ku705 | net     |
++----------------------+---------+
+
+yc vpc network get default
+id: enpk17sut5bjiq73p826
+folder_id: b1gd35ulrq15fj4fftut
+created_at: "2026-05-08T19:53:58Z"
+name: default
+description: Auto-created network
+default_security_group_id: enp310qsrocrlt0u4p2j
+```
+
+- SSH-подключение - указать правильное имя пользователя для каждой ВМ
+
+```bash
+metadata = {
+    ssh-keys = "yudzhi:${var.ssh_public_key}"
+```
+
+- SSH-подключение - передать terraform публичный ключ
+
+Для Yandex Cloud рекомендуется создавать ключи Ed25519 (т. е. на основе криптографического алгоритма Ed25519)
+
+```bash
+cat ~/.ssh/id_ed25519.pub
+```
+
+Файл `terraform.tfvars`:
+```hcl
+ssh_public_key = "ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABAQC..."
+```
+
+#### Создание ресурсов
 
 Выполните команду в папке с конфигурационным файлом .tf. Эта команда инициализирует провайдеров, указанных в конфигурационных файлах, и позволяет работать с ресурсами и источниками данных провайдера. 
 
@@ -294,12 +394,28 @@ workers_ips = [
   "111.88.251.252",
 ]
 ```
+
+**Пересоздание ВМ**
+
+В Яндекс Облаке есть особенность: если вы укажете неправильный публичный ключ при создании ВМ, вы не сможете подключиться. Единственный способ исправить это — пересоздать ВМ или использовать серийную консоль в веб-интерфейсе.
+
+Если что-то пошло не так:
+```bash
+terraform destroy
+```
+
 </details>
 
 ### 1.2 Установка docker на каждую ВМ.
 
 <details>
   <summary>Ход выполнения</summary>
+
+#### Подключение к ВМ
+
+ssh -i ~/.ssh/id_ed25519 yc-user@<IP VM>
+
+#### Установка Docker на каждой ВМ
 
 ```bash
 # Обновление списка пакетов
