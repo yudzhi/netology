@@ -118,9 +118,9 @@ provider_installation {
 ```
 #### Файл объявления переменных `variables.tf`
 
-В корневой папке Terraform-проекта.
+В корневой папке Terraform-проекта `cloud-terraform`.
 
-```bash
+```hcl
 # variables.tf
 # Объявление всех переменных, используемых в конфигурации
 
@@ -174,11 +174,61 @@ variable "worker_count" {
 }
 ```
 
+#### Файл `terraform.tfvars` — значения переменных
+В корневой папке Terraform-проекта `cloud-terraform`. **TODO включить `terraform.tfvars` в `.gitignore`**
+
+- Актуальность ID образа проверить!
+Список доступных публичных образов:
+
+```bash
+yc compute image list --folder-id standard-images
+```
+
+- Выбор сети - YC разрешает созданее не более двух:
+Список сетей:
+
+```bash
+yc vpc network list
++----------------------+---------+
+|          ID          |  NAME   |
++----------------------+---------+
+| enpk17sut5bjiq73p826 | default |
+| enprb83klnpar77ku705 | net     |
++----------------------+---------+
+
+yc vpc network get default
+id: enpk17sut5bjiq73p826
+folder_id: b1gd35ulrq15fj4fftut
+created_at: "2026-05-08T19:53:58Z"
+name: default
+description: Auto-created network
+default_security_group_id: enp310qsrocrlt0u4p2j
+```
+
+```hcl
+# terraform.tfvars
+# Здесь хранятся значения переменных (в том числе секретные)
+
+# Публичный ключ cat ~/.ssh/id_ed25519.pub
+ssh_public_key = "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAI... "  
+
+cloud_id  = "cloud_id"        # yc config get cloud-id
+folder_id = "folder_id"       # yc config get folder-id
+
+zone       = "ru-central1-a"
+image_id   = "fd806c8slu9j1pa87msc"
+vpc_network_id = "enprb83klnpar77ku705"
+subnet_cidr = "10.20.0.0/24"
+
+vm_name_prefix = "swarm"
+worker_count   = 2
+```
+
 #### Файл конфигурации `main.tf`
 
-Создана директория `cloud-terraform`. В ней будут храниться конфигурационные файлы и сохраненные состояния Terraform и инфраструктуры и `key.json` (**TODO включить `key.json` в `.gitignore**).
+В корневой папке Terraform-проекта `cloud-terraform`. В ней будут храниться конфигурационные файлы и сохраненные состояния Terraform и инфраструктуры и `key.json` (**TODO включить `key.json` в `.gitignore`**).
 
-Конфигурационный файл `main.tf`
+Конфигурационный файл `main.tf` основной файл использует переменные через синтаксис `var.имя_переменной`.
 
 ```hcl
 terraform {
@@ -296,33 +346,8 @@ output "workers_ips" {
 
 #### Инфраструктурный план, или на что обратить внимание!
 
-- Актуальность ID образа
-Список доступных публичных образов:
 
-```bash
-yc compute image list --folder-id standard-images
-```
 
-- Выбор сети - YC разрешает созданее не более двух:
-Список сетей:
-
-```bash
-yc vpc network list
-+----------------------+---------+
-|          ID          |  NAME   |
-+----------------------+---------+
-| enpk17sut5bjiq73p826 | default |
-| enprb83klnpar77ku705 | net     |
-+----------------------+---------+
-
-yc vpc network get default
-id: enpk17sut5bjiq73p826
-folder_id: b1gd35ulrq15fj4fftut
-created_at: "2026-05-08T19:53:58Z"
-name: default
-description: Auto-created network
-default_security_group_id: enp310qsrocrlt0u4p2j
-```
 
 - SSH-подключение - указать правильное имя пользователя для каждой ВМ
 
