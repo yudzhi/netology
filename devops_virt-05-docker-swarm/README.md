@@ -231,10 +231,14 @@ worker_count   = 2
 Конфигурационный файл `main.tf` основной файл использует переменные через синтаксис `var.имя_переменной`.
 
 ```hcl
+# main.tf
+# Основная конфигурация Terraform для создания Swarm-кластера
+
 terraform {
   required_providers {
     yandex = {
       source = "yandex-cloud/yandex"
+      version = ">= 0.129.0"
     }
   }
   required_version = ">= 0.13"
@@ -244,68 +248,63 @@ provider "yandex" {
   # Параметры cloud_id, folder_id и token не указываются, так как
   # провайдер автоматически подхватит их из переменных окружения
 
-  zone = "ru-central1-a"
+  zone = var.zone
 }
 
+# Используем существующую сеть (не создаём новую)
+# Сеть уже существует с ID = var.vpc_network_id
 
-# Сеть
-#resource "yandex_vpc_network" "swarm-net" {
-#  name = "swarm-network-tf"
-#}
 
-# Подсеть
-resource "yandex_vpc_subnet" "swarm-subnet-a" {
-  name           = "swarm-subnet-a-tf"
-  zone           = "ru-central1-a"
-  network_id     = "enprb83klnpar77ku705"
-  v4_cidr_blocks = ["10.20.0.0/24"]
+# Создаём подсеть в существующей сети
+resource "yandex_vpc_subnet" "swarm-subnet" {
+  name           = "${var.vm_name_prefix}-subnet"
+  zone           = var.zone
+  network_id     = var.vpc_network_id
+  v4_cidr_blocks = [var.subnet_cidr]
 }
 
-# Переменная для SSH-ключа. Можно использовать default или передать через файл .tfvars
-variable "ssh_public_key" {
-  default = "<содержимое_вашего_публичного_ключа_ssh>" # Очень небезопасно! Используйте файлы .tfvars
-}
-
-# Описание ВМ менеджера
+# Создаём ВМ менеджера
 resource "yandex_compute_instance" "swarm-manager" {
-  name        = "swarm-manager-tf"
-  platform_id = "standard-v3" # Intel Ice Lake
-  zone        = "ru-central1-a"
+  name                      = "${var.vm_name_prefix}-manager"
+  platform_id               = "standard-v3"  # Intel Ice Lake
+  zone                      = var.zone
+  allow_stopping_for_update = true
 
   resources {
     cores         = 2
     memory        = 2
-    core_fraction = 20 # Экономия до 65%
+    core_fraction = 20   # Экономия до 65%
   }
 
   boot_disk {
     initialize_params {
-      image_id = "fd806c8slu9j1pa87msc" # ID образа Ubuntu 22.04 LTS в Yandex Cloud
+      image_id = var.image_id
       type     = "network-hdd"
       size     = 10
     }
   }
 
   network_interface {
-    subnet_id = yandex_vpc_subnet.swarm-subnet-a.id
-    nat       = true # Публичный IP
-  }
-
-  metadata = {
-    ssh-keys = "yc-user:${var.ssh_public_key}"
+    subnet_id = yandex_vpc_subnet.swarm-subnet.id
+    nat       = true  # Публичный IP
   }
 
   scheduling_policy {
-    preemptible = true # Экономия до 70%
+    preemptible = true  # Экономия до 70%
+  }
+
+  metadata = {
+    ssh-keys = "yudzhi:${var.ssh_public_key}"  # Имя пользователя: yudzhi
   }
 }
 
-# Ресурс для рабочих нод. Можно использовать count для создания двух копий.
+# Создаём рабочие ноды (количество задаётся через worker_count)
 resource "yandex_compute_instance" "swarm-worker" {
-  count       = 2
-  name        = "swarm-worker-${count.index + 1}-tf"
-  platform_id = "standard-v3"
-  zone        = "ru-central1-a"
+  count                     = var.worker_count
+  name                      = "${var.vm_name_prefix}-worker-${count.index + 1}"
+  platform_id               = "standard-v3"
+  zone                      = var.zone
+  allow_stopping_for_update = true
 
   resources {
     cores         = 2
@@ -315,58 +314,68 @@ resource "yandex_compute_instance" "swarm-worker" {
 
   boot_disk {
     initialize_params {
-      image_id = "fd806c8slu9j1pa87msc"
+      image_id = var.image_id
       type     = "network-hdd"
       size     = 10
     }
   }
 
   network_interface {
-    subnet_id = yandex_vpc_subnet.swarm-subnet-a.id
+    subnet_id = yandex_vpc_subnet.swarm-subnet.id
     nat       = true
-  }
-
-  metadata = {
-    ssh-keys = "yc-user:${var.ssh_public_key}"
   }
 
   scheduling_policy {
     preemptible = true
   }
+
+  metadata = {
+    ssh-keys = "yudzhi:${var.ssh_public_key}"
+  }
 }
 
+# Вывод IP-адресов для удобства
 output "manager_ip" {
-  value = yandex_compute_instance.swarm-manager.network_interface.0.nat_ip_address
+  value = yandex_compute_instance.swarm-manager.network_interface[0].nat_ip_address
 }
 
 output "workers_ips" {
-  value = yandex_compute_instance.swarm-worker[*].network_interface.0.nat_ip_address
+  value = yandex_compute_instance.swarm-worker[*].network_interface[0].nat_ip_address
+}
+
+output "manager_internal_ip" {
+  value = yandex_compute_instance.swarm-manager.network_interface[0].ip_address
+}
+
+output "workers_internal_ips" {
+  value = yandex_compute_instance.swarm-worker[*].network_interface[0].ip_address
 }
 ```
 
 #### Инфраструктурный план, или на что обратить внимание!
 
+#### Структура проекта
 
-
-
-- SSH-подключение - указать правильное имя пользователя для каждой ВМ
-
-```bash
-metadata = {
-    ssh-keys = "yudzhi:${var.ssh_public_key}"
+```text
+cloud-terraform/
+├── main.tf              # Основная конфигурация ресурсов
+├── variables.tf         # Объявления переменных
+├── terraform.tfvars     # Значения переменных (НЕ добавлять в Git!)
+├── key.json             # Секретный ключ сервисного аккаунта (НЕ добавлять в Git!)
+└── .gitignore           # Файл для исключения секретных файлов
 ```
 
-- SSH-подключение - передать terraform публичный ключ
-
-Для Yandex Cloud рекомендуется создавать ключи Ed25519 (т. е. на основе криптографического алгоритма Ed25519)
-
+#### Файл .gitignore
 ```bash
-cat ~/.ssh/id_ed25519.pub
-```
-
-Файл `terraform.tfvars`:
-```hcl
-ssh_public_key = "ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABAQC..."
+# .gitignore
+terraform.tfvars
+key.json
+*.tfstate
+*.tfstate.*
+.terraform/
+terraform.log
+*.zip
+*.tar.gz
 ```
 
 #### Создание ресурсов
