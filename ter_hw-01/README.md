@@ -89,7 +89,7 @@ docker run -it --rm \
 
 </details>
 
-Установка зависимостей:
+#### Установка зависимостей:
 
 ```bash
 terraform init
@@ -106,3 +106,14 @@ terraform init
 ![terraform_init](https://getfile.dokpub.com/yandex/get/https://disk.yandex.ru/i/t8sNZSmxvi0xCg)
 
 </details>
+
+### Шаг 2. `.gitignore` и место для секретов
+
+```text
+# own secret vars store.
+personal.auto.tfvars
+```
+
+Личную секретную информацию (логины, пароли, ключи, токены) допустимо сохранять в файле `personal.auto.tfvars`.
+
+### Шаг 3. Первый запуск кода и поиск пароля в state-файле
