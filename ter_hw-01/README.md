@@ -233,3 +233,37 @@ resource "docker_container" "nginx" {
 </details>
 
 ### Шаг 7. Уничтожаем ресурсы и проверяем state-файл
+
+```bash
+terraform destroy
+docker ps -a
+```
+Контейнер установлен и удалён. 
+
+`terraform.tfstate`
+```hcl
+{
+  "version": 4,
+  "terraform_version": "1.12.2",
+  "serial": 11,
+  "lineage": "45c18f52-91f3-27a2-a630-965d38270a1d",
+  "outputs": {},
+  "resources": [],
+  "check_results": null
+}
+```
+<details>
+  <summary>Скриншоты</summary>
+
+![terraform_destroy](https://getfile.dokpub.com/yandex/get/https://disk.yandex.ru/i/r8VE0avAoMLBnQ)
+</details>
+
+### Шаг 8. Почему не удалился образ nginx:latest?
+
+В ресурсе `docker_image` установлен параметр
+```hcl
+keep_locally = true
+```
+
+"keep_locally (Boolean) If true, then the Docker image won't be deleted on destroy operation. If this is false, it will delete the image from the docker local storage on destroy operation."
+
