@@ -117,3 +117,9 @@ personal.auto.tfvars
 Личную секретную информацию (логины, пароли, ключи, токены) допустимо сохранять в файле `personal.auto.tfvars`.
 
 ### Шаг 3. Первый запуск кода и поиск пароля в state-файле
+
+```bash
+terraform apply
+cat terraform.tfstate
+```
+**Ответ:** `"result": "ybRAieAQAZF2cb6g"`
