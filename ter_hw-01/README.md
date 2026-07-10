@@ -123,3 +123,65 @@ terraform apply
 cat terraform.tfstate
 ```
 **Ответ:** `"result": "ybRAieAQAZF2cb6g"`
+
+### Шаг 4. Поиск ошибок в `main.tf` и запуск
+
+[library.tf](https://library.tf/providers/kreuzwerker/docker/latest/docs/resources/container)
+
+```bash
+terraform validate
+╷
+│ Error: Missing name for resource
+│ 
+│   on main.tf line 23, in resource "docker_image":
+│   23: resource "docker_image" {
+│ 
+│ All resource blocks must have 2 labels (type, name).
+╵
+╷
+│ Error: Invalid resource name
+│ 
+│   on main.tf line 28, in resource "docker_container" "1nginx":
+│   28: resource "docker_container" "1nginx" {
+│ 
+│ A name must start with a letter or underscore and may contain only letters, digits, underscores, and dashes.
+```
+#### 1. Нет имени ресурса `resource "docker_image" {`
+Имя берём из обращения в блоке docker_container: docker_image.**nginx**.image_id
+
+```hcl
+resource "docker_image" "nginx" {
+  name         = "nginx:latest"
+  keep_locally = true
+}
+```
+
+#### 2. Некорректное имя ресурса "1nginx" (не может начинаться с цифры)
+
+```hcl
+resource "docker_container" "nginx" {
+  image = docker_image.nginx.image_id
+  name  = "example_${random_password.random_string_FAKE.resulT}"
+```
+
+#### 3. Неправильное обращение к ресурсу `resource "random_password" "random_string"`
+
+```hcl
+  name = "example_${random_password.random_string.result}"
+```
+
+#### 4. Неправильное имя атрибута `result`
+`resulT` --> `result`
+
+#### terraform apply
+
+```bash
+docker ps
+CONTAINER ID   IMAGE          COMMAND                  CREATED          STATUS          PORTS                  NAMES
+eaa872feeef7   ec4ed8b5299e   "/docker-entrypoint.…"   20 seconds ago   Up 19 seconds   0.0.0.0:9090->80/tcp   example_ybRAieAQAZF2cb6g
+```
+<details>
+  <summary>Скриншоты</summary>
+
+![docker_ps](https://getfile.dokpub.com/yandex/get/https://disk.yandex.ru/i/5HJGG69-jXccHw)
+</details>
