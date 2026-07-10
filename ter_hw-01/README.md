@@ -173,7 +173,25 @@ resource "docker_container" "nginx" {
 #### 4. Неправильное имя атрибута `result`
 `resulT` --> `result`
 
-#### terraform apply
+### Шаг 5. Выполнение кода
+
+`main.tf' (исправленный фрагмент):
+```hcl
+resource "docker_image" "nginx" {
+  name         = "nginx:latest"
+  keep_locally = true
+}
+
+resource "docker_container" "nginx" {
+  image = docker_image.nginx.image_id
+  name  = "example_${random_password.random_string.result}"
+
+  ports {
+    internal = 80
+    external = 9090
+  }
+}
+```
 
 ```bash
 docker ps
@@ -185,3 +203,33 @@ eaa872feeef7   ec4ed8b5299e   "/docker-entrypoint.…"   20 seconds ago   Up 19 
 
 ![docker_ps](https://getfile.dokpub.com/yandex/get/https://disk.yandex.ru/i/5HJGG69-jXccHw)
 </details>
+
+### Шаг 6. Меняем имя контейнера на `hello_world`
+
+```hcl
+resource "docker_container" "nginx" {
+  image = docker_image.nginx.image_id
+  #name  = "example_${random_password.random_string.result}"
+  name = "hello_world"
+```
+
+**terraform apply -auto-approve**
+
+Не дожидается подтверждения и выполняет инструкции сразу.
+
+Опасность: 
+- не видно заранее плана и нет возможности предварительно отследить ошибку конфигурации
+- легко всё сломать, если нужные ресурсы уничтожатся без предупреждения
+
+Зачем нужно?
+- там, где важна скорость и нет тестировщика, нажимающего тысячу раз `yes`
+- там, где не критична ошибка
+- для автоматизации
+
+<details>
+  <summary>Скриншоты</summary>
+
+![docker_ps_helloworld](https://getfile.dokpub.com/yandex/get/https://disk.yandex.ru/i/dyKmBfeB3GNRAQ)
+</details>
+
+### Шаг 7. Уничтожаем ресурсы и проверяем state-файл
