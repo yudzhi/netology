@@ -32,12 +32,6 @@ tfenv use 1.12.2
 tfenv: Switching default version to v1.12.2
 tfenv: Default version (when not overridden by .terraform-version or TFENV_TERRAFORM_VERSION) is now: 1.12.2
 ```
-Установка зависимостей:
-
-```bash
-terraform init
-```
-
 <details>
   <summary>Варианты решения:</summary>
 
@@ -94,6 +88,13 @@ docker run -it --rm \
 ```
 
 </details>
+
+Установка зависимостей:
+
+```bash
+terraform init
+```
+
 
 <details>
   <summary>Скриншоты</summary>
