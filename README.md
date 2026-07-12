@@ -8,6 +8,6 @@
 
 ### Модуль "Облачная инфраструктура. Terraform"
 
-1. 
+1. ["Введение в Terraform"](https://github.com/yudzhi/netology/tree/main/ter_hw-01) 
    
 
