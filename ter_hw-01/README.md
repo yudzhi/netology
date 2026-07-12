@@ -1,5 +1,7 @@
 # Домашнее задание к занятию «Введение в Terraform»
 
+[Код в fork-репозитории](https://github.com/yudzhi/ter-homeworks/tree/main/01/src)
+
 ## Задание 0. Установка Terraform
 
 ```bash
