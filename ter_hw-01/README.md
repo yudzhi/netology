@@ -274,3 +274,15 @@ keep_locally = true
 [fork-репозиторий с решением](https://github.com/yudzhi/ter-homeworks/tree/main/01/src)
 
 ![mysql-env_VM](https://getfile.dokpub.com/yandex/get/https://disk.yandex.ru/i/F2O8suESaeCBCg)
+
+## Задание 3. Миграция на Tofu
+
+### Шаг 1. Установка
+
+```bash
+wget https://github.com/opentofu/opentofu/releases/download/v1.12.3/tofu_1.12.3_amd64.deb
+sudo dpkg -i tofu_1.12.3_amd64.deb
+tofu --version
+OpenTofu v1.12.3
+on linux_amd64
+```
