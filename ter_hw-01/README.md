@@ -269,3 +269,6 @@ keep_locally = true
 
 "keep_locally (Boolean) If true, then the Docker image won't be deleted on destroy operation. If this is false, it will delete the image from the docker local storage on destroy operation."
 
+## Задание 2. Развертывание ВМ в Yandex Cloud и удаленное управление Docker через Terraform
+
+![mysql-env_VM](https://getfile.dokpub.com/yandex/get/https://disk.yandex.ru/i/F2O8suESaeCBCg)
