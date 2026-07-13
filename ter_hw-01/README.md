@@ -271,4 +271,6 @@ keep_locally = true
 
 ## Задание 2. Развертывание ВМ в Yandex Cloud и удаленное управление Docker через Terraform
 
+[fork-репозиторий с решением](https://github.com/yudzhi/ter-homeworks/tree/main/01/src)
+
 ![mysql-env_VM](https://getfile.dokpub.com/yandex/get/https://disk.yandex.ru/i/F2O8suESaeCBCg)
