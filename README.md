@@ -8,6 +8,8 @@
 
 ### Модуль "Облачная инфраструктура. Terraform"
 
-1. ["Введение в Terraform"](https://github.com/yudzhi/netology/tree/main/ter_hw-01) 
+1. ["Введение в Terraform"](https://github.com/yudzhi/netology/tree/main/ter_hw-01)
+2. ["Основы Terraform. Yandex Cloud](https://github.com/yudzhi/netology/blob/main/ter_hw-02/README.md)
+3. 
    
 
