@@ -26,7 +26,7 @@ yc iam key create \
 ```
 
 ### Шаг 2. Поиск ошибок
-
+#### 1. В providers.tf
 ```bash
 Error: Invalid function argument
 │ 
@@ -41,11 +41,21 @@ Terraform не интерпретирует символ ~ как домашню
 service_account_key_file = file(pathexpand("~/.authorized_key.json"))
 ```
 
-**main.tf** опечатка
+#### 2. В main.tf опечатка
 ```hcl
 platform_id = "standard-v4"  # standart → standard (опечатка)
 ```
 
+#### 3.В файле variables.tf
+
+Замените значение по умолчанию для vms_ssh_root_key переопределяется через personal.auto.tfvars.
+```hcl
+variable "vms_ssh_root_key" {
+  type        = string
+  default     = null  # Было: "<your_ssh_ed25519_key>"
+  description = "ssh-keygen -t ed25519"
+}
+```
 </details>
 
 <details>
