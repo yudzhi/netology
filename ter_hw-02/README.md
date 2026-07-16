@@ -18,6 +18,32 @@ on linux_amd64
 
 yc iam service-account list
 eval $(ssh-agent) && ssh-add ~/.ssh/id_ed25519
+
+# Создание ключа
+yc iam key create \
+  --service-account-name terraform-sa \
+  --output ~/.authorized_key.json
+```
+
+### Шаг 2. Поиск ошибок
+
+```bash
+Error: Invalid function argument
+│ 
+│   on providers.tf line 15, in provider "yandex":
+│   15:   service_account_key_file = file("~/.authorized_key.json")
+```
+
+Terraform не интерпретирует символ ~ как домашнюю директорию, в отличие от командной оболочки. Функция file() ищет файл с буквальным именем ~, которого не существует в файловой системе.
+**Что делать?** Использовать функцию pathexpand() для преобразования ~ в абсолютный путь перед передачей в file().
+
+```bash
+service_account_key_file = file(pathexpand("~/.authorized_key.json"))
+```
+
+**main.tf** опечатка
+```hcl
+platform_id = "standard-v4"  # standart → standard (опечатка)
 ```
 
 </details>
