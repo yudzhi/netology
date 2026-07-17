@@ -129,6 +129,7 @@ variable "vms_ssh_root_key" {
 ## Задание 2. Рефакторинг Terraform кода - вынос хардкода в переменные
 
 modified:   02/src/main.tf
+
 modified:   02/src/variables.tf
 
 [Fork-репозиторий с рефакторингом](https://github.com/yudzhi/ter-homeworks/tree/main/02/src)
