@@ -66,8 +66,15 @@ service_account_key_file = file(pathexpand("~/.authorized_key.json"))
 ```bash
 │ Error: Error while requesting API to create instance: client-request-id = c439ec24-1893-4c12-950c-1d8c82c9fca0 client-trace-id = efbdaa85-7eb2-4044-9b33-4feced8501d5 rpc error: code = InvalidArgument desc = the specified core fraction is not available on platform "standard-v3"; allowed core fractions: 20, 50, 100
 ```
+* Платформа Intel Ice Lake (`standard-v3`):
 
+    Лимит | Уровень<br>производительности | vCPU | RAM, ГБ<br>всего | RAM, ГБ<br>на 1 ядро
+    ------------ | ----------------------------- | ---- | ---------------- | -----------------
+    Мин.         | 20%                           | 2    | 1                | 0.5
+    Макс.        | 100%                          | 96   | 640              | 16
+  
 Уровень производительности core fraction 5 доступен только для standard-v1, v2. Выберем минимальное 20%.
+Количество ядер минимально возможно 2.
 
 Платформа | Процессор | Макс. кол-во ядер (vCPU)</br> на виртуальной машине | Базовая тактовая</br> частота процессора, ГГц
 --- | --- | --- | ---
@@ -80,7 +87,7 @@ AMD Zen 4</br>(`standard-v4a`) | AMD EPYC™ 9654 | 288 | 2.40
 ```hcl
   platform_id = "standard-v3" # standart → standard (опечатка)
   resources {
-    cores         = 1
+    cores         = 2
     memory        = 1
     core_fraction = 20
   }
