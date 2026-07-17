@@ -1,6 +1,14 @@
 # Домашнее задание к занятию «Основы Terraform. Yandex Cloud»
 ## Задание 1
 
+[Fork-репозиторий с исправленным кодом](https://github.com/yudzhi/ter-homeworks/commits/main/02/src)
+
+	modified:   02/src/main.tf
+	
+  modified:   02/src/providers.tf
+  
+	modified:   02/src/variables.tf
+
 <details>
   <summary>Ход выполнения</summary>
 
