@@ -126,4 +126,15 @@ variable "vms_ssh_root_key" {
 ![Curl in Terminal](https://getfile.dokpub.com/yandex/get/https://disk.yandex.ru/i/7FEpsWTcCPSddg)
 </details>
 
-## Задание 2.
+## Задание 2. Рефакторинг Terraform кода - вынос хардкода в переменные
+
+modified:   02/src/main.tf
+modified:   02/src/variables.tf
+
+[Fork-репозиторий с рефакторингом](https://github.com/yudzhi/ter-homeworks/tree/main/02/src)
+
+<details>
+  <summary>Скриншоты</summary>
+
+![Terraform plan after refactoring](https://getfile.dokpub.com/yandex/get/https://disk.yandex.ru/i/SVloPJymT2_phg)
+</details>
