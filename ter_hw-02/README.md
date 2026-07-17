@@ -24,6 +24,16 @@ yc iam key create \
   --service-account-name terraform-sa \
   --output ~/.authorized_key.json
 ```
+**`personal.auto.tfvars'**
+
+```bash
+cat > personal.auto.tfvars << EOF
+cloud_id = "$(yc config get cloud-id)"
+folder_id = "$(yc config get folder-id)"
+default_zone = "ru-central1-a"
+vms_ssh_root_key = "$(cat ~/.ssh/id_ed25519.pub)"
+EOF
+```
 
 ### Шаг 2. Поиск ошибок
 #### 1. В providers.tf
@@ -41,10 +51,30 @@ Terraform не интерпретирует символ ~ как домашню
 service_account_key_file = file(pathexpand("~/.authorized_key.json"))
 ```
 
-#### 2. В main.tf опечатка
-```hcl
-platform_id = "standard-v4"  # standart → standard (опечатка)
+#### 2. В main.tf название платформы
+
+```bash
+│ Error: Error while requesting API to create instance: client-request-id = 2701128f-9daa-474f-845e-ba52605c3ac6 client-trace-id = 7dc3905e-67a5-4f9f-be3c-1d9855b8bab0 rpc error: code = FailedPrecondition desc = Platform "standart-v4" not found
+│ 
+│   with yandex_compute_instance.platform,
+│   on main.tf line 15, in resource "yandex_compute_instance" "platform":
+│   15: resource "yandex_compute_instance" "platform" {
 ```
+По привычке выберем Ice Lake standard-v3
+[Перечень платформ ВМ Yandex Cloud](https://yandex.cloud/ru/docs/compute/concepts/vm-platforms)
+
+Платформа | Процессор | Макс. кол-во ядер (vCPU)</br> на виртуальной машине | Базовая тактовая</br> частота процессора, ГГц
+--- | --- | --- | ---
+Intel Broadwell</br>(`standard-v1`) | Intel® Xeon® Processor E5-2660 v4 | 32 | 2.00
+Intel Cascade Lake</br>(`standard-v2`) | Intel® Xeon® Gold 6230 | 80 | 2.10
+Intel Ice Lake</br>(`standard-v3`) | Intel® Xeon® Gold 6338 | 96 | 2.00
+AMD Zen 3</br>(`amd-v1`)^1^ | AMD EPYC™ 7713 | 128 | 2.00
+AMD Zen 4</br>(`standard-v4a`) | AMD EPYC™ 9654 | 288 | 2.40
+
+```hcl
+platform_id = "standard-v3"  # standart → standard (опечатка)
+```
+
 
 #### 3.В файле variables.tf
 
