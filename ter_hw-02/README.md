@@ -125,3 +125,5 @@ variable "vms_ssh_root_key" {
 
 ![Curl in Terminal](https://getfile.dokpub.com/yandex/get/https://disk.yandex.ru/i/7FEpsWTcCPSddg)
 </details>
+
+## Задание 2.
