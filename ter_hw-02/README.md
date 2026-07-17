@@ -51,7 +51,7 @@ Terraform не интерпретирует символ ~ как домашню
 service_account_key_file = file(pathexpand("~/.authorized_key.json"))
 ```
 
-#### 2. В main.tf название платформы
+#### 2. В main.tf название и конфигурация платформы
 
 ```bash
 │ Error: Error while requesting API to create instance: client-request-id = 2701128f-9daa-474f-845e-ba52605c3ac6 client-trace-id = 7dc3905e-67a5-4f9f-be3c-1d9855b8bab0 rpc error: code = FailedPrecondition desc = Platform "standart-v4" not found
@@ -63,6 +63,12 @@ service_account_key_file = file(pathexpand("~/.authorized_key.json"))
 По привычке выберем Ice Lake standard-v3
 [Перечень платформ ВМ Yandex Cloud](https://yandex.cloud/ru/docs/compute/concepts/vm-platforms)
 
+```bash
+│ Error: Error while requesting API to create instance: client-request-id = c439ec24-1893-4c12-950c-1d8c82c9fca0 client-trace-id = efbdaa85-7eb2-4044-9b33-4feced8501d5 rpc error: code = InvalidArgument desc = the specified core fraction is not available on platform "standard-v3"; allowed core fractions: 20, 50, 100
+```
+
+Уровень производительности core fraction 5 доступен только для standard-v1, v2. Выберем минимальное 20%.
+
 Платформа | Процессор | Макс. кол-во ядер (vCPU)</br> на виртуальной машине | Базовая тактовая</br> частота процессора, ГГц
 --- | --- | --- | ---
 Intel Broadwell</br>(`standard-v1`) | Intel® Xeon® Processor E5-2660 v4 | 32 | 2.00
@@ -72,7 +78,12 @@ AMD Zen 3</br>(`amd-v1`)^1^ | AMD EPYC™ 7713 | 128 | 2.00
 AMD Zen 4</br>(`standard-v4a`) | AMD EPYC™ 9654 | 288 | 2.40
 
 ```hcl
-platform_id = "standard-v3"  # standart → standard (опечатка)
+  platform_id = "standard-v3" # standart → standard (опечатка)
+  resources {
+    cores         = 1
+    memory        = 1
+    core_fraction = 20
+  }
 ```
 
 
