@@ -104,10 +104,24 @@ variable "vms_ssh_root_key" {
   description = "ssh-keygen -t ed25519"
 }
 ```
+
+### Шаг 3. Ответы
+Оба параметра существенно экономият бюджет, хороши для тестирования и обучения. В продакшене и критичных сервисах использовать не стоит.
+
+#### `preemptible = true`
+Прерываемая ВМ может быть остановлена Yandex Cloud в любой момент (через 24 часа или при нехватке ресурсов). 
+
+#### `core_fraction=5`
+Выделяется 5% от одного vCPU (гарантированная доля). 
+
 </details>
 
 <details>
   <summary>Скриншоты</summary>
 
 ![service_account_created](https://getfile.dokpub.com/yandex/get/https://disk.yandex.ru/i/TucFQCP4Y0X3sQ)
+
+![Yandex Cloud Console](https://getfile.dokpub.com/yandex/get/https://disk.yandex.ru/i/DNaymBcgND-uoQ)
+
+![Curl in Terminal](https://getfile.dokpub.com/yandex/get/https://disk.yandex.ru/i/7FEpsWTcCPSddg)
 </details>
