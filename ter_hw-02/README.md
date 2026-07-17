@@ -136,9 +136,8 @@ variable "vms_ssh_root_key" {
 
 [Fork-репозиторий с рефакторингом](https://github.com/yudzhi/ter-homeworks/tree/main/02/src)
 
-modified:   02/src/main.tf
-
-modified:   02/src/variables.tf
+	modified:   02/src/main.tf
+	modified:   02/src/variables.tf
 
 <details>
   <summary>Скриншоты</summary>
