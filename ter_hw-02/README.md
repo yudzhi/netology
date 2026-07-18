@@ -144,3 +144,19 @@ variable "vms_ssh_root_key" {
 
 ![Terraform plan after refactoring](https://getfile.dokpub.com/yandex/get/https://disk.yandex.ru/i/SVloPJymT2_phg)
 </details>
+
+## Задание 3. Создание второй ВМ
+```text
+VPC Network "develop"
+├── Subnet "develop-a" (ru-central1-a, 10.0.1.0/24)
+│   └── Web VM (ru-central1-a) 
+└── Subnet "develop-b" (ru-central1-b, 10.0.2.0/24)
+    └── DB VM (ru-central1-b) 
+```
+
+### Автоматизация создания подсетей - файл `locals.tf` с логикой для подсетей
+Если полностью избавляться от хардкода, нужен код, который будет поддерживать все сценарии размещения ВМ (A/B, A/A, B/A, B/B), автоматически создавая только нужные подсети для уникальных зон. Можно будет расширить и на остальные зоны, но пока разберёмся с двумя.
+
+`vm_web_zone = "a"`, `vm_db_zone = "b"` → `unique_zones = ["a", "b"]`
+
+`vm_web_zone = "a"`, `vm_db_zone = "a"` → `unique_zones = ["a"]`
