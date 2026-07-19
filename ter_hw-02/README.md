@@ -201,9 +201,9 @@ locals {
   }
 }
 ```
-distinct(...): Функция distinct удаляет из списка дубликаты. Если обе переменные имеют значение "ru-central1-a", то на выходе будет list список ["ru-central1-a"] .
+Функция `distinct` удаляет из списка дубликаты. Если обе переменные имеют значение "ru-central1-a", то на выходе будет list список ["ru-central1-a"] .
 
-toset(...): Функция toset преобразует список в множество (set) . Требуется для `for_each`, который принимает либо map, либо set of strings .
+Функция `toset` преобразует список в множество (set) . Требуется для `for_each`, который принимает либо map, либо set of strings .
 
 #### main.tf --> for_each мета-аргумент
 [hashicorp for_each meta-argument](https://developer.hashicorp.com/terraform/language/meta-arguments/for_each)
@@ -221,13 +221,18 @@ resource "yandex_vpc_subnet" "develop" {
   
 }
 ```
+
 `develop` становится map c ключами = зонам, поэтому обращение к подсети:
+
 ```hcl
 subnet_id = yandex_vpc_subnet.develop[var.vm_db_zone].id
 ```
+
 </details>
+
 <details>
 	<summary>Скриншоты</summary>
+	
+![Infrastructure_map_YC](https://getfile.dokpub.com/yandex/get/https://disk.yandex.ru/i/yzdu5A3wPlvYMw)
 
-![Infrastructure map YC](https://getfile.dokpub.com/yandex/get/https://disk.yandex.ru/i/yzdu5A3wPlvYMw)
 </details>
