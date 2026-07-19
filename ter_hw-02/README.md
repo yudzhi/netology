@@ -218,7 +218,6 @@ resource "yandex_vpc_subnet" "develop" {
   zone           = each.key
   network_id     = yandex_vpc_network.develop.id
   v4_cidr_blocks = local.subnet_cidrs[each.key]
-  
 }
 ```
 
@@ -232,7 +231,8 @@ subnet_id = yandex_vpc_subnet.develop[var.vm_db_zone].id
 
 <details>
 	<summary>Скриншоты</summary>
-	
-![Infrastructure_map_YC](https://getfile.dokpub.com/yandex/get/https://disk.yandex.ru/i/yzdu5A3wPlvYMw)
 
+![Yandex Cloud Infrastructure map](https://getfile.dokpub.com/yandex/get/https://disk.yandex.ru/i/UcfF_EhhJQNUJg)
 </details>
+
+## Задание 4.
