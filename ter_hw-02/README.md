@@ -236,3 +236,49 @@ subnet_id = yandex_vpc_subnet.develop[var.vm_db_zone].id
 </details>
 
 ## Задание 4. Создание Outputs
+[Hashicorp Developer: Outputs](https://developer.hashicorp.com/terraform/language/v1.14.x/block/output#sensitive)
+
+<details>
+	<summary>Ход выполнения</summary>
+
+### 'locals.tf':
+
+```hcl
+  # Список всех ВМ
+  all_vms = [
+    yandex_compute_instance.platform_web,
+    yandex_compute_instance.platform_db
+  ]
+```
+
+### 'outputs.tf':
+
+```hcl
+output "vms_info" {
+  description = "Information about all VM instances"
+  
+  sensitive = false
+
+  value = {
+    for vm in local.all_vms :
+    vm.name => {
+      instance_name = vm.name
+      external_ip   = vm.network_interface[0].nat_ip_address
+      fqdn          = vm.fqdn
+    }
+  }
+}
+```
+
+### `terraform output` - вывод только IP
+
+```bash
+terraform output -json vms_info | jq -r '.[] | .external_ip'
+```
+</details>
+
+<details>
+	<summary>Скриншоты</summary>
+
+![Terraform output IP](https://getfile.dokpub.com/yandex/get/https://disk.yandex.ru/i/6ayRfhy7KOPIcQ)
+</details>
