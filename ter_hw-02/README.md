@@ -235,4 +235,4 @@ subnet_id = yandex_vpc_subnet.develop[var.vm_db_zone].id
 ![Yandex Cloud Infrastructure map](https://getfile.dokpub.com/yandex/get/https://disk.yandex.ru/i/UcfF_EhhJQNUJg)
 </details>
 
-## Задание 4.
+## Задание 4. Создание Outputs
