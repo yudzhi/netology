@@ -161,3 +161,73 @@ VPC Network "develop"
 `vm_web_zone = "a"`, `vm_db_zone = "b"` → `unique_zones = ["a", "b"]`
 
 `vm_web_zone = "a"`, `vm_db_zone = "a"` → `unique_zones = ["a"]`
+
+<details>
+	<summary>Ход выполнения</summary>
+
+```bash
+	modified:   02/src/locals.tf
+	modified:   02/src/main.tf
+	modified:   02/src/variables.tf
+
+Untracked files:
+  (use "git add <file>..." to include in what will be committed)
+	02/src/vms_platform.tf
+```
+
+#### Файл `locals.tf`- динамическое создание подсетей только в тех зонах, где будут размещены ВМ
+
+```hcl
+locals {
+  # Собираем все уникальные зоны, в которых будут созданы ВМ
+  unique_zones = toset(distinct([var.vm_web_zone, var.vm_db_zone]))
+  
+  # Создаём map с CIDR блоками для каждой зоны
+  zone_cidr_map = {
+    "ru-central1-a" = var.subnet_cidr_a
+    "ru-central1-b" = var.subnet_cidr_b
+  }
+  
+  # Создаём map с именами подсетей для каждой зоны
+  subnet_names = {
+    for zone in local.unique_zones : 
+    zone => "${var.vpc_name}-${replace(zone, "-", "_")}"
+  }
+  
+  # Определяем, какой CIDR использовать для каждой зоны
+  subnet_cidrs = {
+    for zone in local.unique_zones : 
+    zone => local.zone_cidr_map[zone]
+  }
+}
+```
+distinct(...): Функция distinct удаляет из списка дубликаты. Если обе переменные имеют значение "ru-central1-a", то на выходе будет list список ["ru-central1-a"] .
+
+toset(...): Функция toset преобразует список в множество (set) . Требуется для `for_each`, который принимает либо map, либо set of strings .
+
+#### main.tf --> for_each мета-аргумент
+[hashicorp for_each meta-argument](https://developer.hashicorp.com/terraform/language/meta-arguments/for_each)
+
+Мета-аргумент for_each в Terraform используется для динамического создания нескольких копий ресурса, модуля или блока данных на основе коллекции. Он заменяет необходимость писать дублирующийся код, итерируясь по словарю (map) или множеству (set) строк.
+
+```hcl
+resource "yandex_vpc_subnet" "develop" {
+  for_each = local.unique_zones
+  
+  name           = local.subnet_names[each.key]
+  zone           = each.key
+  network_id     = yandex_vpc_network.develop.id
+  v4_cidr_blocks = local.subnet_cidrs[each.key]
+  
+}
+```
+`develop` становится map c ключами = зонам, поэтому обращение к подсети:
+```hcl
+subnet_id = yandex_vpc_subnet.develop[var.vm_db_zone].id
+```
+</details>
+<details>
+	<summary>Скриншоты</summary>
+
+![Infrastructure map YC](https://getfile.dokpub.com/yandex/get/https://disk.yandex.ru/i/yzdu5A3wPlvYMw)
+</details>
