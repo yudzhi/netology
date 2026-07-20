@@ -354,3 +354,44 @@ terraform console
 
 ![Terraform plan nothing changed](https://getfile.dokpub.com/yandex/get/https://disk.yandex.ru/i/cx0lZt_1SBo2jg)
 </details>
+
+## Задание 6. Map-переменные для ресурсов и metadata
+
+<details>
+	<summary>Ход выполнения</summary>
+
+`vms_platform.tf'
+
+```hcl
+### ==========================================
+### MAP VARIABLE FOR VM RESOURCES
+### ==========================================
+
+variable "vms_resources" {
+  description = "Resource configurations for all VMs"
+  type = map(object({
+    cores         = number
+    memory        = number
+    core_fraction = number
+  }))
+  default = {
+    web = {
+      cores         = 2
+      memory        = 1
+      core_fraction = 20
+    }
+    db = {
+      cores         = 2
+      memory        = 2
+      core_fraction = 20
+    }
+  }
+}
+```
+</details>
+
+<details>
+	<summary>Скриншоты</summary>
+
+![Terraform plan nothing changed](https://getfile.dokpub.com/yandex/get/https://disk.yandex.ru/i/LZm9sWr9R4Axewv)
+</details>
