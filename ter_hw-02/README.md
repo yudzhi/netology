@@ -395,3 +395,29 @@ variable "vms_resources" {
 
 ![Terraform plan nothing changed](https://getfile.dokpub.com/yandex/get/https://disk.yandex.ru/i/LZm9sWr9R4Axewv)
 </details>
+
+## Задание 7. Terraform Console
+### 7.1 Напишите, какой командой можно отобразить второй элемент списка test_list.
+
+```bash
+terraform console
+> local.test_list[1]
+"staging"
+```
+
+### 7.2 Найдите длину списка test_list с помощью функции length(<имя переменной>).
+```bash
+> length(local.test_list)
+3
+```
+
+### 7.3 Напишите, какой командой можно отобразить значение ключа admin из map test_map.
+
+```bash
+> local.test_map.admin
+"John"
+> local.test_map["admin"]
+"John"
+```
+### 7.4 Напишите interpolation-выражение, результатом которого будет: "John is admin for production server based on OS ubuntu-20-04 with X vcpu, Y ram and Z virtual disks", 
+используйте данные из переменных test_list, test_map, servers и функцию length() для подстановки значений.
