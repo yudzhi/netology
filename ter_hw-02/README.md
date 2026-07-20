@@ -360,7 +360,7 @@ terraform console
 <details>
 	<summary>Ход выполнения</summary>
 
-`vms_platform.tf'
+`vms_platform.tf`
 
 ```hcl
 ### ==========================================
