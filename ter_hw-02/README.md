@@ -232,7 +232,7 @@ subnet_id = yandex_vpc_subnet.develop[var.vm_db_zone].id
 <details>
 	<summary>Скриншоты</summary>
 
-![Yandex Cloud Infrastructure map](https://getfile.dokpub.com/yandex/get/https://disk.yandex.ru/i/UcfF_EhhJQNUJg)
+![Yandex Cloud Infrastructure map](https://getfile.dokpub.com/yandex/get/https://disk.yandex.ru/i/wZgHxNCm1DaCGw)
 </details>
 
 ## Задание 4. Создание Outputs
@@ -332,4 +332,25 @@ vm_db_name  = "${var.project_name}-${var.environment}-${var.platform_type}-${var
 ### Шаг 2 Обновление переменных
 
 В `vms_platform.tf` удаляем переменные `vm_web_name`, `vm_db_name`
+В `main.tf' используем `local.vm_web_name`, `local.vm_db_name`
+
+### Шаг 3 Проверка
+
+```bash
+terraform validate
+Success! The configuration is valid.
+
+terraform console
+> local.vm_web_name
+"netology-develop-platform-web"
+> local.vm_db_name
+"netology-develop-platform-db"
+> exit
+```
+</details>
+
+<details>
+	<summary>Скриншоты</summary>
+
+![Terraform plan nothing changed](https://getfile.dokpub.com/yandex/get/https://disk.yandex.ru/i/cx0lZt_1SBo2jg)
 </details>
