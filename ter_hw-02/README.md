@@ -282,3 +282,54 @@ terraform output -json vms_info | jq -r '.[] | .external_ip'
 
 ![Terraform output IP](https://getfile.dokpub.com/yandex/get/https://disk.yandex.ru/i/6ayRfhy7KOPIcQ)
 </details>
+
+## Задание 5. Интерполяция и динамические имена ВМ
+
+<details>
+	<summary>Ход выполнения</summary>
+
+### Шаг 1.1 `variables.tf` - общие переменные для всех ВМ
+
+```hcl
+### Переменные для именования (общие для всех ВМ)
+
+variable "project_name" {
+  type        = string
+  default     = "netology"
+  description = "Project name prefix for all resources"
+}
+
+variable "environment" {
+  type        = string
+  default     = "develop"
+  description = "Environment: dev, staging, prod"
+}
+
+variable "platform_type" {
+  type        = string
+  default     = "platform"
+  description = "Platform type for resource naming"
+}
+```
+
+### Шаг 1.2 `vms_platform.tf` - переменные, специфичные для каждой ВМ
+
+```hcl
+variable "vm_web_role" {
+  type        = string
+  default     = "web"
+  description = "Role of the web VM (used in naming)"
+}
+```
+
+### Шаг 1.3 `locals.tf` - интерполяция
+
+```hcl
+vm_web_name = "${var.project_name}-${var.environment}-${var.platform_type}-${var.vm_web_role}"
+vm_db_name  = "${var.project_name}-${var.environment}-${var.platform_type}-${var.vm_db_role}"
+```
+
+### Шаг 2 Обновление переменных
+
+В `vms_platform.tf` удаляем переменные `vm_web_name`, `vm_db_name`
+</details>
