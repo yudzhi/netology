@@ -474,8 +474,14 @@ Error: Extra characters after expression
 Можно использовать цикл for
 ```hcl
 > [for env in local.test_list : 
-    "${local.test_map["admin"]} is ${keys(local.test_map)[0]} for ${env} server with ${local.servers[env].cpu} cpu, ${local.servers[env].ram} ram and ${length(local.servers[env].disks)} disks"
+    "${local.test_map.admin} is ${keys(local.test_map)[0]} for ${env} server with ${local.servers[env].cpu} cpu, ${local.servers[env].ram} ram and ${length(local.servers[env].disks)} disks"
   ][2]
 ```
+
+| Элемент в test_list |	Ключ в servers	| Совпадают? |
+|----------------|-----------|------------|
+| "develop"	| "develop"	| Да |
+| "staging"	| "stage"	| ❌ НЕТ! |
+| "production"	| "production"	| Да |
 </details>
 
