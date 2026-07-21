@@ -421,3 +421,61 @@ terraform console
 ```
 ### 7.4 Напишите interpolation-выражение, результатом которого будет: "John is admin for production server based on OS ubuntu-20-04 with X vcpu, Y ram and Z virtual disks", 
 используйте данные из переменных test_list, test_map, servers и функцию length() для подстановки значений.
+
+```hcl
+> "${local.test_map.admin} is ${keys(local.test_map)[0]} for ${local.test_list[2]} server based on OS ${local.servers[local.test_list[2]].image} with ${local.servers[local.test_list[2]].cpu} vcpu, ${local.servers[local.test_list[2]].ram} ram and ${length(local.servers[local.test_list[2]].disks)} virtual disks"
+```
+
+<details>
+	<summary>Ход выполнения</summary>
+
+`John` = `local.test_map.admin`
+
+'is'
+
+'admin' = `keys(local.test_map)[0]`
+
+'for'
+
+'production' = `local.test_list[2]`
+
+'server based on OS'
+
+'ubuntu-20-04' = `local.servers.[local.test_list[2]].image`
+
+'with'
+
+X = `local.servers[local.test_list[2]].cpu`
+
+'vcpu, '
+
+Y = `local.servers[local.test_list[2]].ram`
+
+'ram and'
+
+Z = `length(local.servers.[local.test_list[2]].disks)`
+
+'virtual disks'
+
+
+❌ Terraform Console не позволяет объявлять новые переменные и присваивать значения:
+```hcl
+> local.env = local.test_list[2]
+
+Error: Extra characters after expression
+│ 
+│   on <console-input> line 1:
+│   (source code not available)
+│ 
+│ An expression was successfully parsed, but extra characters were found after it.
+╵
+```
+
+Можно использовать цикл for
+```hcl
+> [for env in local.test_list : 
+    "${local.test_map["admin"]} is ${keys(local.test_map)[0]} for ${env} server with ${local.servers[env].cpu} cpu, ${local.servers[env].ram} ram and ${length(local.servers[env].disks)} disks"
+  ][2]
+```
+</details>
+
