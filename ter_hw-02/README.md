@@ -393,7 +393,7 @@ variable "vms_resources" {
 <details>
 	<summary>Скриншоты</summary>
 
-![Terraform plan nothing changed](https://getfile.dokpub.com/yandex/get/https://disk.yandex.ru/i/LZm9sWr9R4Axewv)
+![Terraform plan nothing changed](https://getfile.dokpub.com/yandex/get/https://disk.yandex.ru/i/a7mULt1nw_hY5w)
 </details>
 
 ## Задание 7. Terraform Console
