@@ -477,11 +477,42 @@ Error: Extra characters after expression
     "${local.test_map.admin} is ${keys(local.test_map)[0]} for ${env} server with ${local.servers[env].cpu} cpu, ${local.servers[env].ram} ram and ${length(local.servers[env].disks)} disks"
   ][2]
 ```
+Но в текущем варианте `console.tf` это не работает:
 
 | Элемент в test_list |	Ключ в servers	| Совпадают? |
 |----------------|-----------|------------|
 | "develop"	| "develop"	| Да |
 | "staging"	| "stage"	| ❌ НЕТ! |
 | "production"	| "production"	| Да |
+
+Если изменить `console.tf`:
+```hcl
+test_list = ["develop", "stage", "production"] # staging --> stage
+```
+всё работает:
+
+```hcl
+[for env in local.test_list : 
+:     "${local.test_map.admin} is ${keys(local.test_map)[0]} for ${env} server with ${local.servers[env].cpu} cpu, ${local.servers[env].ram} ram and ${length(local.servers[env].disks)} disks"
+:   ]
+[
+  "John is admin for develop server with 2 cpu, 4 ram and 2 disks",
+  "John is admin for stage server with 4 cpu, 8 ram and 2 disks",
+  "John is admin for production server with 10 cpu, 40 ram and 4 disks",
+]
+> [for env in local.test_list : 
+:     "${local.test_map.admin} is ${keys(local.test_map)[0]} for ${env} server with ${local.servers[env].cpu} cpu, ${local.servers[env].ram} ram and ${length(local.servers[env].disks)} disks"
+:   ][2]
+"John is admin for production server with 10 cpu, 40 ram and 4 disks"
+```
+
+</details>
+
+<details>
+	<summary>Скриншоты</summary>
+
+![Terraform console](https://getfile.dokpub.com/yandex/get/https://disk.yandex.ru/i/5VEah2qsFs7B9g)
+
+![console.tf changed](https://getfile.dokpub.com/yandex/get/https://disk.yandex.ru/i/2C8qkN369d9R8Q)
 </details>
 
