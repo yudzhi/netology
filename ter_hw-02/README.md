@@ -425,7 +425,7 @@ terraform console
 ```hcl
 > "${local.test_map.admin} is ${keys(local.test_map)[0]} for ${local.test_list[2]} server based on OS ${local.servers[local.test_list[2]].image} with ${local.servers[local.test_list[2]].cpu} vcpu, ${local.servers[local.test_list[2]].ram} ram and ${length(local.servers[local.test_list[2]].disks)} virtual disks"
 ```
-
+Можно использовать цикл `for`, если скорректировать `console.tf` (см. "Ход выполнения")
 <details>
 	<summary>Ход выполнения</summary>
 
