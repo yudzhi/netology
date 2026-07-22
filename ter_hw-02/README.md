@@ -516,3 +516,12 @@ test_list = ["develop", "stage", "production"] # staging --> stage
 ![console.tf changed](https://getfile.dokpub.com/yandex/get/https://disk.yandex.ru/i/2C8qkN369d9R8Q)
 </details>
 
+## Задание 8. Работа со сложными структурами данных
+
+Тип `list(map(list(string)))`
+
+|Часть	| Описание	| Пример |
+|--------------|-----------|-----------|
+|list	| Внешний список	| `[ {...}, {...}, {...} ]` |
+| map	| Внутренний объект с динамическими ключами	| `{ "dev1": [...] }` |
+| list(string) |	Значение map - список строк	| `["ssh ...", "10.0.1.7"]` |
