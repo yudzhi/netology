@@ -525,3 +525,10 @@ test_list = ["develop", "stage", "production"] # staging --> stage
 |list	| Внешний список	| `[ {...}, {...}, {...} ]` |
 | map	| Внутренний объект с динамическими ключами	| `{ "dev1": [...] }` |
 | list(string) |	Значение map - список строк	| `["ssh ...", "10.0.1.7"]` |
+
+```hcl
+> var.test[0]["dev1"][0]
+"ssh -o 'StrictHostKeyChecking=no' ubuntu@62.84.124.117"
+```
+
+## Задание 9. 
