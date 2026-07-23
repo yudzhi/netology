@@ -531,4 +531,85 @@ test_list = ["develop", "stage", "production"] # staging --> stage
 "ssh -o 'StrictHostKeyChecking=no' ubuntu@62.84.124.117"
 ```
 
-## Задание 9. 
+## Задание 9. NAT-шлюз
+
+🚨 Бесконечный `ssh: connect to host 51.250.69.254 port 22: Connection timed out`
+
+```bash
+yc compute instance update fhmdn6v6gv19dhn7e38o \
+  --serial-port-settings ssh-authorization=INSTANCE_METADATA
+```
+
+<details>
+	<summary>Диагностика и проблема с OS Login</summary>
+
+```bash
+yc compute instance get netology-develop-platform-web | grep -E "status|one_to_one_nat|security_group_ids"
+status: RUNNING
+      one_to_one_nat:
+
+yc compute instance get netology-develop-platform-web --format json | jq '.network_interfaces[0].primary_v4_address.one_to_one_nat.address'
+"51.250.69.254"
+
+ping -c 4 51.250.69.254
+PING 51.250.69.254 (51.250.69.254) 56(84) bytes of data.
+64 bytes from 51.250.69.254: icmp_seq=1 ttl=54 time=11.0 ms
+64 bytes from 51.250.69.254: icmp_seq=2 ttl=54 time=5.76 ms
+64 bytes from 51.250.69.254: icmp_seq=3 ttl=54 time=5.93 ms
+64 bytes from 51.250.69.254: icmp_seq=4 ttl=54 time=7.90 ms
+
+--- 51.250.69.254 ping statistics ---
+4 packets transmitted, 4 received, 0% packet loss, time 3004ms
+rtt min/avg/max/mdev = 5.762/7.652/11.025/2.120 ms
+
+nc -zv 51.250.69.254 22
+nc: connect to 51.250.69.254 port 22 (tcp) failed: Connection timed out
+
+telnet 51.250.69.254 22
+Trying 51.250.69.254...
+telnet: Unable to connect to remote host: Connection timed out
+```
+Оказалось, дело в OS Login. В разделе "Доступ" веб-интерфейса OS Login выключен, но для подключения к серийной консоли он используется и не даёт нормально подключаться по ssh
+
+```bash
+yc compute instance get fhmdn6v6gv19dhn7e38o
+
+id: fhmdn6v6gv19dhn7e38o
+folder_id: b1gd35ulrq15fj4fftut
+created_at: "2026-07-22T12:44:42Z"
+name: netology-develop-platform-web
+zone_id: ru-central1-a
+platform_id: standard-v3
+***
+metadata_options:
+  gce_http_endpoint: ENABLED
+  aws_v1_http_endpoint: ENABLED
+  gce_http_token: ENABLED
+  aws_v1_http_token: DISABLED
+  aws_v2_http_endpoint: ENABLED
+  aws_v2_http_token: ENABLED
+serial_port_settings:
+  ssh_authorization: OS_LOGIN
+***
+```
+
+В Yandex Cloud существует два независимых уровня настройки OS Login :
+
+1.  **На уровне организации**: Глобально разрешает или запрещает использование технологии OS Login .
+2.  **На уровне виртуальной машины**: Включает или выключает поддержку OS Login для конкретной ВМ.
+
+Настройка в веб-интерфейсе (в разделе "Доступ" при редактировании ВМ), скорее всего, включает/выключает OS Login именно для этой ВМ. Настройка `serial_port_settings: ssh_authorization: OS_LOGIN`, которую показывает CLI, относится к **способу авторизации при подключении к серийной консоли** . Это настройка того, как CLI и `ssh` должны аутентифицироваться для доступа именно к последовательному порту.
+
+Получается, что на уровне ВМ OS Login может быть отключен, но для подключения к серийной консоли он все еще может требоваться.
+
+### 📋 Почему важна настройка серийной консоли
+
+Как сказано в документации, способ подключения к серийной консоли (`yc compute connect-to-serial-port`) напрямую зависит от того, включен ли для ВМ доступ по OS Login .
+*   Если доступ по OS Login **включен**, для подключения к серийной консоли используются короткоживущие SSH-сертификаты .
+*   Если доступ по OS Login **выключен**, для подключения используются обычные SSH-ключи .
+
+</details>
+```bash
+sudo passwd ubuntu
+# Введите новый пароль и подтвердите его.
+```
