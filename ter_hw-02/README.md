@@ -533,6 +533,8 @@ test_list = ["develop", "stage", "production"] # staging --> stage
 
 ## Задание 9. NAT-шлюз
 
+### Проблема с подключением через SSH
+
 🚨 Бесконечный `ssh: connect to host 51.250.69.254 port 22: Connection timed out`
 
 ```bash
@@ -610,7 +612,63 @@ serial_port_settings:
 
 </details>
 
+<details>
+	<summary>Ход выполнения</summary>
+
+### Шаг 1. Пока есть внешний IP
+
 ```bash
 sudo passwd ubuntu
 # Введите новый пароль и подтвердите его.
 ```
+
+### Шаг 2. Создание и настройка NAT-шлюза
+
+[Yandex-справка](https://yandex.cloud/ru/docs/vpc/operations/create-nat-gateway#tf_1)
+
+`main.tf`:
+
+```hcl
+# 1. Data-источник для получения информации о нашей сети
+data "yandex_vpc_network" "develop" {
+  name = var.vpc_name
+}
+
+# 2. Ресурс самого NAT-шлюза
+resource "yandex_vpc_gateway" "nat_gateway" {
+  name = "nat-gateway"
+  shared_egress_gateway {} # Пустой блок, обозначающий тип шлюза
+}
+
+# 3. Ресурс таблицы маршрутизации
+resource "yandex_vpc_route_table" "nat_route_table" {
+  name       = "nat-route-table"
+  network_id = data.yandex_vpc_network.develop.id
+
+  static_route {
+    destination_prefix = "0.0.0.0/0" # Весь трафик в интернет
+    gateway_id         = yandex_vpc_gateway.nat_gateway.id # Идёт через наш шлюз
+  }
+}
+
+resource "yandex_vpc_subnet" "develop" {
+  # ... остальные параметры ...
+  route_table_id = yandex_vpc_route_table.nat_route_table.id # <-- Добавили это
+}
+```
+
+### Шаг 3. Убрать внешние IP
+
+Файл `terraform.tfvars`:
+
+```hcl
+vm_web_nat = false  # Выключаем публичный IP для web-ВМ, чтобы проверить NAT Gateway
+vm_db_nat = false  # Выключаем публичный IP для db-ВМ
+```
+
+Применяем:
+
+```bash
+terraform apply
+```
+</details>
