@@ -609,6 +609,7 @@ serial_port_settings:
 *   Если доступ по OS Login **выключен**, для подключения используются обычные SSH-ключи .
 
 </details>
+
 ```bash
 sudo passwd ubuntu
 # Введите новый пароль и подтвердите его.
