@@ -666,9 +666,34 @@ vm_web_nat = false  # Выключаем публичный IP для web-ВМ, 
 vm_db_nat = false  # Выключаем публичный IP для db-ВМ
 ```
 
-Применяем:
+### Шаг 4. Применяем:
 
 ```bash
 terraform apply
 ```
+
+### Шаг 5. Серийная консоль:
+
+```bash
+curl ifconfig.me
+51.250.53.28
+
+ubuntu@fhmdn6v6gv19dhn7e38o:~$ ping -c 4 yandex.ru
+
+--- yandex.ru ping statistics ---
+4 packets transmitted, 4 received, 0% packet loss, time 3049ms
+rtt min/avg/max/mdev = 0.300/0.436/0.765/0.191 ms
+```
+
+### Шаг 6. Уничтожаем:
+
+```bash
+terraform destroy
+```
+</details>
+
+<details>
+	<summary>Скриншоты</summary>
+
+![Serial-Console NAT](https://getfile.dokpub.com/yandex/get/https://disk.yandex.ru/i/oh4ctQNH0XrDjg)
 </details>
