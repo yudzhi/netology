@@ -46,5 +46,7 @@ provider "yandex" {
 <details>
   <summary>Скриншоты</summary>
 
-![Security group](https://disk.yandex.ru/i/_TtUcV27_BoVLA)
+![Security group](https://getfile.dokpub.com/yandex/get/https://disk.yandex.ru/i/_TtUcV27_BoVLA)
 </details>
+
+## Задание 2. Создание ВМ
