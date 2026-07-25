@@ -50,3 +50,9 @@ provider "yandex" {
 </details>
 
 ## Задание 2. Создание ВМ
+
+src/
+├── variables.tf          # Общие переменные (cloud, network, security)
+├── vm-variables.tf       # Все переменные для ВМ
+├── count-vm.tf           # Веб-серверы, использует переменные из vm-variables.tf
+└── for_each-vm.tf        # Базы данных, использует переменные из vm-variables.tf
