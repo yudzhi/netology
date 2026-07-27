@@ -51,6 +51,8 @@ provider "yandex" {
 
 ## Задание 2. Создание ВМ
 
+[Fork-репозиторий с кодом](https://github.com/yudzhi/ter-homeworks/tree/main/03/src)
+
 ```text
 src/
 ├── variables.tf          # Общие переменные (cloud, network, security)
