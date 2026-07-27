@@ -58,3 +58,6 @@ src/
 ├── count-vm.tf           # Веб-серверы, использует переменные из vm-variables.tf
 └── for_each-vm.tf        # Базы данных, использует переменные из vm-variables.tf
 ```
+
+[yandex/compute_instance](https://library.tf/providers/yandex-cloud/yandex/latest/docs/resources/compute_instance) :
+> security_group_ids (Set Of String). Security Group (SG) IDs for network interface.
