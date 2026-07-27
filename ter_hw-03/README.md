@@ -61,3 +61,11 @@ src/
 
 [yandex/compute_instance](https://library.tf/providers/yandex-cloud/yandex/latest/docs/resources/compute_instance) :
 > security_group_ids (Set Of String). Security Group (SG) IDs for network interface.
+
+<details>
+  <summary>Скриншоты</summary>
+
+![Infrastructure map](https://getfile.dokpub.com/yandex/get/https://disk.yandex.ru/i/KlVUbL24doo4VQ)
+
+![Security group](https://getfile.dokpub.com/yandex/get/https://disk.yandex.ru/i/1hC9lPrPHgAnjA)
+</details>
