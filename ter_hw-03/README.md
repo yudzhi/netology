@@ -183,3 +183,9 @@ terraform output storage_vm_ip
 terraform output storage_disks_attached
 ```
 </details>
+
+<details>
+  <summary>Скриншоты</summary>
+
+![vm_storage_disks](https://getfile.dokpub.com/yandex/get/https://disk.yandex.ru/i/lUBn83j7ygkeBA)
+</details>
