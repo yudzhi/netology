@@ -167,4 +167,19 @@ dynamic "secondary_disk" {
   }
 }
 ```
+
+### Шаг 3. Проверка
+
+```bash
+# Проверка созданных дисков
+yc compute disk list
+
+# Проверка ВМ с подключёнными дисками
+yc compute instance get storage
+
+# Проверка через terraform output
+terraform output storage_disks_info
+terraform output storage_vm_ip
+terraform output storage_disks_attached
+```
 </details>
