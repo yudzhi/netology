@@ -252,3 +252,23 @@ host_key_checking=False
 
 ![inventory file](https://getfile.dokpub.com/yandex/get/https://disk.yandex.ru/i/8Y63zTfycXfKJw)
 </details>
+
+# Задание 5. Output
+
+```text
+ТРЕБОВАНИЯ
+│
+├── 1. Список словарей
+│   └── Каждый элемент — словарь с полями name, id, fqdn
+│
+├── 2. Итерация по ресурсам
+│   └── Автоматический обход всех ВМ
+│
+├── 3. Все типы ВМ
+│   ├── Из count-vm.tf (web-1, web-2)
+│   ├── Из for_each-vm.tf (db-main, db-replica)
+│   └── Из disk_vm.tf (storage)
+│
+└── 4. Любое количество ВМ
+    └── Динамическая обработка (2 или 999 ВМ)
+```
