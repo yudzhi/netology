@@ -191,6 +191,7 @@ terraform output storage_disks_attached
 </details>
 
 ## Задание 4. Ansible Inventory
+[terraform-03 branch commit](https://github.com/yudzhi/ter-homeworks/commit/e0e33b6e3146348edea6ecc3ff577d37d96386eb)
 
 <details>
   <summary>Ход выполнения</summary>
