@@ -189,3 +189,57 @@ terraform output storage_disks_attached
 
 ![vm_storage_disks](https://getfile.dokpub.com/yandex/get/https://disk.yandex.ru/i/lUBn83j7ygkeBA)
 </details>
+
+## Задание 4. Ansible Inventory
+
+<details>
+  <summary>Ход выполнения</summary>
+
+### Шаг 1. Нужно получить inventory-файл:
+
+```text
+[webservers]
+web-1 ansible_host=<внешний ip-адрес> fqdn=<полное доменное имя виртуальной машины>
+web-2 ansible_host=<внешний ip-адрес> fqdn=<полное доменное имя виртуальной машины>
+
+[databases]
+main ansible_host=<внешний ip-адрес> fqdn=<полное доменное имя виртуальной машины>
+replica ansible_host<внешний ip-адрес> fqdn=<полное доменное имя виртуальной машины>
+
+[storage]
+storage ansible_host=<внешний ip-адрес> fqdn=<полное доменное имя виртуальной машины>
+```
+
+### Шаг 2. Создать файл-шаблон `hosts.tftpl'
+
+```hcl
+[webservers]
+%{~ for vm in webservers ~}
+${vm.name} ansible_host=${vm.nat_ip} fqdn=${vm.fqdn}
+%{~ endfor ~}
+
+[databases]
+%{~ for vm in databases ~}
+${vm.name} ansible_host=${vm.nat_ip} fqdn=${vm.fqdn}
+%{~ endfor ~}
+
+[storage]
+%{~ for vm in storage ~}
+${vm.name} ansible_host=${vm.nat_ip} fqdn=${vm.fqdn}
+%{~ endfor ~}
+
+[all:vars]
+ansible_user=ubuntu
+ansible_ssh_private_key_file=~/.ssh/id_ed25519
+host_key_checking=False
+```
+
+### Шаг 3. Сбор групп и генерация: `ansible.tf`
+
+Собираем все ВМ в группы для inventory
+Целевые группы: webservers, databases, storage
+Поля: name, nat_ip, fqdn
+
+[templatefile функция](https://developer.hashicorp.com/terraform/language/functions/templatefile)
+
+</details>
