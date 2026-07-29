@@ -242,4 +242,12 @@ host_key_checking=False
 
 [templatefile функция](https://developer.hashicorp.com/terraform/language/functions/templatefile)
 
+[resource local_file](https://library.tf/providers/hashicorp/local/latest/docs/resources/file)
+
+</details>
+
+<details>
+  <summary>Скриншоты</summary>
+
+![inventory file](https://getfile.dokpub.com/yandex/get/https://disk.yandex.ru/i/8Y63zTfycXfKJw)
 </details>
