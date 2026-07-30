@@ -245,6 +245,14 @@ host_key_checking=False
 
 [resource local_file](https://library.tf/providers/hashicorp/local/latest/docs/resources/file)
 
+
+```bash
+# Хеш последнего коммита
+git log -1 --format=%H
+
+# Полная ссылка на коммит
+echo "https://github.com/$(git config --get remote.origin.url | sed 's/.*://' | sed 's/\.git$//')/commit/$(git rev-parse HEAD)"
+```
 </details>
 
 <details>
