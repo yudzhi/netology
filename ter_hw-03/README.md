@@ -191,6 +191,8 @@ terraform output storage_disks_attached
 </details>
 
 ## Задание 4. Ansible Inventory
+**UPD:** [Добавлено обновление inventory  по триггерам](https://github.com/yudzhi/ter-homeworks/commit/333783b367f11440da7d2701d14f82a496501f1e)
+
 [terraform-03 branch commit](https://github.com/yudzhi/ter-homeworks/commit/e0e33b6e3146348edea6ecc3ff577d37d96386eb)
 
 <details>
@@ -292,11 +294,9 @@ resource "local_file" "ansible_inventory" {
 
 [templatefile функция](https://developer.hashicorp.com/terraform/language/functions/templatefile)
 
-├── Читает файл-шаблон hosts.tftpl
-
-├── Подставляет в него переменные
-
-└── Возвращает готовый текст
+- Читает файл-шаблон hosts.tftpl
+- Подставляет в него переменные
+- Возвращает готовый текст
 
 #### Ресурс `terraform_data` и триггеры
 
@@ -307,6 +307,36 @@ resource "local_file" "ansible_inventory" {
 *- `local_file` не поддерживает `triggers`*
 
 >the terraform_data resource serves as a container for arbitrary operations taken by the provisioner "local-exec" block.
+
+Аргумент `triggers_replace = { ... }` - это карта (map) значений, которые Terraform отслеживает. Если старые и новые значения различаются, ресурс пересоздаётся
+
+```hcl
+resource "terraform_data" "inventory_trigger" {
+  # Триггеры для пересоздания при изменении ВМ
+  triggers_replace = {
+    web_instances     = join(",", [for vm in yandex_compute_instance.web : vm.id])
+    db_instances      = join(",", [for vm in yandex_compute_instance.db : vm.id])
+    storage_instance  = yandex_compute_instance.storage.id
+    template_checksum = filemd5("${path.module}/hosts.tftpl")
+  }
+```
+
+Отслеживаемые изменения: 
+- перебираем все web-серверы, берём их ID. `join(",", [...])` — объединяем все ID в строку через запятую
+- перебираем все ID баз данных
+- ID storage
+- MD5-хеш файла шаблона (изменился шаблон → изменился хеш)
+
+#### Provisioner "local-exec" и обновление inventory
+
+```hcl
+  # Пересоздаём inventory-файл при срабатывании триггеров
+  provisioner "local-exec" {
+    command = "echo 'Inventory updated at $(date)' > ${abspath(path.module)}/inventory-update.log"
+  }
+}
+```
+
 
 
 ```bash
