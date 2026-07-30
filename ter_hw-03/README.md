@@ -293,7 +293,9 @@ resource "local_file" "ansible_inventory" {
 [templatefile функция](https://developer.hashicorp.com/terraform/language/functions/templatefile)
 
 ├── Читает файл-шаблон hosts.tftpl
+
 ├── Подставляет в него переменные
+
 └── Возвращает готовый текст
 
 #### Ресурс `terraform_data` и триггеры
@@ -301,6 +303,7 @@ resource "local_file" "ansible_inventory" {
 [terraform_data resource](https://developer.hashicorp.com/terraform/language/resources/terraform-data)
 
 *- Ресурс `local_file` создаёт файл только один раз, не обновляя при изменении ВМ*
+
 *- `local_file` не поддерживает `triggers`*
 
 >the terraform_data resource serves as a container for arbitrary operations taken by the provisioner "local-exec" block.
