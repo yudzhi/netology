@@ -237,13 +237,73 @@ host_key_checking=False
 
 ### Шаг 3. Сбор групп и генерация: `ansible.tf`
 
-Собираем все ВМ в группы для inventory
+#### Переменные `locals`. Собираем все ВМ в группы для inventory
 Целевые группы: webservers, databases, storage
 Поля: name, nat_ip, fqdn
 
-[templatefile функция](https://developer.hashicorp.com/terraform/language/functions/templatefile)
+```hcl
+locals {
+
+  # Группа веб-серверов (из count-vm.tf)
+  webservers = [
+    for instance in yandex_compute_instance.web : {
+      name   = instance.name
+      nat_ip = instance.network_interface.0.nat_ip_address
+      fqdn   = instance.fqdn
+    }
+  ]
+
+  # Группа баз данных (из for_each-vm.tf)
+  databases = [
+    for instance in yandex_compute_instance.db : {
+      name   = instance.name
+      nat_ip = instance.network_interface.0.nat_ip_address
+      fqdn   = instance.fqdn
+    }
+  ]
+
+  # Группа storage (из disk_vm.tf)
+  storage = [
+    for instance in [yandex_compute_instance.storage] : {
+      name   = instance.name
+      nat_ip = instance.network_interface.0.nat_ip_address
+      fqdn   = instance.fqdn
+    }
+  ]
+}
+```
+
+#### Ресурс `local_file`. Создаем локальный файл `inventory.ini`
 
 [resource local_file](https://library.tf/providers/hashicorp/local/latest/docs/resources/file)
+
+```hcl
+resource "local_file" "ansible_inventory" {
+  content = templatefile("${path.module}/hosts.tftpl", {
+    webservers = local.webservers
+    databases  = local.databases
+    storage    = local.storage
+  })
+  
+  filename = "${abspath(path.module)}/inventory.ini"
+}
+```
+#### Функция `templatefile'.
+
+[templatefile функция](https://developer.hashicorp.com/terraform/language/functions/templatefile)
+
+├── Читает файл-шаблон hosts.tftpl
+├── Подставляет в него переменные
+└── Возвращает готовый текст
+
+#### Ресурс `terraform_data` и триггеры
+
+[terraform_data resource](https://developer.hashicorp.com/terraform/language/resources/terraform-data)
+
+*- Ресурс `local_file` создаёт файл только один раз, не обновляя при изменении ВМ*
+*- `local_file` не поддерживает `triggers`*
+
+>the terraform_data resource serves as a container for arbitrary operations taken by the provisioner "local-exec" block.
 
 
 ```bash
