@@ -261,7 +261,7 @@ echo "https://github.com/$(git config --get remote.origin.url | sed 's/.*://' | 
 ![inventory file](https://getfile.dokpub.com/yandex/get/https://disk.yandex.ru/i/8Y63zTfycXfKJw)
 </details>
 
-# Задание 5. Output
+## Задание 5. Output
 
 [terraform-03 коммит с заданием](https://github.com/yudzhi/ter-homeworks/commit/06e2efdb3f62a139ec91fca655a2abcee5bfead5)
 
