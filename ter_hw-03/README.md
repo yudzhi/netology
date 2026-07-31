@@ -275,20 +275,31 @@ locals {
 }
 ```
 
+#### Генерация inventory из шаблона - вынесено в `locals`:
+```hcl
+locals {
+  # Генерация inventory из шаблона
+  # Сохранено в переменную для реализации обновления
+  inventory_content = templatefile("${path.module}/hosts.tftpl", {
+    webservers = local.web_servers
+    databases  = local.database_servers
+    storage    = local.storage_servers
+  })
+}
+```
+
 #### Ресурс `local_file`. Создаем локальный файл `inventory.ini`
 
 [resource local_file](https://library.tf/providers/hashicorp/local/latest/docs/resources/file)
 
+`ansible.tf`:
+
 ```hcl
 resource "local_file" "ansible_inventory" {
-  content = templatefile("${path.module}/hosts.tftpl", {
-    webservers = local.webservers
-    databases  = local.databases
-    storage    = local.storage
-  })
-  
+  content  = local.inventory_content
   filename = "${abspath(path.module)}/inventory.ini"
 }
+
 ```
 #### Функция `templatefile'.
 
@@ -318,7 +329,19 @@ resource "terraform_data" "inventory_trigger" {
     db_instances      = join(",", [for vm in yandex_compute_instance.db : vm.id])
     storage_instance  = yandex_compute_instance.storage.id
     template_checksum = filemd5("${path.module}/hosts.tftpl")
+    inventory_content = local.inventory_content
   }
+
+  # Пересоздаём inventory-файл при срабатывании триггеров
+  provisioner "local-exec" {
+    command = <<-EOT
+      cat > ${abspath(path.module)}/inventory.ini << 'INVENTORY'
+${local.inventory_content}
+INVENTORY
+      echo "Inventory updated at $(date)" >> ${abspath(path.module)}/inventory-update.log
+    EOT
+  }
+}
 ```
 
 Отслеживаемые изменения: 
@@ -329,13 +352,6 @@ resource "terraform_data" "inventory_trigger" {
 
 #### Provisioner "local-exec" и обновление inventory
 
-```hcl
-  # Пересоздаём inventory-файл при срабатывании триггеров
-  provisioner "local-exec" {
-    command = "echo 'Inventory updated at $(date)' > ${abspath(path.module)}/inventory-update.log"
-  }
-}
-```
 
 
 
