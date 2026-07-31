@@ -379,3 +379,16 @@ echo "https://github.com/$(git config --get remote.origin.url | sed 's/.*://' | 
 
 ![terraform output](https://getfile.dokpub.com/yandex/get/https://disk.yandex.ru/i/uwzMaJoU2-vuHw)
 </details>
+
+## Задание 6. Ansible playbook + bastion
+
+<details>
+  <summary>Ход выполнения</summary>
+
+[null_resource](https://library.tf/providers/hashicorp/null/latest)
+
+> The primary use-case for the null resource is as a do-nothing container for arbitrary actions taken by a provisioner. In this example, three EC2 instances are created and then a null_resource instance is used to gather data about all three and execute a single action that affects them all. Due to the triggers map, the null_resource will be replaced each time the instance ids change, and thus the remote-exec provisioner will be re-run.
+> On Terraform 1.4 and later, use the terraform_data resource type instead. Terraform 1.9 and later support the moved configuration block from null_resource to terraform_data.
+> The triggers argument allows specifying an arbitrary set of values that, when changed, will cause the resource to be replaced.
+
+</details>
