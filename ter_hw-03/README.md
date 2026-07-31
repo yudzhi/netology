@@ -441,4 +441,43 @@ resource "yandex_compute_instance" "bastion" {
   count = var.bastion.enable ? 1 : 0
 ```
 
+#### Обновление `hosts.tftpl' - функция `coalesce`
+
+`ansible.tf`:
+```hcl
+locals {
+  # --------------------------------------------
+  # Выбор внутреннего или внешнего IP для Ansible
+  # --------------------------------------------
+  
+  # Все ВМ в одном map для удобства
+  all_vms = merge(
+    { for vm in yandex_compute_instance.web : vm.name => vm },
+    { for name, vm in yandex_compute_instance.db : vm.name => vm },
+    { for idx, vm in [yandex_compute_instance.storage] : vm.name => vm }
+  )
+
+  # Вспомогательная функция для выбора IP
+  # Использует coalesce() - возвращает первое НЕ ПУСТОЕ значение
+  # Если внешний IP есть → используем его, иначе → внутренний IP
+  # Функция для получения ansible_host для любой ВМ
+  get_ansible_host = {
+    for name, vm in local.all_vms : 
+    name => coalesce(
+      vm.network_interface.0.nat_ip_address,
+      vm.network_interface.0.ip_address
+    )
+  }
+```
+Далее во всех группах меняем `nat_ip` на `ansible_host = local.get_ansible_host[instance.name]`
+
+**Особенности синтаксиса для for**
+
+|Ресурс |	Способ создания	| Тип данных |	Доступ к элементам |
+|--------|------------|-------------|----------------|
+| yandex_compute_instance.web |	count	| Список (list)	| По индексу: web[0], web[1] |
+| yandex_compute_instance.db	| for_each | Map (словарь) |	По ключу: db["main"] |
+| yandex_compute_instance.storage |	Одиночный |	Объект (object) |	Прямой доступ: storage |
+
+
 </details>
