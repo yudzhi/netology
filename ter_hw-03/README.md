@@ -393,4 +393,52 @@ echo "https://github.com/$(git config --get remote.origin.url | sed 's/.*://' | 
 > 
 > The triggers argument allows specifying an arbitrary set of values that, when changed, will cause the resource to be replaced.
 
+#### Отключаем внешние IP у существующих ВМ
+Переопределим через `terraform.tfvars`:
+
+```hcl
+web_servers = {
+  enable_nat = false
+}
+
+each_vm = [ {
+  enable_nat = false
+},
+{
+  enable_nat = false
+} ]
+
+storage_vm = {
+  enable_nat = false
+}
+```
+
+#### Создадим bastion-server
+`vms_platform.tf`
+```hcl
+variable "bastion" {
+  description = "Параметры bastion-сервера"
+  type = object({
+    enable    = bool # bool => count=1, false => count=0
+    name      = string
+    cpu       = number
+    ram       = number
+    disk_size = number
+  })
+  default = {
+    enable    = true
+    name      = "bastion"
+    cpu       = 2
+    ram       = 2
+    disk_size = 20
+  }
+}
+```
+
+`bastion.tf`:
+```hcl
+resource "yandex_compute_instance" "bastion" {
+  count = var.bastion.enable ? 1 : 0
+```
+
 </details>
