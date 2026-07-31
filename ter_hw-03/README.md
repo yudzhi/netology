@@ -452,9 +452,12 @@ locals {
   
   # Все ВМ в одном map для удобства
   all_vms = merge(
+    # vm — это элемент списка
     { for vm in yandex_compute_instance.web : vm.name => vm },
+    # name — это ключ, vm — значение
     { for name, vm in yandex_compute_instance.db : vm.name => vm },
-    { for idx, vm in [yandex_compute_instance.storage] : vm.name => vm }
+    # превращаем в список и перебираем
+    { for vm in [yandex_compute_instance.storage] : vm.name => vm }
   )
 
   # Вспомогательная функция для выбора IP
