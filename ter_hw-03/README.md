@@ -393,27 +393,42 @@ echo "https://github.com/$(git config --get remote.origin.url | sed 's/.*://' | 
 > 
 > The triggers argument allows specifying an arbitrary set of values that, when changed, will cause the resource to be replaced.
 
-#### Отключаем внешние IP у существующих ВМ
-Переопределим через `terraform.tfvars`:
+### Шаг 1. Отключаем внешние IP у существующих ВМ
+Вводим новые управляющие переменные в `vms_platform.tf`:
 
 ```hcl
-web_servers = {
-  enable_nat = false
+variable "enable_nat_for_vms" {
+  description = "Включать ли NAT (внешний IP) для обычных ВМ"
+  type        = bool
+  default     = true
 }
 
-each_vm = [ {
-  enable_nat = false
-},
-{
-  enable_nat = false
-} ]
-
-storage_vm = {
-  enable_nat = false
+variable "enable_nat_for_bastion" {
+  description = "Включать ли NAT для bastion-сервера"
+  type        = bool
+  default     = true
 }
 ```
 
-#### Создадим bastion-server
+Обновляем ресурсы:
+```hcl
+# count-vm.tf
+network_interface {
+  nat = var.enable_nat_for_vms  # ✅
+}
+
+# for_each-vm.tf
+network_interface {
+  nat = var.enable_nat_for_vms  # ✅
+}
+
+# disk_vm.tf
+network_interface {
+  nat = var.enable_nat_for_vms  # ✅
+}
+```
+
+### Шаг 2. Создадим bastion-server
 `vms_platform.tf`
 ```hcl
 variable "bastion" {
@@ -441,7 +456,77 @@ resource "yandex_compute_instance" "bastion" {
   count = var.bastion.enable ? 1 : 0
 ```
 
-#### Обновление `hosts.tftpl' - функция `coalesce`
+### Шаг 3. Обновим шаблон inventory (`hosts.tftpl`)
+
+Теперь нужно, чтобы inventory использовал внешние IP для ВМ при отсутствии бастиона и внутренние IP при его наличии.
+Используем переменную `vm.ansible_host` для автоматизации подстановки нужного IP:
+```hcl
+[webservers]
+%{ for vm in webservers ~}
+${vm.name} ansible_host=${vm.ansible_host} fqdn=${vm.fqdn}
+%{~ endfor ~}
+
+[databases]
+%{ for vm in databases ~}
+${vm.name} ansible_host=${vm.ansible_host} fqdn=${vm.fqdn}
+%{~ endfor ~}
+
+[storage]
+%{ for vm in storage ~}
+${vm.name} ansible_host=${vm.ansible_host} fqdn=${vm.fqdn}
+%{~ endfor ~}
+
+[bastion]
+%{ for vm in bastion ~}
+${vm.name} ansible_host=${vm.ansible_host} fqdn=${vm.fqdn}
+%{~ endfor ~}
+```
+
+### Шаг 4. Настройка прокси-бастиона в `inventory.ini`
+```ini
+# inventory.ini
+[webservers]
+web-1 ansible_host=10.0.1.11
+
+# Настройка прокси:
+[webservers:vars]
+ansible_ssh_common_args='-o ProxyCommand="ssh -W %h:%p -q ubuntu@84.201.150.100"'
+
+# Ansible подключается через прокси:
+ssh -o ProxyCommand="ssh -W %h:%p -q ubuntu@84.201.150.100" ubuntu@10.0.1.11
+```
+
+`ProxyCommand=`	Указывает Ansible, как подключаться к целевой ВМ
+
+`ssh`	Используем SSH для проксирования
+
+`-W %h:%p`	Перенаправляем трафик на целевой хост (%h) и порт (%p)
+
+`-q`	Тихий режим (без лишних сообщений)
+
+`ubuntu@84.201.150.100`	Подключаемся к bastion под пользователем ubuntu
+
+*Для подключения к целевой ВМ сначала запусти SSH-туннель через bastion-сервер, и перенаправь весь трафик через него*
+
+`hosts.tftpl`:
+```hcl
+# Proxy через bastion (если есть)
+%{ if length(bastion) > 0 }
+[webservers:vars]
+ansible_ssh_common_args='-o ProxyCommand="ssh -W %h:%p -q ubuntu@${bastion[0].ansible_host}"'
+
+[databases:vars]
+ansible_ssh_common_args='-o ProxyCommand="ssh -W %h:%p -q ubuntu@${bastion[0].ansible_host}"'
+
+[storage:vars]
+ansible_ssh_common_args='-o ProxyCommand="ssh -W %h:%p -q ubuntu@${bastion[0].ansible_host}"'
+%{ endif }
+
+```
+
+### Шаг 5. Выбор внутреннего или внешнего IP - функция `coalesce`
+
+Определим для всех групп `ansible_host` переменную.
 
 `ansible.tf`:
 ```hcl
@@ -472,7 +557,13 @@ locals {
     )
   }
 ```
-Далее во всех группах меняем `nat_ip` на `ansible_host = local.get_ansible_host[instance.name]`
+Далее во всех группах:
+
+```hcl
+      ansible_host = local.get_ansible_host[instance.name]
+      nat_ip      = instance.network_interface.0.nat_ip_address
+      internal_ip = instance.network_interface.0.ip_address
+```
 
 #### Особенности синтаксиса для for
 
@@ -502,4 +593,164 @@ locals {
 }]
 # map → [значение1, значение2] → for instance in список
 ```
+
+### Шаг 6. Добавляем группу bastion в `ansible.tf`
+```hcl
+# Группа Bastion-сервер
+  bastion_servers = [
+    for instance in yandex_compute_instance.bastion : {
+      name        = instance.name
+      nat_ip      = instance.network_interface.0.nat_ip_address
+      internal_ip = instance.network_interface.0.ip_address
+      
+      # Для bastion используем внешний IP (он всегда есть)
+      ansible_host = instance.network_interface.0.nat_ip_address
+    }
+  ]
+```
+
+### Шаг 7. Анализ `test.yml` - playbook
+```yaml
+---
+- name: test                      # Название play
+  gather_facts: false              # Не собирать факты (быстрее)
+  hosts: webservers                # Только для группы webservers
+  vars:
+    ansible_ssh_user: ubuntu       # Пользователь для SSH
+  become: yes                      # Использовать sudo
+
+  pre_tasks:                       # Задачи ДО основных
+    - name: Validating the ssh port is open
+      wait_for:                    # Ожидание готовности SSH
+        host: '{{ (ansible_ssh_host|default(ansible_host))|default(inventory_hostname) }}'
+        port: 22
+        delay: 5
+        timeout: 300
+        search_regex: OpenSSH
+
+  tasks:                           # Основные задачи
+    - name: save own secret        # Сохранить секрет для конкретной ВМ
+      copy:
+        dest: /tmp/own.pass
+        content: "{{ secrets[inventory_hostname] }}"
+      when: secrets[inventory_hostname] is defined
+
+    - name: save all secrets       # Сохранить все секреты
+      copy:
+        dest: /tmp/all.pass
+        content: "{{ secrets }}"
+      when: secrets is defined
+```
+
+#### - pre_tasks — ожидание готовности SSH перед выполнением задач
+
+- Ждёт, пока на порту 22 (SSH) не появится служба
+- Проверяет каждые 5 секунд (delay: 5)
+- Ждёт до 300 секунд (5 минут)
+- Ищет строку "OpenSSH" в ответе
+
+ВМ может создаваться несколько минут, Cloud-init может настраивать систему после первого запуск - без этого Ansible может попытаться подключиться к ещё не готовой ВМ
+
+#### - работа с secrets — передача чувствительных данных через Ansible
+
+- Переменная secrets передаётся извне (через --extra-vars)
+- Для каждой ВМ сохраняется свой секрет в /tmp/own.pass
+- Все секреты сохраняются в /tmp/all.pass
+
+Для передачи и безопасного хранения чувствительных данных - паролей, токенов, ключей на ВМ
+
+#### - передача данных через --extra-vars
+
+### Шаг 8. Запуск playbook
+
+#### Переменная запуска в `vms_platform.tf`
+```hcl
+# ============================================
+# Применение Ansible playbook
+# ============================================
+
+variable "run_ansible" {
+  description = "Запускать ли Ansible playbook"
+  type        = bool
+  default
+```
+
+#### null-resource в `ansible.tf`
+```hcl
+resource "null_resource" "ansible_provision" {
+  count = var.run_ansible ? 1 : 0
+  
+  depends_on = [
+    yandex_compute_instance.web,
+    yandex_compute_instance.db,
+    yandex_compute_instance.storage,
+    yandex_compute_instance.bastion,
+    local_file.ansible_inventory
+  ]
+  
+  triggers = {
+    all_vm_ids     = join(",", local.all_vm_ids)
+    inventory_hash = md5(local.inventory_content)
+    playbook_hash  = filemd5("${path.module}/site.yml")
+  }
+  
+  # Добавление приватного ключа в ssh-agent
+  provisioner "local-exec" {
+    command = "eval $(ssh-agent) && cat ~/.ssh/id_ed25519 | ssh-add -"
+    on_failure = continue
+  }
+  
+  # УБИРАЕМ sleep 60 (это делает pre_tasks в Ansible)
+  # provisioner "local-exec" {
+  #   command = "sleep 60"
+  #   on_failure = continue
+  # }
+  
+  # Запуск Ansible playbook с передачей секретов
+  provisioner "local-exec" {
+    command = <<-EOT
+      echo "Запуск Ansible playbook..."
+      ANSIBLE_HOST_KEY_CHECKING=False \
+      ansible-playbook \
+        -i ${abspath(path.module)}/inventory.ini \
+        ${abspath(path.module)}/site.yml \
+        --extra-vars '{
+          "secrets": ${jsonencode({
+            for vm in yandex_compute_instance.web : 
+            vm.name => "secret_for_${vm.name}"
+          })}
+        }'
+      
+      if [ $? -eq 0 ]; then
+        echo "Ansible playbook выполнен успешно"
+      else
+        echo "Ошибка при выполнении Ansible playbook"
+        exit 1
+      fi
+    EOT
+    on_failure = continue
+    environment = {
+      ANSIBLE_HOST_KEY_CHECKING = "False"
+    }
+  }
+}
+```
+
+### Шаг 9. Обновление security group (добавление правил для bastion)
+
+Для бастиона (публичный доступ):
+
+    Кто: Трафик приходит из публичного интернета (0.0.0.0/0).
+
+    Что: Правила разрешают входящий SSH-доступ на порт 22 с любых IP-адресов.
+
+    Зачем: Чтобы разработчик или администратор мог подключиться к бастион-хосту из любой точки мира.
+
+Для внутренних ВМ (web, db, storage):
+
+    Кто: Трафик приходит только от бастион-хоста, а не из публичного интернета.
+
+    Что: Правила разрешают входящий SSH-доступ на порт 22 только с внутреннего IP-адреса бастиона (например, из подсети 10.0.1.0/24).
+
+    Зачем: Это позволяет полностью скрыть внутренние ВМ от внешнего мира, делая их доступными исключительно через защищенный бастион. Это значительно снижает поверхность атак.
 </details>
