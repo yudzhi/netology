@@ -474,7 +474,7 @@ locals {
 ```
 Далее во всех группах меняем `nat_ip` на `ansible_host = local.get_ansible_host[instance.name]`
 
-**Особенности синтаксиса для for**
+#### Особенности синтаксиса для for
 
 |Ресурс |	Способ создания	| Тип данных |	Доступ к элементам |
 |--------|------------|-------------|----------------|
@@ -482,5 +482,24 @@ locals {
 | yandex_compute_instance.db	| for_each | Map (словарь) |	По ключу: db["main"] |
 | yandex_compute_instance.storage |	Одиночный |	Объект (object) |	Прямой доступ: storage |
 
+`for instance in yandex_compute_instance.db` работает, потому что Terraform автоматически преобразует map в список значений, когда `for` используется без указания ключа.
 
+Способ 1: С ключом и значением (явный)
+```hcl
+
+# Получаем И ключ, И значение
+[ for name, instance in yandex_compute_instance.db : {
+  key = name           # ← "main", "replica"
+  name = instance.name # ← "db-main", "db-replica"
+}]
+```
+Способ 2: Только со значением (неявный)
+```hcl
+
+# Получаем только значение (ключ игнорируется)
+[ for instance in yandex_compute_instance.db : {
+  name = instance.name  # ← "db-main", "db-replica"
+}]
+# map → [значение1, значение2] → for instance in список
+```
 </details>
