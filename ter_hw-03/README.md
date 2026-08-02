@@ -381,6 +381,7 @@ echo "https://github.com/$(git config --get remote.origin.url | sed 's/.*://' | 
 </details>
 
 ## Задание 6. Ansible playbook + bastion
+[task 6 commit](https://github.com/yudzhi/ter-homeworks/commit/671ad9adab8c6c943d4d178acc7556110c6c54a5)
 
 <details>
   <summary>Ход выполнения</summary>
@@ -870,4 +871,10 @@ resource "yandex_vpc_security_group" "example" {
   }
 }
 ```
+</details>
+
+<details>
+  <summary>Скриншоты</summary>
+
+![inventory with bastion](https://getfile.dokpub.com/yandex/get/https://disk.yandex.ru/i/bG3LxXI5YN9uAA)
 </details>
