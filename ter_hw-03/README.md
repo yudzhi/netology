@@ -903,3 +903,103 @@ slice(subnet_ids, 3, 4)  # → ["fl8ner8rjsio6rcpcf0h"]                        (
 # concat() — объединяет списки
 concat(slice(...), slice(...))  # → ["e9b0le401619ngf4h68n", "e2lbar6u8b2ftd7f5hia", "fl8ner8rjsio6rcpcf0h"]
 ```
+## Задание 9. Сложные списки
+`["rc01","rc02","rc03","rc04",rc05","rc06","rc11","rc12","rc13","rc14",rc15","rc16","rc19"....."rc96"]` те список от "rc01" до "rc96", пропуская все номера, заканчивающиеся на "0","7", "8", "9", за исключением "rc19"
+
+```bash
+# Запуск консоли
+terraform console
+
+# Задача 1: Список от rc01 до rc99
+> [for i in range(1, 100) : format("rc%02d", i)]
+
+# Задача 2: Список с пропусками
+> [
+    for i in range(1, 97) :
+    format("rc%02d", i)
+    if i == 19 || !contains([0, 7, 8, 9], i % 10)
+  ]
+```
+
+```text
+ЗАДАЧА 1: Список "rc01" - "rc99"
+│
+└── [for i in range(1, 100) : format("rc%02d", i)]
+
+ЗАДАЧА 2: Список с пропусками
+│
+└── [
+      for i in range(1, 97) :
+      format("rc%02d", i)
+      if i == 19 || !contains([0, 7, 8, 9], i % 10)
+    ]
+
+КЛЮЧЕВЫЕ ФУНКЦИИ:
+│
+├── range(start, end) — генерирует числа
+├── format("rc%02d", i) — форматирует с ведущим нулём
+├── contains(list, value) — проверяет наличие
+└── i % 10 — последняя цифра числа
+
+ПРИМЕРЫ ИСПОЛЬЗОВАНИЯ:
+│
+├── Имена ВМ: [for i in range(1, 10) : format("web-%02d", i)]
+├── Имена дисков: [for i in range(1, 5) : format("disk-%02d", i)]
+└── Имена подсетей: [for i in range(1, 4) : format("subnet-%02d", i)]
+```
+### Задача 1: Список от "rc01" до "rc99"
+
+```hcl
+
+[for i in range(1, 100) : format("rc%02d", i)]
+```
+
+- range(1, 100) — генерирует числа от 1 до 99
+- `format("rc%02d", i)` — форматирует число в строку с ведущим нулём
+- `%02d` — означает: число минимум из 2 цифр, с ведущим нулём
+
+### Задача 2: Список с пропусками
+
+```hcl
+
+[
+  for i in range(1, 97) :
+  format("rc%02d", i)
+  if i == 19 || !contains([0, 7, 8, 9], i % 10)
+]
+```
+
+- `i % 10` возвращает последнюю цифру числа i
+- `contains([0, 7, 8, 9], i % 10)` — проверяет, является ли последняя цифра одной из запрещённых
+- `!contains(...)` — инвертирует условие (пропускаем, если НЕ заканчивается на 0,7,8,9)
+- `i == 19 || ... `— всегда включаем 19
+
+*i % 10 — это оператор взятия остатка от деления (modulo)*
+### Практическое применение в проекте: 
+```hcl
+# vms_platform.tf
+variable "vm_count" {
+  description = "Количество ВМ"
+  type        = number
+  default     = 99
+}
+
+locals {
+  # Список имён ВМ
+  vm_names = [for i in range(1, var.vm_count + 1) : format("vm-%02d", i)]
+  
+  # Список имён ВМ с пропусками
+  vm_names_filtered = [
+    for i in range(1, var.vm_count + 1) :
+    format("vm-%02d", i)
+    if i == 19 || !contains([0, 7, 8, 9], i % 10)
+  ]
+}
+
+# Использование в ресурсах
+resource "yandex_compute_instance" "vm" {
+  count = length(local.vm_names)
+  name  = local.vm_names[count.index]
+  # ...
+}
+```
