@@ -878,3 +878,28 @@ resource "yandex_vpc_security_group" "example" {
 
 ![inventory with bastion](https://getfile.dokpub.com/yandex/get/https://disk.yandex.ru/i/bG3LxXI5YN9uAA)
 </details>
+
+## Задание 7. Удаление элементов из списков Terraform
+
+```hcl
+{
+  network_id  = local.vpc.network_id
+  subnet_ids  = concat(slice(local.vpc.subnet_ids, 0, 2), slice(local.vpc.subnet_ids, 3, length(local.vpc.subnet_ids)))
+  subnet_zones = concat(slice(local.vpc.subnet_zones, 0, 2), slice(local.vpc.subnet_zones, 3, length(local.vpc.subnet_zones)))
+}
+```
+
+С комментариями:
+
+```hcl
+# Исходный список
+subnet_ids = ["e9b0le401619ngf4h68n", "e2lbar6u8b2ftd7f5hia", "b0ca48coorjjq93u36pl", "fl8ner8rjsio6rcpcf0h"]
+# индексы:          0                         1                         2                         3
+
+# slice(list, start, end) — берёт элементы от start до end (не включая end)
+slice(subnet_ids, 0, 2)  # → ["e9b0le401619ngf4h68n", "e2lbar6u8b2ftd7f5hia"]  (элементы 0 и 1)
+slice(subnet_ids, 3, 4)  # → ["fl8ner8rjsio6rcpcf0h"]                        (элемент 3)
+
+# concat() — объединяет списки
+concat(slice(...), slice(...))  # → ["e9b0le401619ngf4h68n", "e2lbar6u8b2ftd7f5hia", "fl8ner8rjsio6rcpcf0h"]
+```
