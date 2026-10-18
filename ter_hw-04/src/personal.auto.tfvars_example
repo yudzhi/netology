@@ -1,3 +1,4 @@
 token  =  ""
 cloud_id  = ""
 folder_id = ""
+vms_ssh_root_key = "ssh-ed25519 AAAA... your-key"

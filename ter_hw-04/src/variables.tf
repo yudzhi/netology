@@ -1,8 +1,8 @@
 ###cloud vars
-variable "token" {
-  type        = string
-  description = "OAuth-token; https://cloud.yandex.ru/docs/iam/concepts/authorization/oauth-token"
-}
+# variable "token" {
+#   type        = string
+#   description = "OAuth-token; https://cloud.yandex.ru/docs/iam/concepts/authorization/oauth-token"
+# }
 
 variable "cloud_id" {
   type        = string
@@ -35,8 +35,26 @@ variable "vpc_name" {
 
 variable "vms_ssh_root_key" {
   type        = string
-  default     = "your_ssh_ed25519_key"
+  # default     = "your_ssh_ed25519_key"
   description = "ssh-keygen -t ed25519"
+}
+
+###labels
+
+variable "marketing_labels" {
+  type = map(string)
+  default = {
+    project = "marketing"
+    owner = "p.petrov"
+  }
+}
+
+variable "analytics_labels" {
+  type = map(string)
+  default = {
+    project = "analytics"
+    owner = "s.sydorov"
+  }
 }
 
 ###example vm_web var
