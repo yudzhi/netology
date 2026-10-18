@@ -75,5 +75,5 @@
 ![terraform console](./images/terraform-console.png)
 
 
-![to be done](https://getfile.dokpub.com/yandex/get/https://disk.yandex.ru/i/bG3LxXI5YN9uAA)
+![Пока так](https://getfile.dokpub.com/yandex/get/https://disk.yandex.ru/i/iYc3i_eMsFBl3Q)
 </details>
