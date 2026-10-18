@@ -24,6 +24,7 @@ module "marketing_vm" {
   instance_count = 1
   image_family   = "ubuntu-2004-lts"
   public_ip      = true
+  # boot_disk_size = 10
 
   labels = var.marketing_labels
 
@@ -43,6 +44,7 @@ module "analytics_vm" {
   instance_count = 1
   image_family   = "ubuntu-2004-lts"
   public_ip      = true
+  # boot_disk_size = 10
 
   labels = var.analytics_labels
 
