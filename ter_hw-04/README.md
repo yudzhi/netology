@@ -90,7 +90,7 @@
 
 ## Задание 2.
 
-[`vpc/README.md`](./vpc/README.md)
+[`vpc/README.md`](https://github.com/yudzhi/netology/blob/terraform-04/ter_hw-04/src/vpc/README.md)
 
 <details>
 <summary>Ход выполнения</summary>
