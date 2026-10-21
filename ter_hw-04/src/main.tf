@@ -1,6 +1,9 @@
 ### Задание 2. Создаём сеть и подсеть через модуль 
 module "vpc_dev" {
   source   = "./vpc"
+  # providers = {
+  #   yandex = yandex
+  # }
   env_name = "develop"
   zone     = var.default_zone
   cidr     = var.default_cidr[0]
@@ -24,6 +27,9 @@ locals {
 
 module "marketing_vm" {
   source         = "git::https://github.com/udjin10/yandex_compute_instance.git?ref=v2.0.0"
+  # providers = {
+  #   yandex = yandex
+  # }
   env_name       = "develop"
   # network_id     = yandex_vpc_network.develop.id
   # subnet_zones   = [var.default_zone]
@@ -47,6 +53,9 @@ module "marketing_vm" {
 
 module "analytics_vm" {
   source         = "git::https://github.com/udjin10/yandex_compute_instance.git?ref=v2.0.0"
+  # providers = {
+  #   yandex = yandex
+  # }
   env_name       = "develop"
   # network_id     = yandex_vpc_network.develop.id
   # subnet_zones   = [var.default_zone]
