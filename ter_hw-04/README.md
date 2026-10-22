@@ -79,18 +79,28 @@ sudo nginx -t
 
 ![nginx -t](https://getfile.dokpub.com/yandex/get/https://disk.yandex.ru/i/K4KLvCCz1R2wBg)
 
+[nginx -t_YD](https://disk.yandex.ru/i/K4KLvCCz1R2wBg)
+
 **2. Консоль Yandex Cloud с метками ВМ:**
 
 ![Метки ВМ](https://getfile.dokpub.com/yandex/get/https://disk.yandex.ru/i/HY6Qs97udaVm_g)
 
+![Метки ВМ_YD](https://disk.yandex.ru/i/HY6Qs97udaVm_g)
+
 ![Карта ВМ](https://getfile.dokpub.com/yandex/get/https://disk.yandex.ru/i/ZWXhNAp2T76A1w)
+
+[Карта ВМ](https://disk.yandex.ru/i/ZWXhNAp2T76A1w)
 
 **3. `terraform console` — содержимое модулей:**
 
 ![terraform console](https://getfile.dokpub.com/yandex/get/https://disk.yandex.ru/i/RqICwcZyTkWq5w)
 
+[terraform console_YD](https://disk.yandex.ru/i/RqICwcZyTkWq5w)
 
 ![Сбой YC](https://getfile.dokpub.com/yandex/get/https://disk.yandex.ru/i/iYc3i_eMsFBl3Q)
+
+[Сбой YC_YD](https://disk.yandex.ru/i/iYc3i_eMsFBl3Q)
+
 </details>
 
 ## Задание 2.
