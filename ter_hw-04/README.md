@@ -281,5 +281,5 @@ module.vpc_dev.vpc.subnet_id
 ```
 ![vpc_dev](https://getfile.dokpub.com/yandex/get/https://disk.yandex.ru/i/YeA1K5p3xRgrrQ)
 
-![vpc_dev_YD](https://disk.yandex.ru/i/YeA1K5p3xRgrrQ)
+[vpc_dev_YD](https://disk.yandex.ru/i/YeA1K5p3xRgrrQ)
 </details>
