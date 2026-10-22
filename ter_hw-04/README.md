@@ -277,7 +277,7 @@ terraform console
 ```
 ```hcl
 module.vpc_dev
-module.vpc_dev.subnet_id
+module.vpc_dev.vpc.subnet_id
 ```
-TBD
+![vpc_dev](https://getfile.dokpub.com/yandex/get/https://disk.yandex.ru/i/YeA1K5p3xRgrrQ)
 </details>
