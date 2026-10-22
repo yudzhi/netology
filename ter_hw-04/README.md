@@ -1,14 +1,11 @@
 # Домашнее задание к занятию «Продвинутые методы работы с Terraform»
 
-## NB - пока все ответы теоретические, поскольку проверить в Yandex Cloud не получается
- Error: Error while requesting API to create instance: x-request-id = abbbef50-2a0f-4d6c-bc2a-3177da6fc77b x-server-trace-id = 970e497cdeb1fdf4:d5988e5d8126227c:49582a369b917f2d:1 x-client-trace-id = 0bac0c56-dac9-4d66-8577-0dde61a6df56 rpc error: code = FailedPrecondition desc = Zone ru-central1-a is not available
+## NB - сбой у Yandex Cloud
+Подсеть и ВМ перенесены в зону `ru-central1-d`, дефолтная платформа заменена на доступную в этой зоне `standard-v2`: 
 
- Error: Failed to query available provider packages
-│ 
-│ Could not retrieve the list of available versions for provider hashicorp/yandex: provider
-│ registry.terraform.io/hashicorp/yandex was not found in any of the search locations
-│ 
-│   - provider mirror at https://terraform-mirror.yandexcloud.net/
+```
+Error while requesting API to create instance: x-request-id = abbbef50-2a0f-4d6c-bc2a-3177da6fc77b x-server-trace-id = 970e497cdeb1fdf4:d5988e5d8126227c:49582a369b917f2d:1 x-client-trace-id = 0bac0c56-dac9-4d66-8577-0dde61a6df56 rpc error: code = FailedPrecondition desc = Zone ru-central1-a is not available
+```
 
 ## Задание 1. Один remote-модуль = две ВМ
 <details>
@@ -74,18 +71,26 @@
 
 **1. Подключение к ВМ и вывод `sudo nginx -t`:**
 
-![nginx -t](./images/nginx-test.png)
+```bash
+yc compute instance list
+ssh ubuntu@<EXTERNAL IP>
+sudo nginx -t
+```
+
+![nginx -t](https://getfile.dokpub.com/yandex/get/https://disk.yandex.ru/i/K4KLvCCz1R2wBg)
 
 **2. Консоль Yandex Cloud с метками ВМ:**
 
-![Метки ВМ](./images/vm-labels.png)
+![Метки ВМ](https://getfile.dokpub.com/yandex/get/https://disk.yandex.ru/i/HY6Qs97udaVm_g)
+
+![Карта ВМ](https://getfile.dokpub.com/yandex/get/https://disk.yandex.ru/i/ZWXhNAp2T76A1w)
 
 **3. `terraform console` — содержимое модулей:**
 
-![terraform console](./images/terraform-console.png)
+![terraform console](https://getfile.dokpub.com/yandex/get/https://disk.yandex.ru/i/RqICwcZyTkWq5w)
 
 
-![Пока так](https://getfile.dokpub.com/yandex/get/https://disk.yandex.ru/i/iYc3i_eMsFBl3Q)
+![Сбой YC](https://getfile.dokpub.com/yandex/get/https://disk.yandex.ru/i/iYc3i_eMsFBl3Q)
 </details>
 
 ## Задание 2.
