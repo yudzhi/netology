@@ -89,7 +89,7 @@ sudo nginx -t
 
 ![Карта ВМ](https://getfile.dokpub.com/yandex/get/https://disk.yandex.ru/i/ZWXhNAp2T76A1w)
 
-[Карта ВМ](https://disk.yandex.ru/i/ZWXhNAp2T76A1w)
+[Карта ВМ_YD](https://disk.yandex.ru/i/ZWXhNAp2T76A1w)
 
 **3. `terraform console` — содержимое модулей:**
 
@@ -292,4 +292,71 @@ module.vpc_dev.vpc.subnet_id
 ![vpc_dev](https://getfile.dokpub.com/yandex/get/https://disk.yandex.ru/i/YeA1K5p3xRgrrQ)
 
 [vpc_dev_YD](https://disk.yandex.ru/i/YeA1K5p3xRgrrQ)
+</details>
+
+## Задание 3. Terraform state 
+
+<details>
+  <summary>Ход выполнения</summary>
+
+### 1. terraform - список ресурсов
+
+```bash
+terraform state list
+
+module.analytics_vm.data.yandex_compute_image.my_image
+module.analytics_vm.yandex_compute_instance.vm[0]
+module.marketing_vm.data.yandex_compute_image.my_image
+module.marketing_vm.yandex_compute_instance.vm[0]
+module.vpc_dev.yandex_vpc_network.this
+module.vpc_dev.yandex_vpc_subnet.this
+
+
+terraform state pull > state_before.json
+```
+
+### 2. vpc модуль удалить из стейта
+
+`state` можно редактировать отдельно от реальной инфраструктуры: команда `terraform state rm` убирает запись из `state`, но не удаляет сам ресурс в облаке 
+
+```bash
+terraform state rm module.vpc_dev
+```
+
+### 3. vm модуль удалить из стейта
+
+```bash
+terraform state rm module.marketing_vm
+terraform state rm module.analytics_vm
+
+terraform state list
+```
+[terraform_state_rm_YD](https://disk.yandex.ru/i/fcYbMNUSu011gQ)
+
+### 4. импорт всего обратно. terraform plan
+
+```bash
+# Собираем ID
+yc vpc network list
+yc vpc subnet list
+yc compute instance list
+
+# Импортируем обратно
+terraform import module.vpc_dev.yandex_vpc_network.this <NETWORK_ID>
+terraform import module.vpc_dev.yandex_vpc_subnet.this <SUBNET_ID>
+terraform import module.marketing_vm.yandex_compute_instance.vm[0] <MARKETING_VM_ID>
+terraform import module.analytics_vm.yandex_compute_instance.vm[0] <ANALYTICS_VM_ID>
+
+
+[IDs](https://disk.yandex.ru/i/WAWG4a4NDEvd9g)
+
+[terraform import](https://disk.yandex.ru/i/IdkYIpUGU9Kvrg) 
+# Проверка plan
+terraform plan
+```
+
+После импорта `terraform plan` показал только незначительное изменение: добавление флага `allow_stopping_for_update = true` к обеим ВМ (update in-place, без пересоздания). После `terraform apply` plan показывает `No changes`. Значимых изменений нет.
+
+[terraform_plan](https://disk.yandex.ru/i/ialkyQGiH7_uuw)
+
 </details>
