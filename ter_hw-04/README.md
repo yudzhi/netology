@@ -360,3 +360,166 @@ terraform plan
 [terraform_plan](https://disk.yandex.ru/i/ialkyQGiH7_uuw)
 
 </details>
+
+## Задание 4. vpc - каждой зоне по своей подсети
+
+<details>
+  <summary>Ход выполнения</summary>
+
+### план, нюансы, мысли в слух
+
+- `subnets = list(object)` instead of `zone, cidr = string`
+- `for_each` или `count`?
+Подсети идентифицируются по зоне, а не по позиции в списке. Для однотипных ВМ используем `count`, для подсетей есть ключ - зона, в которой она создаётся. Если удалить или переставить элемент в списке, `count` пересоздаст все подсети после изменённого индекса, а `for_each` затронет только ту, которую реально изменили.
+- оставить `this` для сети (она по-прежнему одна), изменить имена для подсетей
+Когда ресурсов несколько, имя должно отражать роль или ключ. Пусть будет
+`resource "yandex_vpc_subnet" "for_zone"`
+- обновить вызовы в корневом `main.tf`
+- `terraform plan`
+- Yandex Cloud не поддерживает зону [ru-central1-c](https://yandex.cloud/en/docs/overview/concepts/geo-scope) в новых проектах — можно будет добавить предупреждение - только ru-central1-a, ru-central1-b, ru-central1-d, ru-central1-e
+
+
+### vpc/variables.tf
+
+Пример вызова из задания:
+
+```hcl
+subnets = [
+    { zone = "ru-central1-a", cidr = "10.0.1.0/24" },
+  ]
+```
+Список объектов с фиксированными полями
+
+```hcl
+variable "subnets" {
+  type = list(object({
+    zone = string
+    cidr = string
+  }))
+  description = "List of subnets to create: each object contains zone and cidr"
+}
+```
+
+### vpc/main.tf и MOVED
+
+```hcl
+resource "yandex_vpc_subnet" "for_zone" {
+  for_each = { for s in var.subnets : s.zone => s}
+
+  name           = "${var.env_name}-subnet-${each.key}"
+  zone           = each.value.zone
+  network_id     = yandex_vpc_network.this.id
+  v4_cidr_blocks = [each.value.cidr]
+
+}
+```
+`for_each` принимает `map` - надо преобразовать. 
+
+Ключ - зона => значение - объект `{zone, cidr}`
+
+**Как не пересоздавать подсеть**
+
+```hcl
+moved {
+  from = yandex_vpc_subnet.this
+  to   = yandex_vpc_subnet.for_zone["ru-central1-d"]
+}
+```
+
+### vpc/outputs.tf
+
+Пусть будет общий вывод (map) и выводы для передачи в модуль ВМ:
+
+```hcl
+output "vpc" {
+  description = "VPC module result: network and subnets for each zone"
+  value = {
+    network_id     = yandex_vpc_network.this.id
+    network_name   = yandex_vpc_network.this.name
+    subnets = {
+        for zone, subnet in yandex_vpc_subnet.for_zone : zone => {
+            id   = subnet.id
+            name = subnet.name
+            zone = subnet.zone
+            cidr = subnet.v4_cidr_blocks
+        }
+    }
+    subnet_ids = [for s in yandex_vpc_subnet.for_zone : s.id]
+    subnet_zones = [for s in yandex_vpc_subnet.for_zone : s.zone]
+  }
+}
+```
+### main.tf корневой
+
+Берём код из примера вызова задания, заменяем неподдерживаемую зону `ru-central1-c`-> `ru-central1-d`
+
+```hcl
+module "vpc_prod" {
+  source       = "./vpc"
+  env_name     = "production"
+  subnets = [
+    { zone = "ru-central1-a", cidr = "10.0.1.0/24" },
+    { zone = "ru-central1-b", cidr = "10.0.2.0/24" },
+    { zone = "ru-central1-d", cidr = "10.0.3.0/24" },
+  ]
+}
+
+module "vpc_dev" {
+  source       = "./vpc"
+  env_name     = "develop"
+  subnets = [
+    { zone = "ru-central1-d", cidr = "10.0.1.0/24" },
+  ]
+}
+```
+
+Вызов в модуле ВМ:
+```hcl
+subnet_zones = module.vpc_dev.vpc.subnet_zones
+subnet_ids = module.vpc_dev.vpc.subnet_ids
+# subnet_zones   = [module.vpc_dev.vpc.subnet_zone] Задание 2
+# subnet_ids     = [module.vpc_dev.vpc.subnet_id] Задание 2
+```
+
+Модули ВМ вызываются с `instance_count = 1`, поэтому создают одну ВМ в первой зоне из `subnet_zones` (индекс 0) и в первой подсети из `subnet_ids` (индекс 0). Списки `subnet_zones` и `subnet_ids` передаются из `module.vpc_dev.vpc`. Если увеличить `instance_count` до числа зон, модуль создаст по ВМ в каждой зоне (распределение по кругу через `element`):
+
+```hcl
+zone = element(var.subnet_zones, count.index)
+
+subnet_id = element(var.subnet_ids, count.index)
+```
+</details>
+
+<details>
+  <summary>Скриншоты</summary>
+
+```bash
+terraform init -upgrade
+terraform validate
+terraform plan
+
+# module.vpc_dev.yandex_vpc_subnet.for_zone["ru-central1-d"] will be created
+# module.vpc_dev.yandex_vpc_subnet.this will be destroyed
+ # module.analytics_vm.yandex_compute_instance.vm[0] will be updated in-place
+# module.marketing_vm.yandex_compute_instance.vm[0] will be updated in-place
+
+Plan: 5 to add, 2 to change, 1 to destroy
+```
+
+terraform предлагает пересоздать подсеть для `vpc_dev` из-за нового формата имени, при этом ВМ не пересозадются - новый `subnet_id` подставится 'in-place'. Плюс добавляется кластер сеть+подсети `vpc_prod`
+
+[terraform_plan_1](https://disk.yandex.ru/i/LK6EkDnIOxcQLQ)
+[terraform_plan_2](https://disk.yandex.ru/i/tczKxj0Mw7XSEw)
+[terraform_plan_3](https://disk.yandex.ru/i/-JpJFuAgL-P5tg)
+
+Чтобы избавиться от пересоздания подсети (которое невозможно, поскольку в ней уже работают две ВМ), добавляем в `vpc/main.tf` блок `moved`.
+
+[terraform_plan_4](https://disk.yandex.ru/i/uhDOUul1CyiS6Q)
+
+```bash
+yc vpc subnet list
+```
+
+[yc_vpc_subnet_list](https://disk.yandex.ru/i/IwZkj-BPEmojvg)
+
+[infrastructure_map](https://disk.yandex.ru/i/0v2BthSOqk_Tpw)
