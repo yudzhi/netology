@@ -509,7 +509,9 @@ Plan: 5 to add, 2 to change, 1 to destroy
 terraform предлагает пересоздать подсеть для `vpc_dev` из-за нового формата имени, при этом ВМ не пересозадются - новый `subnet_id` подставится 'in-place'. Плюс добавляется кластер сеть+подсети `vpc_prod`
 
 [terraform_plan_1](https://disk.yandex.ru/i/LK6EkDnIOxcQLQ)
+
 [terraform_plan_2](https://disk.yandex.ru/i/tczKxj0Mw7XSEw)
+
 [terraform_plan_3](https://disk.yandex.ru/i/-JpJFuAgL-P5tg)
 
 Чтобы избавиться от пересоздания подсети (которое невозможно, поскольку в ней уже работают две ВМ), добавляем в `vpc/main.tf` блок `moved`.
