@@ -36,6 +36,7 @@ variable "vpc_name" {
 variable "vms_ssh_root_key" {
   type        = string
   # default     = "your_ssh_ed25519_key"
+  sensitive = true
   description = "ssh-keygen -t ed25519"
 }
 
@@ -71,5 +72,9 @@ variable "vm_db_name" {
   description = "example vm_db_ prefix"
 }
 
-
+variable "mysql_app_password" {
+  type        = string
+  sensitive   = true
+  description = "Password for MySQL user app"
+}
 
