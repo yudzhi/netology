@@ -16,4 +16,4 @@
 
 ### Модуль "Система управления конфигурациями"
 
-1. [Введение в Ansble]()
+1. [Введение в Ansble](https://github.com/yudzhi/netology/blob/main/ans_hw-01/README.md)
