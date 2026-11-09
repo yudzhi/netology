@@ -11,5 +11,6 @@
 1. ["Введение в Terraform"](https://github.com/yudzhi/netology/tree/main/ter_hw-01)
 2. ["Основы Terraform. Yandex Cloud](https://github.com/yudzhi/netology/blob/main/ter_hw-02/README.md)
 3. [Домашнее задание к занятию «Управляющие конструкции в коде Terraform»](https://github.com/yudzhi/netology/blob/main/ter_hw-03/README.md)
+4. [Продвинутые методы работы с Terraform](https://github.com/yudzhi/netology/tree/main/ter_hw-04)
    
 
